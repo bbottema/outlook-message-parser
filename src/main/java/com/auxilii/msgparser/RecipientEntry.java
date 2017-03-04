@@ -19,10 +19,7 @@ package com.auxilii.msgparser;
 
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,6 +85,21 @@ public class RecipientEntry {
 		this.properties.put(mapiClass, value);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		RecipientEntry that = (RecipientEntry) o;
+		return Objects.equals(toEmail, that.toEmail) &&
+				Objects.equals(toName, that.toName);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(toEmail, toName);
+	}
 
 	/**
 	 * @return the to: email
