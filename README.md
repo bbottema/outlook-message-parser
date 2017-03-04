@@ -13,5 +13,6 @@ msgparser uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to
 
 **Help wanted**: To support a wide range of .msg files (e.g., in Chinese or Japanese), we need some example files. Please send us your .msg files that could not be parsed with this library.
 
+ * [Documentation](https://github.com/bbottema/msgparser/wiki)
  * [Project's original Home](http://auxilii.com/msgparser/)
  * Forked code from [SourceForge](https://sourceforge.net/projects/msgparser), so that msgparser can be deployed to Maven Central
