@@ -17,13 +17,12 @@
  */
 package com.auxilii.msgparser;
 
+import junit.framework.TestCase;
+
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import junit.framework.TestCase;
 
 public class ParserTest extends TestCase {
 
@@ -40,12 +39,7 @@ public class ParserTest extends TestCase {
 			
 			Message msg = null;
 			
-			File testDir = new File("src/test/resources");
-			File[] testFiles = testDir.listFiles(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return name.toLowerCase().endsWith(".msg");
-				}
-			});
+			File[] testFiles = { /*new File("test1.msg")*/ };
 			
 			for (File testFile : testFiles) {
 				msg = msgp.parseMsg(testFile);
