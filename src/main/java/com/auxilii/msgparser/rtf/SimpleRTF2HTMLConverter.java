@@ -25,7 +25,9 @@ import java.util.regex.Pattern;
 public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 
 	protected static final Logger logger = Logger.getLogger(SimpleRTF2HTMLConverter.class.getName());
-	
+
+	private static final String WINDOWS_CHARSET = "CP1252";
+
 	public String rtf2html(String rtf) throws Exception {
 		
 		String plain = null;
@@ -65,7 +67,7 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 		while(m.find()) {
 			for(int g = 1; g <= m.groupCount(); g++) {
 				String hex = m.group(g);
-				String hexToString = hexToString(hex, "CP1252");
+				String hexToString = hexToString(hex);
 				if (hexToString != null) {
 					text = text.replaceAll("\\\\'"+hex, hexToString);
 				}
@@ -81,7 +83,7 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	 * @return The HTML section only but still with RTF code inside.
 	 */
 	private String fetchHtmlSection(String text) {
-		String html = null;
+		String html;
 		int htmlStart = -1;
 		int htmlEnd = -1;
 		
@@ -154,8 +156,8 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	 * @param hex The hex value to be converted.
 	 * @return The string representing the hex value.
 	 */
-	private static String hexToString(String hex, String charset) {
-		int i = 0;
+	private static String hexToString(String hex) {
+		int i;
 		try {
 			i = Integer.parseInt(hex, 16);
 		} catch(NumberFormatException nfe) {
@@ -164,9 +166,9 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 		}
 		byte[] b = new byte[]{(byte)i};
 		try {
-			return new String(b, charset);
+			return new String(b, WINDOWS_CHARSET);
 		} catch (UnsupportedEncodingException e) {
-			logger.log(Level.FINEST, "Unsupported encoding: " + charset);
+			logger.log(Level.FINEST, "Unsupported encoding: " + WINDOWS_CHARSET);
 		}
 		return null;
 	}

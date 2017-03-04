@@ -17,6 +17,8 @@
  */
 package com.auxilii.msgparser;
 
+import org.apache.poi.hsmf.datatypes.MAPIProperty;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +46,7 @@ public class RecipientEntry {
 	 * Contains all properties that are not
 	 * covered by the special properties.
 	 */
-	protected Map<Integer,Object> properties = new TreeMap<Integer,Object>();
+	protected final Map<Integer,Object> properties = new TreeMap<>();
 
 	/**
 	 * Sets the name/value pair in the {@link #properties}
@@ -127,13 +129,13 @@ public class RecipientEntry {
 	 */
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(this.toName);
 		if (sb.length() > 0) {
 			sb.append(" ");
 		}
 		if ((this.toEmail != null) && (this.toEmail.length() > 0)) {
-			sb.append("<" + this.toEmail + ">");
+			sb.append("<").append(this.toEmail).append(">");
 		}
 		return sb.toString();
 	}
@@ -159,7 +161,7 @@ public class RecipientEntry {
 	 */
 	public Set<String> getPropertiesAsHex() {
 		Set<Integer> keySet = this.properties.keySet();
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		for(Integer k : keySet) {
 			String s = String.format("%04x", k);
 			result.add(s);
@@ -212,11 +214,9 @@ public class RecipientEntry {
 	
 	/**
 	 * This method retrieves the value for a specific property.
-	 * <br>
-	 * Please refer to {@link #getPropertyValue(Integer)} for dealing with 
-	 * integer based keys.
-	 * <br><b>NOTE:</b> You can also use fields defined within
-	 * {@link MAPIProp} to easily read certain properties.
+	 * <p>
+	 * <b>NOTE:</b> You can also use fields defined within
+	 * {@link MAPIProperty} to easily read certain properties.
 	 * @param code The key for the property to be retrieved.
 	 * @return The value of the specified property.
 	 */

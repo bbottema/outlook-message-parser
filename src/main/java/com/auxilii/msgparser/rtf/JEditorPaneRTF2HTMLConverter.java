@@ -17,13 +17,11 @@
  */
 package com.auxilii.msgparser.rtf;
 
+import javax.swing.*;
+import javax.swing.text.EditorKit;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-
-import javax.swing.JEditorPane;
-import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
 
 public class JEditorPaneRTF2HTMLConverter implements RTF2HTMLConverter {
 
@@ -34,8 +32,6 @@ public class JEditorPaneRTF2HTMLConverter implements RTF2HTMLConverter {
 		try {
 			StringReader rtfReader = new StringReader(rtf);
 			kitRtf.read(rtfReader, p.getDocument(), 0);
-			kitRtf = null;
-			Document t = p.getDocument();
 			EditorKit kitHtml = p.getEditorKitForContentType("text/html");
 			Writer writer = new StringWriter();
 			kitHtml.write(writer, p.getDocument(), 0, p.getDocument().getLength());

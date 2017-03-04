@@ -17,28 +17,21 @@
  */
 package com.auxilii.msgparser;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.poi.hmef.CompressedRTF;
-
 import com.auxilii.msgparser.attachment.Attachment;
 import com.auxilii.msgparser.attachment.FileAttachment;
 import com.auxilii.msgparser.attachment.MsgAttachment;
 import com.auxilii.msgparser.rtf.RTF2HTMLConverter;
 import com.auxilii.msgparser.rtf.SimpleRTF2HTMLConverter;
+import org.apache.poi.hmef.CompressedRTF;
+import org.apache.poi.hsmf.datatypes.MAPIProperty;
+
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class that represents a .msg file. Some
@@ -54,6 +47,8 @@ import com.auxilii.msgparser.rtf.SimpleRTF2HTMLConverter;
  */
 public class Message {
 	protected static final Logger logger = Logger.getLogger(Message.class.getName());
+
+	private static final String WINDOWS_CHARSET = "CP1252";
 
 	/**
 	 * The message class as defined in the .msg file.
@@ -136,18 +131,18 @@ public class Message {
 	 * A list of all attachments (both {@link FileAttachment}
 	 * and {@link MsgAttachment}).
 	 */
-	protected List<Attachment> attachments = new ArrayList<Attachment>();	
+	protected List<Attachment> attachments = new ArrayList<>();
 	/**
 	 * Contains all properties that are not
 	 * covered by the special properties.
 	 */
-	protected Map<Integer,Object> properties = new TreeMap<Integer,Object>();
+	protected final Map<Integer,Object> properties = new TreeMap<>();
 	/**
 	 * A list containing all recipients for this message 
 	 * (which can be set in the 'to:', 'cc:' and 'bcc:' field, respectively).
 	 */
-	protected List<RecipientEntry> recipients = new ArrayList<RecipientEntry>();
-	protected RTF2HTMLConverter rtf2htmlConverter;
+	protected List<RecipientEntry> recipients = new ArrayList<>();
+	protected final RTF2HTMLConverter rtf2htmlConverter;
 	
 	
 	public Message() {
@@ -183,9 +178,6 @@ public class Message {
 	 * special attributes (e.g., {@link #toEmail} when
 	 * the property name is '0076'). 
 	 * 
-	 * @param name The property name (i.e., the class
-	 *  of the document entry).
-	 * @param value The value of the field.
 	 * @throws ClassCastException Thrown if the detected data
 	 *  type does not match the expected data type.
 	 */
@@ -331,7 +323,7 @@ public class Message {
 	protected static Date parseDateString(String date) {
 		//in order to parse the date we try using the US locale before we 
 		//fall back to the default locale.
-		List<SimpleDateFormat> sdfList = new ArrayList<SimpleDateFormat>(2); 
+		List<SimpleDateFormat> sdfList = new ArrayList<>(2);
 		sdfList.add(new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy", Locale.US));
 		sdfList.add(new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy"));
 		
@@ -374,15 +366,15 @@ public class Message {
 	 */
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("From: "+this.createMailString(this.fromEmail, this.fromName)+"\n");
-		sb.append("To: "+this.createMailString(this.toEmail, this.toName)+"\n");
+		StringBuilder sb = new StringBuilder();
+		sb.append("From: ").append(this.createMailString(this.fromEmail, this.fromName)).append("\n");
+		sb.append("To: ").append(this.createMailString(this.toEmail, this.toName)).append("\n");
 		if (this.date != null) {
 			SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-			sb.append("Date: "+formatter.format(this.date)+"\n");
+			sb.append("Date: ").append(formatter.format(this.date)).append("\n");
 		}
-		if (this.subject != null) sb.append("Subject: "+this.subject+"\n");
-		sb.append(""+this.attachments.size()+" attachments.");
+		if (this.subject != null) sb.append("Subject: ").append(this.subject).append("\n");
+		sb.append("").append(this.attachments.size()).append(" attachments.");
 		return sb.toString();
 	}
 	
@@ -392,21 +384,21 @@ public class Message {
 	 * @return The full message information.
 	 */
 	public String toLongString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("From: "+this.createMailString(this.fromEmail, this.fromName)+"\n");
-		sb.append("To: "+this.createMailString(this.toEmail, this.toName)+"\n");
+		StringBuilder sb = new StringBuilder();
+		sb.append("From: ").append(this.createMailString(this.fromEmail, this.fromName)).append("\n");
+		sb.append("To: ").append(this.createMailString(this.toEmail, this.toName)).append("\n");
 		if (this.date != null) {
 			SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-			sb.append("Date: "+formatter.format(this.date)+"\n");
+			sb.append("Date: ").append(formatter.format(this.date)).append("\n");
 		}
-		if (this.subject != null) sb.append("Subject: "+this.subject+"\n");
+		if (this.subject != null) sb.append("Subject: ").append(this.subject).append("\n");
 		sb.append("\n");
 		if (this.bodyText != null) sb.append(this.bodyText);
 		if (this.attachments.size() > 0) {
 			sb.append("\n");
-			sb.append(""+this.attachments.size()+" attachments.\n");
+			sb.append("").append(this.attachments.size()).append(" attachments.\n");
 			for (Attachment att : this.attachments) {
-				sb.append(att.toString()+"\n");
+				sb.append(att.toString()).append("\n");
 			}
 		}
 		return sb.toString();
@@ -665,7 +657,7 @@ public class Message {
 	 * @return the CC recipients of the message.
 	 */
 	public List<RecipientEntry> getCcRecipients() {
-		List<RecipientEntry> recipients = new ArrayList<RecipientEntry>();
+		List<RecipientEntry> recipients = new ArrayList<>();
 		String recipientKey = getDisplayCc().trim();
 		for (RecipientEntry entry : recipients) {
 			String name = entry.getToName().trim();
@@ -682,7 +674,7 @@ public class Message {
 	 * @return the BCC recipients of the message.
 	 */
 	public List<RecipientEntry> getBccRecipients() {
-		List<RecipientEntry> recipients = new ArrayList<RecipientEntry>();
+		List<RecipientEntry> recipients = new ArrayList<>();
 		String recipientKey = getDisplayBcc().trim();
 		for (RecipientEntry entry : recipients) {
 			String name = entry.getToName().trim();
@@ -727,8 +719,8 @@ public class Message {
 			if (bodyRTF instanceof byte[]) {
 				byte[] decompressedBytes = decompressRtfBytes((byte[]) bodyRTF);
 				if(decompressedBytes != null) {
-					this.bodyRTF = new String(decompressedBytes);
 					try {
+						this.bodyRTF = new String(decompressedBytes, WINDOWS_CHARSET);
 						setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
 					} catch(Exception e) {
 						logger.log(Level.WARNING, "Could not convert RTF body to HTML.", e);
@@ -768,7 +760,7 @@ public class Message {
 	}
 	
 	/**
-	 * @param bodyHTML the bodyHTML to set
+	 * @param bodyToSet the bodyHTML to set
 	 * @param force forces overwriting of the field if already set
 	 */
 	protected void setBodyHTML(String bodyToSet, boolean force) {
@@ -808,7 +800,7 @@ public class Message {
 	
 	/**
 	 * Parses the sender's email address from the mail headers.
-	 * @param The headers in a single String object
+	 * @param headers The headers in a single String object
 	 * @return The sender's email or null if nothing was found.
 	 */
 	protected static String getFromEmailFromHeaders(String headers) {
@@ -944,7 +936,7 @@ public class Message {
 	 */
 	public Set<String> getPropertiesAsHex() {
 		Set<Integer> keySet = this.properties.keySet();
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		for(Integer k : keySet) {
 			String s = convertToHex(k);
 			result.add(s);
@@ -995,9 +987,9 @@ public class Message {
 	}
 
 	/**
-	 * This method retrieves the value for a specific property. <br>
-	 * Please refer to {@link #getPropertyValue(Integer)} for dealing with integer based keys. <br>
-	 * <b>NOTE:</b> You can also use fields defined within {@link MAPIProp} to easily read certain properties.
+	 * This method retrieves the value for a specific property.
+	 * <p>
+	 * <b>NOTE:</b> You can also use fields defined within {@link MAPIProperty} to easily read certain properties.
 	 * 
 	 * @param code
 	 *            The key for the property to be retrieved.
@@ -1014,12 +1006,12 @@ public class Message {
 	 *         values.
 	 */
 	public String getPropertyListing() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (Integer propCode : getPropertyCodes()) {
 			Object value = getPropertyValue(propCode);
 			String hexCode = "0x" + convertToHex(propCode);
-			sb.append(hexCode + " / " + propCode);
-			sb.append(": " + value.toString());
+			sb.append(hexCode).append(" / ").append(propCode);
+			sb.append(": ").append(value.toString());
 			sb.append("\n");
 		}
 		return sb.toString();

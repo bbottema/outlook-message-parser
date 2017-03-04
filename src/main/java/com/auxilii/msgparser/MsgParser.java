@@ -17,12 +17,14 @@
  */
 package com.auxilii.msgparser;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.auxilii.msgparser.attachment.Attachment;
+import com.auxilii.msgparser.attachment.FileAttachment;
+import com.auxilii.msgparser.attachment.MsgAttachment;
+import com.auxilii.msgparser.rtf.RTF2HTMLConverter;
+import com.auxilii.msgparser.rtf.SimpleRTF2HTMLConverter;
+import org.apache.poi.poifs.filesystem.*;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -31,18 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.poi.poifs.filesystem.DirectoryEntry;
-import org.apache.poi.poifs.filesystem.DocumentEntry;
-import org.apache.poi.poifs.filesystem.DocumentInputStream;
-import org.apache.poi.poifs.filesystem.Entry;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-
-import com.auxilii.msgparser.attachment.Attachment;
-import com.auxilii.msgparser.attachment.FileAttachment;
-import com.auxilii.msgparser.attachment.MsgAttachment;
-import com.auxilii.msgparser.rtf.RTF2HTMLConverter;
-import com.auxilii.msgparser.rtf.SimpleRTF2HTMLConverter;
 
 /**
  * Main parser class that does the actual
@@ -154,7 +144,7 @@ public class MsgParser {
 		// and documents within this directories
 		// we now gain access to the root node
 		// and recursively go through the complete 'filesystem'.
-		Message msg = null;
+		Message msg;
 		try {
 			POIFSFileSystem fs = new POIFSFileSystem(msgFileStream);
 			DirectoryEntry dir = fs.getRoot();
@@ -207,7 +197,8 @@ public class MsgParser {
 			    	// node will be recursively checked
 			    	this.checkDirectoryEntry(de, msg);
 			    }
-		    } else if (entry.isDocumentEntry()) {
+		    } else //noinspection StatementWithEmptyBody
+				if (entry.isDocumentEntry()) {
 		    	// a document entry contains information about
 				// the mail (e.g, from, to, subject, ...)
 				DocumentEntry de = (DocumentEntry) entry;
@@ -237,9 +228,11 @@ public class MsgParser {
 			
 			// check whether the entry is either a directory entry
 			// or a document entry, while we are just interested in document entries on this level			
+			//noinspection StatementWithEmptyBody
 			if (entry.isDirectoryEntry()) {
 				// not expected within a recipient entry
-			} else if (entry.isDocumentEntry()) {
+			} else //noinspection StatementWithEmptyBody
+				if (entry.isDocumentEntry()) {
 				// a document entry contains information about
 				// the mail (e.g, from, to, subject, ...)
 				DocumentEntry de = (DocumentEntry) entry;
@@ -272,8 +265,7 @@ public class MsgParser {
 				msg.setProperty(msgProp);
 			}
     	} else {
-    		MessageProperty msgProp = getMessagePropertyFromDocumentEntry(de);
-			msg.setProperty(msgProp);
+			msg.setProperty(getMessagePropertyFromDocumentEntry(de));
     	}
 	}
 	
@@ -296,11 +288,10 @@ public class MsgParser {
 				recipient.setProperty(msgProp);
 			}
 		} else {
-			MessageProperty msgProp = getMessagePropertyFromDocumentEntry(de);
-			recipient.setProperty(msgProp);
+			recipient.setProperty(getMessagePropertyFromDocumentEntry(de));
 		}
 	}
-	
+
 	/**
 	 * Parses a document entry which has been detected to be a stream of document entries itself.
 	 * This stream is identified by the key "__properties_version1.0".
@@ -309,7 +300,7 @@ public class MsgParser {
 	 * @throws IOException Thrown if the properties stream could not be parsed.
 	 */
 	private List<DocumentEntry> getDocumentEntriesFromPropertiesStream(DocumentEntry de) throws IOException {
-		List<DocumentEntry> result = new ArrayList<DocumentEntry>();
+		List<DocumentEntry> result = new ArrayList<>();
 		DocumentInputStream dstream = null;
 		try {
 			dstream = new DocumentInputStream(de);
@@ -457,8 +448,7 @@ public class MsgParser {
 			// we put the complete data into a byte[] object...
 			byte[] textBytes1e = this.getBytesFromDocumentEntry(de);
 			// ...and create a String object from it
-			String text1e = new String(textBytes1e, "ISO-8859-1");
-			return text1e;
+			return new String(textBytes1e, "ISO-8859-1");
 		case 0x1f:
 			// Unicode encoding with lowbyte followed by hibyte
 			// Note: this is arcane guesswork, but it works
@@ -473,14 +463,12 @@ public class MsgParser {
 				int cl = (int) textBytes1f[i] & 0xff; //Using unsigned value (thanks to Reto Schuettel)
 				characters[c++] = (char) ((ch << 8) + cl);
 			}
-			String text1f = new String(characters);
-			return text1f;
+			return new String(characters);
 		case 0x102:
 			try {
 				// the data is read into a byte[] object
-				byte[] bytes102 = this.getBytesFromDocumentEntry(de);
 				// and returned as-is
-				return bytes102;
+				return this.getBytesFromDocumentEntry(de);
 			} catch(Exception e) {
 				logger.fine("Could not get content of byte array of field 0x102: "+e.getMessage());
 				// To keep compatible with previous implementations, we return an empty array here
@@ -548,18 +536,17 @@ public class MsgParser {
 	private byte[] getBytesFromStream(InputStream dstream) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
-		int read = -1;
+		int read;
 		while ((read = dstream.read(buffer)) > 0) {
 			baos.write(buffer, 0, read);
 		}
-		byte[] bytes = baos.toByteArray();
-		return bytes;
+		return baos.toByteArray();
 	}
 	
-	private String bytesToHex(byte[] bytes) throws IOException {
+	private String bytesToHex(byte[] bytes) {
 		StringBuilder byteStr = new StringBuilder();
-		for(int i = 0; i < bytes.length; i++) {
-			byteStr.append(String.format("%02X", bytes[i] & 0xff));
+		for (byte aByte : bytes) {
+			byteStr.append(String.format("%02X", aByte & 0xff));
 		}
 		return byteStr.toString();
 	}
@@ -583,9 +570,9 @@ public class MsgParser {
     	// with names starting with __substg1.
     	logger.finest("Document entry: "+name);
     	if (name.startsWith(propertyStreamPrefix)) {
-    		String clazz = FieldInformation.UNKNOWN;
-    		String type = FieldInformation.UNKNOWN; 
-    		int mapiType = FieldInformation.UNKNOWN_MAPITYPE;
+    		String clazz;
+    		String type;
+    		int mapiType;
     		try {
     			String val = name.substring(propertyStreamPrefix.length()).toLowerCase();
     			// the first 4 digits of the remainder

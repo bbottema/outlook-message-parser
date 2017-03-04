@@ -15,9 +15,9 @@ package com.auxilii.msgparser;
  */
 public class MessageProperty {
 	
-	private String clazz;
-	private Object data;
-	private int size;
+	private final String clazz;
+	private final Object data;
+	private final int size;
 
 
 	public MessageProperty(String clazz, Object data, int size) {

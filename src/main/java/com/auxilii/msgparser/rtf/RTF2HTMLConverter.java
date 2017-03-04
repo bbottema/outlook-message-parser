@@ -27,6 +27,6 @@ package com.auxilii.msgparser.rtf;
  */
 public interface RTF2HTMLConverter {
 
-	public String rtf2html(String rtf) throws Exception;
+	String rtf2html(String rtf) throws Exception;
 
 }

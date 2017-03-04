@@ -17,6 +17,7 @@
  */
 package com.auxilii.msgparser;
 
+import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 
 /**
@@ -77,7 +78,7 @@ public class FieldInformation {
 	 * and type properties.
 	 * 
 	 * @param clazz The class of the {@link DocumentEntry}.
-	 * @param mapiType The mapiType of the {@link DocumentEntry} (see {@link MAPIProp}).
+	 * @param mapiType The mapiType of the {@link DocumentEntry} (see {@link MAPIProperty}).
 	 */
 	public FieldInformation(String clazz, int mapiType) {
 		this.setClazz(clazz);
