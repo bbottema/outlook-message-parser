@@ -75,6 +75,14 @@ public class Message {
 	 */
 	protected String toName = null;
 	/**
+	 * The address part of Reply-To header
+	 */
+	protected String replyToEmail = null;
+	/**
+	 * The name part of Reply-To header
+	 */
+	protected String replyToName = null;
+	/**
 	 * The mail's subject.
 	 */
 	protected String subject = null;
@@ -1024,5 +1032,21 @@ public class Message {
 	 */
 	public String convertToHex(Integer propCode) {
 		return String.format("%04x", propCode);
+	}
+
+	public String getReplyToEmail() {
+		return replyToEmail;
+	}
+
+	public void setReplyToEmail(String replyToEmail) {
+		this.replyToEmail = replyToEmail;
+	}
+
+	public String getReplyToName() {
+		return replyToName;
+	}
+
+	public void setReplyToName(String replyToName) {
+		this.replyToName = replyToName;
 	}
 }

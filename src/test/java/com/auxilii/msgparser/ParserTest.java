@@ -598,6 +598,8 @@ public class ParserTest {
 		// Outlook overrode this when saving the .msg to match the mail account
 		MessageAssert.assertThat(msg).hasToName("Bottema, Benny");
 		MessageAssert.assertThat(msg).hasToEmail("benny.bottema@aegon.nl");
+		MessageAssert.assertThat(msg).hasReplyToName("lollypop-replyto");
+		MessageAssert.assertThat(msg).hasReplyToEmail("lo.pop.replyto@somemail.com");
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
 		// Outlook overrode this value too OR converted the original HTML to RTF, from which MsgParser derived this HTML
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).contains(
@@ -617,10 +619,6 @@ public class ParserTest {
 		String attachmentContent2 = normalizeText(new String(((FileAttachment) attachment2).getData(), UTF_8));
 		assertThat(attachmentContent1).isEqualTo("Black Tie Optional");
 		assertThat(attachmentContent2).isEqualTo("On the moon!");
-		System.out.println("-------------------------------------");
-		System.out.println("-------------------------------------");
-		System.out.println("-------------------------------------");
-		System.out.println(msg.getHeaders());
 	}
 
 	private void assertAttachmentMetadata(Attachment embeddedImg, String mimeType, String fileExt, String filename) {

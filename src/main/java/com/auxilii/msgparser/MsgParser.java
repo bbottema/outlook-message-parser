@@ -33,6 +33,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.compile;
 
 /**
  * Main parser class that does the actual
@@ -158,7 +162,31 @@ public class MsgParser {
 				}
 			}
 		}
+		convertHeaders(msg);
 		return msg;
+	}
+
+	private void convertHeaders(Message msg) {
+		String allHeaders = msg.getHeaders();
+		extractReplyToHeader(msg, allHeaders);
+	}
+
+	static void extractReplyToHeader(Message msg, String allHeaders) {
+		// Reply-To: Optional Name <adress@somemail.com> // second '<' and '>' kept optional
+		Matcher m = compile("^Reply-To:\\s*(?:<?(?<nameOrAddress>.*?)>?)?\\s*(?:<(?<address>.*?)>)?$", Pattern.MULTILINE).matcher(allHeaders);
+		if (m.find()) {
+			if (m.group("address") != null) {
+				// found both name and email part
+				msg.setReplyToName(m.group("nameOrAddress"));
+				msg.setReplyToEmail(m.group("address"));
+			} else if (m.group("nameOrAddress") != null) {
+				// assume we found an email
+				msg.setReplyToName(m.group("nameOrAddress"));
+				msg.setReplyToEmail(m.group("nameOrAddress"));
+			} else {
+				// unknown results, ignore Reply-To data
+			}
+		}
 	}
 
 	/**
