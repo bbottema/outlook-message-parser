@@ -14,12 +14,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
+import static java.util.regex.Pattern.compile;
 
 /**
  * Class that represents a .msg file. Some fields from the .msg file are stored in special parameters (e.g., {@link #fromEmail}). Attachments are stored in the
@@ -291,6 +294,40 @@ public class OutlookMessage {
 			recipients.remove(toRecipient);
 			recipients.add(0, toRecipient);
 		}
+	}
+
+	/**
+	 * @return Only the attachments that are embedded by cid reference.
+	 */
+	public Map<String, OutlookFileAttachment> fetchCIDMap() {
+		final HashMap<String, OutlookFileAttachment> cidMap = new HashMap<>();
+		final String html = getConvertedBodyHTML();
+
+		if (html != null && html.length() != 0) {
+			for (OutlookAttachment attachment : getOutlookAttachments()) {
+				if (attachment instanceof OutlookFileAttachment) {
+					OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
+					String cid = fileAttachment.getFilename();
+					if (cid != null && cid.length() != 0 && htmlContainsCID(html, cid)) {
+						cidMap.put(cid, fileAttachment);
+					}
+				}
+			}
+		}
+		return cidMap;
+	}
+
+	/**
+	 * @return Only the downloadable attachments, *not* embedded attachments (as in embedded with cid:attachment, such as images in an email).
+	 */
+	public List<OutlookAttachment> fetchTrueAttachments() {
+		Set<OutlookAttachment> allAttachments = new HashSet<>(getOutlookAttachments());
+		allAttachments.removeAll(fetchCIDMap().values());
+		return new ArrayList<>(allAttachments);
+	}
+
+	private boolean htmlContainsCID(String html, String cidName) {
+		return compile("cid:['\"]?" + cidName + "['\"]?").matcher(html).find();
 	}
 
 	/**
@@ -720,7 +757,6 @@ public class OutlookMessage {
 
 	/**
 	 * @param bodyToSet the bodyHTML to set
-	 *
 	 */
 	private void setBodyHTML(String bodyToSet) {
 		if (bodyToSet != null) {

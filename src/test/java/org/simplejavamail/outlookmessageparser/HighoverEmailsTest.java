@@ -379,6 +379,9 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).contains("cid:image001.png");
+		assertThat(msg.fetchCIDMap()).hasSize(1);
+		assertThat(msg.fetchCIDMap()).containsEntry("image001.png", (OutlookFileAttachment) outlookAttachments.get(0));
+		assertThat(msg.fetchTrueAttachments()).isEmpty();
 		assertThat(normalizeText(msg.getBodyText())).contains("This should pass into the kayako\n"
 				+ "\n"
 				+ " \n"
@@ -439,15 +442,24 @@ public class HighoverEmailsTest {
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(4);
 		OutlookAttachment outlookAttachment1 = outlookAttachments.get(0);
-		OutlookAttachment outlookAttachment2 = outlookAttachments.get(3);
+		OutlookAttachment outlookAttachment2 = outlookAttachments.get(1);
+		OutlookAttachment outlookAttachment3 = outlookAttachments.get(2);
+		OutlookAttachment outlookAttachment4 = outlookAttachments.get(3);
 		assertAttachmentMetadata(outlookAttachment1, "message/delivery-status", "", "");
-		assertAttachmentMetadata(outlookAttachments.get(1), "image/png", ".png", "image001.png");
-		assertAttachmentMetadata(outlookAttachments.get(2), "image/png", ".png", "image002.png");
-		assertAttachmentMetadata(outlookAttachment2, "text/rfc822-headers", "", "");
+		assertAttachmentMetadata(outlookAttachment2, "image/png", ".png", "image001.png");
+		assertAttachmentMetadata(outlookAttachment3, "image/png", ".png", "image002.png");
+		assertAttachmentMetadata(outlookAttachment4, "text/rfc822-headers", "", "");
+
+		assertThat(msg.fetchCIDMap()).hasSize(2);
+		assertThat(msg.fetchCIDMap()).containsEntry("image001.png", (OutlookFileAttachment) outlookAttachment2);
+		assertThat(msg.fetchCIDMap()).containsEntry("image002.png", (OutlookFileAttachment) outlookAttachment3);
+		assertThat(msg.fetchTrueAttachments()).hasSize(2);
+		assertThat(msg.fetchTrueAttachments()).contains(outlookAttachment1, outlookAttachment4);
+
 		assertThat(outlookAttachment1).isOfAnyClassIn(OutlookFileAttachment.class);
-		assertThat(outlookAttachment2).isOfAnyClassIn(OutlookFileAttachment.class);
+		assertThat(outlookAttachment4).isOfAnyClassIn(OutlookFileAttachment.class);
 		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
-		String attachmentContent2 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment2).getData(), UTF_8));
+		String attachmentContent2 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment4).getData(), UTF_8));
 		assertThat(attachmentContent1).isEqualTo("Reporting-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Received-From-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Arrival-Date: Mon, 11 Apr 2016 13:08:47 +0000\n"
