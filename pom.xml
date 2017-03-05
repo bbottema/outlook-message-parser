@@ -60,6 +60,36 @@
 			<version>3.9</version>
 		</dependency>
 
+        <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId><!-- or log4j2 or logback or whatever-->
+            <version>2.6.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.6.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.6.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.6.1</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- testing -->
         <dependency>
@@ -108,7 +138,7 @@
                 </executions>
                 <configuration>
                     <classes>
-                        <param>org.simplejavamail.outlookmessageparser.Message</param>
+                        <param>org.simplejavamail.outlookmessageparser.OutlookMessage</param>
                     </classes>
                 </configuration>
             </plugin>
