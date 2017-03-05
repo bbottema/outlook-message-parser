@@ -38,9 +38,10 @@ import static java.util.regex.Pattern.compile;
  * Main parser class that does the actual parsing of the Outlook .msg file. It uses the <a href="http://poi.apache.org/poifs/">POI</a> library for parsing the
  * .msg container file and is based on a description posted by Peter Fiskerstrand at <a href="http://www.fileformat.info/format/outlookmsg/">fileformat.info</a>.
  * <p>
- * It parses the .msg file and stores the information in a {@link OutlookMessage} object. Attachments are put into an {@link OutlookFileAttachment} object. Hence, please keep
- * in mind that the complete mail is held in the memory! If an attachment is another .msg file, this attachment is not processed as a normal attachment but
- * rather included as a {@link OutlookMsgAttachment}. This attached mail is, again, a {@link OutlookMessage} object and may have further outlookAttachments and so on.
+ * It parses the .msg file and stores the information in a {@link OutlookMessage} object. Attachments are put into an {@link OutlookFileAttachment} object.
+ * Hence, please keep in mind that the complete mail is held in the memory! If an attachment is another .msg file, this attachment is not processed as a normal
+ * attachment but rather included as a {@link OutlookMsgAttachment}. This attached mail is, again, a {@link OutlookMessage} object and may have further
+ * outlookAttachments and so on.
  * <p>
  * Furthermore there is a feature which allows us to extract HTML bodies when only RTF bodies are available. In order to achieve this a conversion class
  * implementing {@link RTF2HTMLConverter} is used. This can be overridden with a custom implementation as well (see code below for an example).
@@ -71,7 +72,7 @@ public class OutlookMessageParser {
 	 */
 	public OutlookMessage parseMsg(File msgFile)
 			throws IOException, UnsupportedOperationException {
-		return this.parseMsg(new FileInputStream(msgFile), true);
+		return parseMsg(new FileInputStream(msgFile));
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class OutlookMessageParser {
 	 */
 	public OutlookMessage parseMsg(String msgFile)
 			throws IOException, UnsupportedOperationException {
-		return this.parseMsg(new FileInputStream(msgFile), true);
+		return parseMsg(new FileInputStream(msgFile));
 	}
 
 	/**
@@ -95,40 +96,20 @@ public class OutlookMessageParser {
 	 * @throws IOException                   Thrown if the file could not be loaded or parsed.
 	 * @throws UnsupportedOperationException Thrown if the .msg file cannot be parsed correctly.
 	 */
-	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public OutlookMessage parseMsg(InputStream msgFileStream)
 			throws IOException, UnsupportedOperationException {
-		return this.parseMsg(msgFileStream, true);
-	}
-
-	/**
-	 * Parses a .msg file provided by an input stream.
-	 *
-	 * @param msgFileStream The .msg file as a InputStream.
-	 * @param closeStream   Indicates whether the provided stream should be closed after the message has been read.
-	 * @return A {@link OutlookMessage} object representing the .msg file.
-	 * @throws IOException                   Thrown if the file could not be loaded or parsed.
-	 * @throws UnsupportedOperationException Thrown if the .msg file cannot be parsed correctly.
-	 */
-	public OutlookMessage parseMsg(InputStream msgFileStream, boolean closeStream)
-			throws IOException, UnsupportedOperationException {
-		// the .msg file, like a file system, contains directories
-		// and documents within this directories
-		// we now gain access to the root node
-		// and recursively go through the complete 'filesystem'.
+		// the .msg file, like a file system, contains directories and documents within this directories
+		// we now gain access to the root node and recursively go through the complete 'filesystem'.
 		OutlookMessage msg;
 		try {
-			POIFSFileSystem fs = new POIFSFileSystem(msgFileStream);
-			DirectoryEntry dir = fs.getRoot();
+			DirectoryEntry dir = new POIFSFileSystem(msgFileStream).getRoot();
 			msg = new OutlookMessage(rtf2htmlConverter);
-			this.checkDirectoryEntry(dir, msg);
+			checkDirectoryEntry(dir, msg);
 		} finally {
-			if (closeStream) {
-				try {
-					msgFileStream.close();
-				} catch (IOException e) {
-					LOGGER.error("Was unable to close file stream", e);
-				}
+			try {
+				msgFileStream.close();
+			} catch (IOException e) {
+				LOGGER.error("Was unable to close file stream", e);
 			}
 		}
 		convertHeaders(msg);
@@ -152,12 +133,12 @@ public class OutlookMessageParser {
 				msg.setReplyToEmail(m.group("address"));
 			} else //noinspection StatementWithEmptyBody
 				if (m.group("nameOrAddress") != null) {
-				// assume we found an email
-				msg.setReplyToName(m.group("nameOrAddress"));
-				msg.setReplyToEmail(m.group("nameOrAddress"));
-			} else {
-				// unknown results, ignore Reply-To data
-			}
+					// assume we found an email
+					msg.setReplyToName(m.group("nameOrAddress"));
+					msg.setReplyToEmail(m.group("nameOrAddress"));
+				} else {
+					// unknown results, ignore Reply-To data
+				}
 		}
 	}
 
@@ -186,14 +167,14 @@ public class OutlookMessageParser {
 				// outlookAttachments have a special name and
 				// have to be handled separately at this point
 				if (de.getName().startsWith("__attach_version1.0")) {
-					this.parseAttachment(de, msg);
+					parseAttachment(de, msg);
 				} else if (de.getName().startsWith("__recip_version1.0")) {
 					// a recipient entry has been found (which is also a directory entry itself)
-					this.checkRecipientDirectoryEntry(de, msg);
+					checkRecipientDirectoryEntry(de, msg);
 				} else {
 					// a directory entry has been found. this
 					// node will be recursively checked
-					this.checkDirectoryEntry(de, msg);
+					checkDirectoryEntry(de, msg);
 				}
 			} else //noinspection StatementWithEmptyBody
 				if (entry.isDocumentEntry()) {
@@ -370,7 +351,7 @@ public class OutlookMessageParser {
 					if (bytes != null) {
 						//creating new document entry for later processing of all document entries
 						POIFSFileSystem poifs = new POIFSFileSystem();
-						result.add(poifs.createDocument(new ByteArrayInputStream(bytes), "__substg1.0_" + header.toString()));
+						result.add(poifs.createDocument(new ByteArrayInputStream(bytes), "__substg1.0_" + header));
 					}
 				}
 
@@ -399,12 +380,12 @@ public class OutlookMessageParser {
 			throws IOException {
 		// analyze the document entry
 		// (i.e., get class and data type)
-		OutlookFieldInformation info = this.analyzeDocumentEntry(de);
+		OutlookFieldInformation info = analyzeDocumentEntry(de);
 		// create a Java object from the data provided
 		// by the input stream. depending on the field
 		// information, either a String or a byte[] will
 		// be returned. other datatypes are not yet supported
-		Object data = this.getData(de, info);
+		Object data = getData(de, info);
 		LOGGER.trace("  Document data: {}", data);
 		return new OutlookMessageProperty(info.getClazz(), data, de.getSize());
 	}
@@ -445,13 +426,13 @@ public class OutlookMessageParser {
 				return null;
 			case 0x1e:
 				// we put the complete data into a byte[] object...
-				byte[] textBytes1e = this.getBytesFromDocumentEntry(de);
+				byte[] textBytes1e = getBytesFromDocumentEntry(de);
 				// ...and create a String object from it
 				return new String(textBytes1e, "ISO-8859-1");
 			case 0x1f:
 				// Unicode encoding with lowbyte followed by hibyte
 				// Note: this is arcane guesswork, but it works
-				byte[] textBytes1f = this.getBytesFromDocumentEntry(de);
+				byte[] textBytes1f = getBytesFromDocumentEntry(de);
 				// now that we have all bytes from the stream,
 				// we can now convert the byte array into
 				// a character array by switching hi- and lowbytes
@@ -467,7 +448,7 @@ public class OutlookMessageParser {
 				try {
 					// the data is read into a byte[] object
 					// and returned as-is
-					return this.getBytesFromDocumentEntry(de);
+					return getBytesFromDocumentEntry(de);
 				} catch (IOException e) {
 					LOGGER.error("Could not get content of byte array of field 0x102", e);
 					// To keep compatible with previous implementations, we return an empty array here
@@ -480,7 +461,7 @@ public class OutlookMessageParser {
 				// https://sourceforge.net/projects/msgviewer/
 
 				// the data is read into a byte[] object
-				byte[] bytes = this.getBytesFromDocumentEntry(de);
+				byte[] bytes = getBytesFromDocumentEntry(de);
 				// Read the byte array as little endian byteorder
 				ByteBuffer buff = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
 				buff.put(bytes);
@@ -515,7 +496,7 @@ public class OutlookMessageParser {
 		InputStream is = null;
 		try {
 			is = new DocumentInputStream(de);
-			return this.getBytesFromStream(is);
+			return getBytesFromStream(is);
 		} finally {
 			if (is != null) {
 				try {
@@ -560,8 +541,8 @@ public class OutlookMessageParser {
 	 * the entry.
 	 *
 	 * @param de The {@link DocumentEntry} that should be examined.
-	 * @return A {@link OutlookFieldInformation} object containing class and type of the document entry or, if the entry is not an interesting field, an empty {@link
-	 * OutlookFieldInformation} object containing {@link OutlookFieldInformation#UNKNOWN} class and type.
+	 * @return A {@link OutlookFieldInformation} object containing class and type of the document entry or, if the entry is not an interesting field, an empty
+	 * {@link OutlookFieldInformation} object containing {@link OutlookFieldInformation#UNKNOWN} class and type.
 	 */
 	private OutlookFieldInformation analyzeDocumentEntry(DocumentEntry de) {
 		String name = de.getName();
@@ -637,7 +618,7 @@ public class OutlookMessageParser {
 				OutlookMessage attachmentMsg = new OutlookMessage();
 				OutlookMsgAttachment msgAttachment = new OutlookMsgAttachment(attachmentMsg);
 				msg.addAttachment(msgAttachment);
-				this.checkDirectoryEntry((DirectoryEntry) entry, attachmentMsg);
+				checkDirectoryEntry((DirectoryEntry) entry, attachmentMsg);
 			}
 		}
 

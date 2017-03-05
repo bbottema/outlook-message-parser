@@ -9,23 +9,23 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * The (by Outlook) shortened filename of the attachment.
 	 */
-	private String filename = null;
+	private String filename;
 	/**
 	 * The full filename of the attachment.
 	 */
-	private String longFilename = null;
+	private String longFilename;
 	/**
 	 * Mime type of the attachment
 	 */
-	private String mimeTag = null;
+	private String mimeTag;
 	/**
 	 * The extension of the attachment (may not be set).
 	 */
-	private String extension = null;
+	private String extension;
 	/**
 	 * The attachment itself as a byte array.
 	 */
-	private byte[] data = null;
+	private byte[] data;
 	/**
 	 * The size of the attachment.
 	 */
@@ -41,20 +41,20 @@ public class OutlookFileAttachment implements OutlookAttachment {
 		if (name != null && value != null) {
 			switch (name) {
 				case "3701":
-					this.setSize(msgProp.getSize());
-					this.setData((byte[]) value);
+					setSize(msgProp.getSize());
+					setData((byte[]) value);
 					break;
 				case "3704":
-					this.setFilename((String) value);
+					setFilename((String) value);
 					break;
 				case "3707":
-					this.setLongFilename((String) value);
+					setLongFilename((String) value);
 					break;
 				case "370e":
-					this.setMimeTag((String) value);
+					setMimeTag((String) value);
 					break;
 				case "3703":
-					this.setExtension((String) value);
+					setExtension((String) value);
 					break;
 			}
 		}

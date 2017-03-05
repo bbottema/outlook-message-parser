@@ -24,8 +24,8 @@ public class OutlookRecipient {
 	 */
 	private final Map<Integer, Object> properties = new TreeMap<>();
 
-	private String name = null;
-	private String address = null;
+	private String name;
+	private String address;
 
 	/**
 	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #address} when the property name
@@ -52,15 +52,15 @@ public class OutlookRecipient {
 		switch (mapiClass) {
 			case 0x3003: //EMAIL ADDRESS
 			case 0x39fe:
-				this.setAddress((String) value);
+				setAddress((String) value);
 				break;
 			case 0x3001: //DISPLAY NAME
-				this.setName((String) value);
+				setName((String) value);
 				break;
 		}
 
 		// save all properties (incl. those identified above)
-		this.properties.put(mapiClass, value);
+		properties.put(mapiClass, value);
 	}
 
 	@Override
@@ -82,12 +82,12 @@ public class OutlookRecipient {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.name);
+		sb.append(name);
 		if (sb.length() > 0) {
 			sb.append(" ");
 		}
-		if ((this.address != null) && (this.address.length() > 0)) {
-			sb.append("<").append(this.address).append(">");
+		if ((address != null) && (address.length() > 0)) {
+			sb.append("<").append(address).append(">");
 		}
 		return sb.toString();
 	}
@@ -110,7 +110,7 @@ public class OutlookRecipient {
 	 * @return All available keys properties have been found for.
 	 */
 	private Set<String> getPropertiesAsHex() {
-		Set<Integer> keySet = this.properties.keySet();
+		Set<Integer> keySet = properties.keySet();
 		Set<String> result = new HashSet<>();
 		for (Integer k : keySet) {
 			String s = String.format("%04x", k);
@@ -153,7 +153,7 @@ public class OutlookRecipient {
 	 * @return All available keys for properties found.
 	 */
 	public Set<Integer> getPropertyCodes() {
-		return this.properties.keySet();
+		return properties.keySet();
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class OutlookRecipient {
 	 * @return The property value of the specified code.
 	 */
 	private Object getPropertyValue(Integer code) {
-		return this.properties.get(code);
+		return properties.get(code);
 	}
 
 	/**

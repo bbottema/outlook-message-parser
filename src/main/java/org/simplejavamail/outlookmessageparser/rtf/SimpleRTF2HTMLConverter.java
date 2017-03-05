@@ -15,8 +15,8 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleRTF2HTMLConverter.class);
 
-	private static final String[] HTML_START_TAGS = new String[] { "<html ", "<Html ", "<HTML " };
-	private static final String[] HTML_END_TAGS = new String[] { "</html>", "</Html>", "</HTML>" };
+	private static final String[] HTML_START_TAGS = { "<html ", "<Html ", "<HTML " };
+	private static final String[] HTML_END_TAGS = { "</html>", "</Html>", "</HTML>" };
 	private static final String WINDOWS_CHARSET = "CP1252";
 
 	public String rtf2html(String rtf) {

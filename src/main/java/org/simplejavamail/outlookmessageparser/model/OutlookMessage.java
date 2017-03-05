@@ -38,84 +38,84 @@ public class OutlookMessage {
 	/**
 	 * The message Id.
 	 */
-	private String messageId = null;
+	private String messageId;
 	/**
 	 * The address part of From: mail address.
 	 */
-	private String fromEmail = null;
+	private String fromEmail;
 	/**
 	 * The name part of the From: mail address
 	 */
-	private String fromName = null;
+	private String fromName;
 	/**
 	 * The address part of To: mail address.
 	 */
-	private String toEmail = null;
+	private String toEmail;
 	/**
 	 * The name part of the To: mail address
 	 */
-	private String toName = null;
+	private String toName;
 	/**
 	 * The address part of Reply-To header
 	 */
-	private String replyToEmail = null;
+	private String replyToEmail;
 	/**
 	 * The name part of Reply-To header
 	 */
-	private String replyToName = null;
+	private String replyToName;
 	/**
 	 * The mail's subject.
 	 */
-	private String subject = null;
+	private String subject;
 	/**
 	 * The normalized body text.
 	 */
-	private String bodyText = null;
+	private String bodyText;
 	/**
 	 * The displayed To: field
 	 */
-	private String displayTo = null;
+	private String displayTo;
 	/**
 	 * The displayed Cc: field
 	 */
-	private String displayCc = null;
+	private String displayCc;
 	/**
 	 * The displayed Bcc: field
 	 */
-	private String displayBcc = null;
+	private String displayBcc;
 
 	/**
 	 * The body in RTF format (if available)
 	 */
-	private String bodyRTF = null;
+	private String bodyRTF;
 
 	/**
 	 * The body in HTML format (if available)
 	 */
-	private String bodyHTML = null;
+	private String bodyHTML;
 
 	/**
 	 * The body in HTML format (converted from RTF)
 	 */
-	private String convertedBodyHTML = null;
+	private String convertedBodyHTML;
 	/**
 	 * Email headers (if available)
 	 */
-	private String headers = null;
+	private String headers;
 
 	/**
 	 * Email Date
 	 */
-	private Date date = null;
+	private Date date;
 
 	/**
 	 * Client Submit Time
 	 */
-	private Date clientSubmitTime = null;
+	private Date clientSubmitTime;
 
-	private Date creationDate = null;
+	private Date creationDate;
 
-	private Date lastModificationDate = null;
+	private Date lastModificationDate;
 	/**
 	 * A list of all outlookAttachments (both {@link OutlookFileAttachment}
 	 * and {@link OutlookMsgAttachment}).
@@ -135,7 +135,7 @@ public class OutlookMessage {
 	private final RTF2HTMLConverter rtf2htmlConverter;
 
 	public OutlookMessage() {
-		this.rtf2htmlConverter = new SimpleRTF2HTMLConverter();
+		rtf2htmlConverter = new SimpleRTF2HTMLConverter();
 	}
 
 	public OutlookMessage(RTF2HTMLConverter rtf2htmlConverter) {
@@ -143,11 +143,11 @@ public class OutlookMessage {
 	}
 
 	public void addAttachment(OutlookAttachment outlookAttachment) {
-		this.outlookAttachments.add(outlookAttachment);
+		outlookAttachments.add(outlookAttachment);
 	}
 
 	public void addRecipient(OutlookRecipient recipient) {
-		this.recipients.add(recipient);
+		recipients.add(recipient);
 		if (toEmail == null) {
 			setToEmail(recipient.getAddress());
 		}
@@ -169,7 +169,7 @@ public class OutlookMessage {
 		}
 
 		//Most fields expect a String representation of the value
-		String stringValue = this.convertValueToString(value);
+		String stringValue = convertValueToString(value);
 
 		int mapiClass = -1;
 		try {
@@ -180,68 +180,68 @@ public class OutlookMessage {
 
 		switch (mapiClass) {
 			case 0x1a: //MESSAGE CLASS
-				this.setMessageClass(stringValue);
+				setMessageClass(stringValue);
 				break;
 			case 0x1035:
-				this.setMessageId(stringValue);
+				setMessageId(stringValue);
 				break;
 			case 0x37: //SUBJECT
 			case 0xe1d: //NORMALIZED SUBJECT
-				this.setSubject(stringValue);
+				setSubject(stringValue);
 				break;
 			case 0xc1f: //SENDER EMAIL ADDRESS
 			case 0x65: //SENT REPRESENTING EMAIL ADDRESS
 			case 0x3ffa: //LAST MODIFIER NAME
 			case 0x800d:
 			case 0x8008:
-				this.setFromEmail(stringValue);
+				setFromEmail(stringValue);
 				break;
 			case 0x42: //SENT REPRESENTING NAME
-				this.setFromName(stringValue);
+				setFromName(stringValue);
 				break;
 			case 0x76: //RECEIVED BY EMAIL ADDRESS
-				this.setToEmail(stringValue, true);
+				setToEmail(stringValue, true);
 				break;
 			case 0x8000:
-				this.setToEmail(stringValue);
+				setToEmail(stringValue);
 				break;
 			case 0x3001: //DISPLAY NAME
-				this.setToName(stringValue);
+				setToName(stringValue);
 				break;
 			case 0xe04: //DISPLAY TO
-				this.setDisplayTo(stringValue);
+				setDisplayTo(stringValue);
 				break;
 			case 0xe03: //DISPLAY CC
-				this.setDisplayCc(stringValue);
+				setDisplayCc(stringValue);
 				break;
 			case 0xe02: //DISPLAY BCC
-				this.setDisplayBcc(stringValue);
+				setDisplayBcc(stringValue);
 				break;
 			case 0x1013: //HTML
-				this.setBodyHTML(stringValue);
+				setBodyHTML(stringValue);
 				break;
 			case 0x1000: //BODY
-				this.setBodyText(stringValue);
+				setBodyText(stringValue);
 				break;
 			case 0x1009: //RTF COMPRESSED
-				this.setBodyRTF(value);
+				setBodyRTF(value);
 				break;
 			case 0x7d: //TRANSPORT MESSAGE HEADERS
-				this.setHeaders(stringValue);
+				setHeaders(stringValue);
 				break;
 			case 0x3007: //CREATION TIME
-				this.setCreationDate(stringValue);
+				setCreationDate(stringValue);
 				break;
 			case 0x3008: //LAST MODIFICATION TIME
-				this.setLastModificationDate(stringValue);
+				setLastModificationDate(stringValue);
 				break;
 			case 0x39: //CLIENT SUBMIT TIME
-				this.setClientSubmitTime(stringValue);
+				setClientSubmitTime(stringValue);
 				break;
 		}
 
 		// save all properties (incl. those identified above)
-		this.properties.put(mapiClass, value);
+		properties.put(mapiClass, value);
 
 		checkToRecipient();
 
@@ -340,15 +340,15 @@ public class OutlookMessage {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("From: ").append(this.createMailString(this.fromEmail, this.fromName)).append("\n");
-		sb.append("To: ").append(this.createMailString(this.toEmail, this.toName)).append("\n");
-		if (this.date != null) {
+		sb.append("From: ").append(createMailString(fromEmail, fromName)).append("\n");
+		sb.append("To: ").append(createMailString(toEmail, toName)).append("\n");
+		if (date != null) {
 			SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-			sb.append("Date: ").append(formatter.format(this.date)).append("\n");
+			sb.append("Date: ").append(formatter.format(date)).append("\n");
 		}
-		if (this.subject != null)
-			sb.append("Subject: ").append(this.subject).append("\n");
-		sb.append("").append(this.outlookAttachments.size()).append(" outlookAttachments.");
+		if (subject != null)
+			sb.append("Subject: ").append(subject).append("\n");
+		sb.append("").append(outlookAttachments.size()).append(" outlookAttachments.");
 		return sb.toString();
 	}
 
@@ -357,22 +357,22 @@ public class OutlookMessage {
 	 */
 	public String toLongString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("From: ").append(this.createMailString(this.fromEmail, this.fromName)).append("\n");
-		sb.append("To: ").append(this.createMailString(this.toEmail, this.toName)).append("\n");
-		if (this.date != null) {
+		sb.append("From: ").append(createMailString(fromEmail, fromName)).append("\n");
+		sb.append("To: ").append(createMailString(toEmail, toName)).append("\n");
+		if (date != null) {
 			SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-			sb.append("Date: ").append(formatter.format(this.date)).append("\n");
+			sb.append("Date: ").append(formatter.format(date)).append("\n");
 		}
-		if (this.subject != null)
-			sb.append("Subject: ").append(this.subject).append("\n");
+		if (subject != null)
+			sb.append("Subject: ").append(subject).append("\n");
 		sb.append("\n");
-		if (this.bodyText != null)
-			sb.append(this.bodyText);
-		if (this.outlookAttachments.size() > 0) {
+		if (bodyText != null)
+			sb.append(bodyText);
+		if (outlookAttachments.size() > 0) {
 			sb.append("\n");
-			sb.append("").append(this.outlookAttachments.size()).append(" outlookAttachments.\n");
-			for (OutlookAttachment att : this.outlookAttachments) {
-				sb.append(att.toString()).append("\n");
+			sb.append("").append(outlookAttachments.size()).append(" outlookAttachments.\n");
+			for (OutlookAttachment att : outlookAttachments) {
+				sb.append(att).append("\n");
 			}
 		}
 		return sb.toString();
@@ -724,10 +724,10 @@ public class OutlookMessage {
 	 */
 	private void setBodyHTML(String bodyToSet) {
 		if (bodyToSet != null) {
-			if (!(this.bodyHTML != null && this.bodyHTML.length() > bodyToSet.length())) {
+			if (!(bodyHTML != null && bodyHTML.length() > bodyToSet.length())) {
 				//only if the new body to be set is bigger than the current one
 				//thus the short one is most probably wrong
-				this.bodyHTML = bodyToSet;
+				bodyHTML = bodyToSet;
 			}
 		}
 	}
@@ -746,13 +746,13 @@ public class OutlookMessage {
 		if (headers != null) {
 			this.headers = headers;
 			// try to parse the date from the headers
-			Date d = OutlookMessage.getDateFromHeaders(headers);
+			Date d = getDateFromHeaders(headers);
 			if (d != null) {
-				this.setDate(d);
+				setDate(d);
 			}
-			String s = OutlookMessage.getFromEmailFromHeaders(headers);
+			String s = getFromEmailFromHeaders(headers);
 			if (s != null) {
-				this.setFromEmail(s);
+				setFromEmail(s);
 			}
 		}
 	}
@@ -832,9 +832,9 @@ public class OutlookMessage {
 
 	private void setClientSubmitTime(String value) {
 		if (value != null) {
-			Date d = OutlookMessage.parseDateString(value);
+			Date d = parseDateString(value);
 			if (d != null) {
-				this.clientSubmitTime = d;
+				clientSubmitTime = d;
 			}
 		}
 	}
@@ -848,9 +848,9 @@ public class OutlookMessage {
 
 	private void setCreationDate(String value) {
 		if (value != null) {
-			Date d = OutlookMessage.parseDateString(value);
+			Date d = parseDateString(value);
 			if (d != null) {
-				this.creationDate = d;
+				creationDate = d;
 				setDate(d);
 			}
 		}
@@ -865,9 +865,9 @@ public class OutlookMessage {
 
 	private void setLastModificationDate(String value) {
 		if (value != null) {
-			Date d = OutlookMessage.parseDateString(value);
+			Date d = parseDateString(value);
 			if (d != null) {
-				this.lastModificationDate = d;
+				lastModificationDate = d;
 			}
 		}
 	}
@@ -894,7 +894,7 @@ public class OutlookMessage {
 	 * @return All available keys properties have been found for.
 	 */
 	public Set<String> getPropertiesAsHex() {
-		Set<Integer> keySet = this.properties.keySet();
+		Set<Integer> keySet = properties.keySet();
 		Set<String> result = new HashSet<>();
 		for (Integer k : keySet) {
 			String s = convertToHex(k);
@@ -940,7 +940,7 @@ public class OutlookMessage {
 	 * @return All available keys properties have been found for.
 	 */
 	public Set<Integer> getPropertyCodes() {
-		return this.properties.keySet();
+		return properties.keySet();
 	}
 
 	/**
@@ -952,7 +952,7 @@ public class OutlookMessage {
 	 * @return The value of the specified property.
 	 */
 	private Object getPropertyValue(Integer code) {
-		return this.properties.get(code);
+		return properties.get(code);
 	}
 
 	/**
@@ -966,7 +966,7 @@ public class OutlookMessage {
 			Object value = getPropertyValue(propCode);
 			String hexCode = "0x" + convertToHex(propCode);
 			sb.append(hexCode).append(" / ").append(propCode);
-			sb.append(": ").append(value.toString());
+			sb.append(": ").append(value);
 			sb.append("\n");
 		}
 		return sb.toString();
