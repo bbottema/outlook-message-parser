@@ -168,7 +168,9 @@ public class MsgParser {
 
 	private void convertHeaders(Message msg) {
 		String allHeaders = msg.getHeaders();
-		extractReplyToHeader(msg, allHeaders);
+		if (allHeaders != null) {
+			extractReplyToHeader(msg, allHeaders);
+		}
 	}
 
 	static void extractReplyToHeader(Message msg, String allHeaders) {
