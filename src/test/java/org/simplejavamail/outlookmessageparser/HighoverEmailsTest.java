@@ -231,8 +231,8 @@ public class HighoverEmailsTest {
 		assertThat(outlookAttachments).hasSize(2);
 		OutlookAttachment outlookAttachment1 = outlookAttachments.get(0);
 		OutlookAttachment outlookAttachment2 = outlookAttachments.get(1);
-		assertAttachmentMetadata(outlookAttachment1, "message/delivery-status", null, null);
-		assertAttachmentMetadata(outlookAttachment2, "text/rfc822-headers", null, null);
+		assertAttachmentMetadata(outlookAttachment1, "message/delivery-status", null, null, null);
+		assertAttachmentMetadata(outlookAttachment2, "text/rfc822-headers", null, null, null);
 		assertThat(outlookAttachment1).isOfAnyClassIn(OutlookFileAttachment.class);
 		assertThat(outlookAttachment2).isOfAnyClassIn(OutlookFileAttachment.class);
 		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
@@ -375,7 +375,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasToEmail("mpaliarik@mdlz.com");
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(1);
-		assertAttachmentMetadata(outlookAttachments.get(0), "image/png", ".png", "image001.png");
+		assertAttachmentMetadata(outlookAttachments.get(0), "image/png", ".png", "image001.png", "image001.png");
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).contains("cid:image001.png");
@@ -441,25 +441,25 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasToEmail(null);
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(4);
-		OutlookAttachment outlookAttachment1 = outlookAttachments.get(0);
-		OutlookAttachment outlookAttachment2 = outlookAttachments.get(1);
-		OutlookAttachment outlookAttachment3 = outlookAttachments.get(2);
-		OutlookAttachment outlookAttachment4 = outlookAttachments.get(3);
-		assertAttachmentMetadata(outlookAttachment1, "message/delivery-status", "", "");
-		assertAttachmentMetadata(outlookAttachment2, "image/png", ".png", "image001.png");
-		assertAttachmentMetadata(outlookAttachment3, "image/png", ".png", "image002.png");
-		assertAttachmentMetadata(outlookAttachment4, "text/rfc822-headers", "", "");
+		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
+		OutlookFileAttachment outlookAttachment2 = (OutlookFileAttachment) outlookAttachments.get(1);
+		OutlookFileAttachment outlookAttachment3 = (OutlookFileAttachment) outlookAttachments.get(2);
+		OutlookFileAttachment outlookAttachment4 = (OutlookFileAttachment) outlookAttachments.get(3);
+		assertAttachmentMetadata(outlookAttachment1, "message/delivery-status", "", "", "");
+		assertAttachmentMetadata(outlookAttachment2, "image/png", ".png", "image001.png", "image001.png");
+		assertAttachmentMetadata(outlookAttachment3, "image/png", ".png", "image002.png", "image002.png");
+		assertAttachmentMetadata(outlookAttachment4, "text/rfc822-headers", "", "", "");
 
 		assertThat(msg.fetchCIDMap()).hasSize(2);
-		assertThat(msg.fetchCIDMap()).containsEntry("image001.png", (OutlookFileAttachment) outlookAttachment2);
-		assertThat(msg.fetchCIDMap()).containsEntry("image002.png", (OutlookFileAttachment) outlookAttachment3);
+		assertThat(msg.fetchCIDMap()).containsEntry("image001.png", outlookAttachment2);
+		assertThat(msg.fetchCIDMap()).containsEntry("image002.png", outlookAttachment3);
 		assertThat(msg.fetchTrueAttachments()).hasSize(2);
 		assertThat(msg.fetchTrueAttachments()).contains(outlookAttachment1, outlookAttachment4);
 
 		assertThat(outlookAttachment1).isOfAnyClassIn(OutlookFileAttachment.class);
 		assertThat(outlookAttachment4).isOfAnyClassIn(OutlookFileAttachment.class);
-		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
-		String attachmentContent2 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment4).getData(), UTF_8));
+		String attachmentContent1 = normalizeText(new String(outlookAttachment1.getData(), UTF_8));
+		String attachmentContent2 = normalizeText(new String(outlookAttachment4.getData(), UTF_8));
 		assertThat(attachmentContent1).isEqualTo("Reporting-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Received-From-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Arrival-Date: Mon, 11 Apr 2016 13:08:47 +0000\n"
@@ -623,24 +623,31 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(3);
-		OutlookAttachment outlookAttachment1 = outlookAttachments.get(0);
-		OutlookAttachment outlookAttachment2 = outlookAttachments.get(1);
-		OutlookAttachment embeddedImg = outlookAttachments.get(2);
+		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
+		OutlookFileAttachment outlookAttachment2 = (OutlookFileAttachment) outlookAttachments.get(1);
+		OutlookFileAttachment embeddedImg = (OutlookFileAttachment) outlookAttachments.get(2);
 		// Outlook overrode dresscode.txt, presumably because it was more than 8 character long??
-		assertAttachmentMetadata(outlookAttachment1, "text/plain", ".txt", "dressc~1.txt");
-		assertAttachmentMetadata(outlookAttachment2, "text/plain", ".txt", "location.txt");
-		assertAttachmentMetadata(embeddedImg, "image/png", "", "thumbsup");
-		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
-		String attachmentContent2 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment2).getData(), UTF_8));
+		assertAttachmentMetadata(outlookAttachment1, "text/plain", ".txt", "dressc~1.txt", "dresscode.txt");
+		assertAttachmentMetadata(outlookAttachment2, "text/plain", ".txt", "location.txt", "location.txt");
+		assertAttachmentMetadata(embeddedImg, "image/png", "", "thumbsup", "thumbsup");
+
+		assertThat(msg.fetchCIDMap()).hasSize(1);
+		assertThat(msg.fetchCIDMap()).containsEntry("thumbsup", embeddedImg);
+		assertThat(msg.fetchTrueAttachments()).hasSize(2);
+		assertThat(msg.fetchTrueAttachments()).contains(outlookAttachment1, outlookAttachment2);
+
+		String attachmentContent1 = normalizeText(new String(outlookAttachment1.getData(), UTF_8));
+		String attachmentContent2 = normalizeText(new String(outlookAttachment2.getData(), UTF_8));
 		assertThat(attachmentContent1).isEqualTo("Black Tie Optional");
 		assertThat(attachmentContent2).isEqualTo("On the moon!");
 	}
 
-	private void assertAttachmentMetadata(OutlookAttachment embeddedImg, String mimeType, String fileExt, String filename) {
+	private void assertAttachmentMetadata(OutlookAttachment embeddedImg, String mimeType, String fileExt, String filename, String fullname) {
 		assertThat(embeddedImg).isOfAnyClassIn(OutlookFileAttachment.class);
 		assertThat(((OutlookFileAttachment) embeddedImg).getMimeTag()).isEqualTo(mimeType);
 		assertThat(((OutlookFileAttachment) embeddedImg).getExtension()).isEqualTo(fileExt);
 		assertThat(((OutlookFileAttachment) embeddedImg).getFilename()).isEqualTo(filename);
+		assertThat(((OutlookFileAttachment) embeddedImg).getLongFilename()).isEqualTo(fullname);
 	}
 
 	private static OutlookRecipient createRecipient(String toName, String toEmail) {

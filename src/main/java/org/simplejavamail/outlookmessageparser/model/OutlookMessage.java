@@ -318,12 +318,22 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * @return Only the downloadable attachments, *not* embedded attachments (as in embedded with cid:attachment, such as images in an email).
+	 * @return Only the downloadable attachments, *not* embedded attachments (as in embedded with cid:attachment, such as images in an email). This includes
+	 * downloadable nested outlook messages as file attachments!
 	 */
-	public List<OutlookAttachment> fetchTrueAttachments() {
+	public List<OutlookFileAttachment> fetchTrueAttachments() {
 		Set<OutlookAttachment> allAttachments = new HashSet<>(getOutlookAttachments());
 		allAttachments.removeAll(fetchCIDMap().values());
-		return new ArrayList<>(allAttachments);
+		ArrayList<OutlookFileAttachment> fileAttachments = new ArrayList<>();
+		for (OutlookAttachment attachment : allAttachments) {
+			if (attachment instanceof OutlookFileAttachment) {
+				fileAttachments.add((OutlookFileAttachment) attachment);
+			} else {
+				LOGGER.warn("Skipping nested Outlook message as file attachment, writing Outlook messages back as data is not supported!");
+				LOGGER.warn("To access the nested Outlook message as parsed Java object, refer to .getAttachments() instead.");
+			}
+		}
+		return fileAttachments;
 	}
 
 	private boolean htmlContainsCID(String html, String cidName) {
