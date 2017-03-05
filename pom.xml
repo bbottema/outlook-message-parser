@@ -250,6 +250,29 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>travis-install-skip-findbugs</id>
+            <activation>
+                <property>
+                    <name>skipFindBugs</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <reporting>
