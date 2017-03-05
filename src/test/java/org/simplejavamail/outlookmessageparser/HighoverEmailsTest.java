@@ -1,9 +1,12 @@
 package org.simplejavamail.outlookmessageparser;
 
 import org.junit.Test;
-import org.simplejavamail.outlookmessageparser.attachment.FileOutlookAttachment;
-import org.simplejavamail.outlookmessageparser.attachment.MsgOutlookAttachment;
-import org.simplejavamail.outlookmessageparser.attachment.OutlookAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
+import org.simplejavamail.outlookmessageparser.model.OutlookMessageAssert;
+import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -179,8 +182,8 @@ public class HighoverEmailsTest {
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(1);
 		OutlookAttachment outlookAttachment = outlookAttachments.get(0);
-		assertThat(outlookAttachment).isOfAnyClassIn(MsgOutlookAttachment.class);
-		OutlookMessage nestedMsg = ((MsgOutlookAttachment) outlookAttachment).getOutlookMessage();
+		assertThat(outlookAttachment).isOfAnyClassIn(OutlookMsgAttachment.class);
+		OutlookMessage nestedMsg = ((OutlookMsgAttachment) outlookAttachment).getOutlookMessage();
 		/* nested message */
 		OutlookMessageAssert.assertThat(nestedMsg).hasFromName("REISINGER Emanuel");
 		OutlookMessageAssert.assertThat(nestedMsg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
@@ -230,10 +233,10 @@ public class HighoverEmailsTest {
 		OutlookAttachment outlookAttachment2 = outlookAttachments.get(1);
 		assertAttachmentMetadata(outlookAttachment1, "message/delivery-status", null, null);
 		assertAttachmentMetadata(outlookAttachment2, "text/rfc822-headers", null, null);
-		assertThat(outlookAttachment1).isOfAnyClassIn(FileOutlookAttachment.class);
-		assertThat(outlookAttachment2).isOfAnyClassIn(FileOutlookAttachment.class);
-		String attachmentContent1 = normalizeText(new String(((FileOutlookAttachment) outlookAttachment1).getData(), UTF_8));
-		String attachmentContent2 = normalizeText(new String(((FileOutlookAttachment) outlookAttachment2).getData(), UTF_8));
+		assertThat(outlookAttachment1).isOfAnyClassIn(OutlookFileAttachment.class);
+		assertThat(outlookAttachment2).isOfAnyClassIn(OutlookFileAttachment.class);
+		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
+		String attachmentContent2 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment2).getData(), UTF_8));
 		assertThat(attachmentContent1).isEqualTo("Reporting-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Received-From-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Arrival-Date: Mon, 11 Apr 2016 13:08:47 +0000\n"
@@ -441,10 +444,10 @@ public class HighoverEmailsTest {
 		assertAttachmentMetadata(outlookAttachments.get(1), "image/png", ".png", "image001.png");
 		assertAttachmentMetadata(outlookAttachments.get(2), "image/png", ".png", "image002.png");
 		assertAttachmentMetadata(outlookAttachment2, "text/rfc822-headers", "", "");
-		assertThat(outlookAttachment1).isOfAnyClassIn(FileOutlookAttachment.class);
-		assertThat(outlookAttachment2).isOfAnyClassIn(FileOutlookAttachment.class);
-		String attachmentContent1 = normalizeText(new String(((FileOutlookAttachment) outlookAttachment1).getData(), UTF_8));
-		String attachmentContent2 = normalizeText(new String(((FileOutlookAttachment) outlookAttachment2).getData(), UTF_8));
+		assertThat(outlookAttachment1).isOfAnyClassIn(OutlookFileAttachment.class);
+		assertThat(outlookAttachment2).isOfAnyClassIn(OutlookFileAttachment.class);
+		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
+		String attachmentContent2 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment2).getData(), UTF_8));
 		assertThat(attachmentContent1).isEqualTo("Reporting-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Received-From-MTA: dns;ABMAIL13.ci.atlantic-beach.fl.us\n"
 				+ "Arrival-Date: Mon, 11 Apr 2016 13:08:47 +0000\n"
@@ -615,17 +618,17 @@ public class HighoverEmailsTest {
 		assertAttachmentMetadata(outlookAttachment1, "text/plain", ".txt", "dressc~1.txt");
 		assertAttachmentMetadata(outlookAttachment2, "text/plain", ".txt", "location.txt");
 		assertAttachmentMetadata(embeddedImg, "image/png", "", "thumbsup");
-		String attachmentContent1 = normalizeText(new String(((FileOutlookAttachment) outlookAttachment1).getData(), UTF_8));
-		String attachmentContent2 = normalizeText(new String(((FileOutlookAttachment) outlookAttachment2).getData(), UTF_8));
+		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
+		String attachmentContent2 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment2).getData(), UTF_8));
 		assertThat(attachmentContent1).isEqualTo("Black Tie Optional");
 		assertThat(attachmentContent2).isEqualTo("On the moon!");
 	}
 
 	private void assertAttachmentMetadata(OutlookAttachment embeddedImg, String mimeType, String fileExt, String filename) {
-		assertThat(embeddedImg).isOfAnyClassIn(FileOutlookAttachment.class);
-		assertThat(((FileOutlookAttachment) embeddedImg).getMimeTag()).isEqualTo(mimeType);
-		assertThat(((FileOutlookAttachment) embeddedImg).getExtension()).isEqualTo(fileExt);
-		assertThat(((FileOutlookAttachment) embeddedImg).getFilename()).isEqualTo(filename);
+		assertThat(embeddedImg).isOfAnyClassIn(OutlookFileAttachment.class);
+		assertThat(((OutlookFileAttachment) embeddedImg).getMimeTag()).isEqualTo(mimeType);
+		assertThat(((OutlookFileAttachment) embeddedImg).getExtension()).isEqualTo(fileExt);
+		assertThat(((OutlookFileAttachment) embeddedImg).getFilename()).isEqualTo(filename);
 	}
 
 	private static OutlookRecipient createRecipient(String toName, String toEmail) {

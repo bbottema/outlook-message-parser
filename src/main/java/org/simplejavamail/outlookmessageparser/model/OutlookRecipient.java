@@ -1,4 +1,4 @@
-package org.simplejavamail.outlookmessageparser;
+package org.simplejavamail.outlookmessageparser.model;
 
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 

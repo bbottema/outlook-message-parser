@@ -1,10 +1,11 @@
 package org.simplejavamail.outlookmessageparser;
 
 import org.junit.Test;
+import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OutlookOutlookMessageParserTest {
+public class OutlookMessageParserTest {
 
 	private static final String HEADERS = "Date: Sun, 5 Mar 2017 12:11:31 +0100\n"
 			+ "Reply-To: lollypop-replyto <lo.pop.replyto@somemail.com>\n"

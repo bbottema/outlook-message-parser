@@ -1,4 +1,4 @@
-package org.simplejavamail.outlookmessageparser;
+package org.simplejavamail.outlookmessageparser.model;
 
 /**
  * Represents a message property holding the type of data and the data itself.

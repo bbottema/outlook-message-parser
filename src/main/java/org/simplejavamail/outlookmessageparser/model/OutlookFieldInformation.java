@@ -1,4 +1,4 @@
-package org.simplejavamail.outlookmessageparser;
+package org.simplejavamail.outlookmessageparser.model;
 
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
@@ -16,7 +16,7 @@ public class OutlookFieldInformation {
 	/**
 	 * The default value for the {@link #mapiType}
 	 */
-	static final int UNKNOWN_MAPITYPE = -1;
+	public static final int UNKNOWN_MAPITYPE = -1;
 
 	/**
 	 * The class of the {@link DocumentEntry}.

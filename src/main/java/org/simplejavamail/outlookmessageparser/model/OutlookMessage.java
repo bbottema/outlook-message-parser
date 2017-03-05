@@ -1,10 +1,7 @@
-package org.simplejavamail.outlookmessageparser;
+package org.simplejavamail.outlookmessageparser.model;
 
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
-import org.simplejavamail.outlookmessageparser.attachment.FileOutlookAttachment;
-import org.simplejavamail.outlookmessageparser.attachment.MsgOutlookAttachment;
-import org.simplejavamail.outlookmessageparser.attachment.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
 import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
 import org.slf4j.Logger;
@@ -26,7 +23,7 @@ import java.util.TreeMap;
 
 /**
  * Class that represents a .msg file. Some fields from the .msg file are stored in special parameters (e.g., {@link #fromEmail}). Attachments are stored in the
- * property {@link #outlookAttachments}). An attachment may be of the type {@link MsgOutlookAttachment} which represents another attached (encapsulated) .msg
+ * property {@link #outlookAttachments}). An attachment may be of the type {@link OutlookMsgAttachment} which represents another attached (encapsulated) .msg
  * object.
  */
 public class OutlookMessage {
@@ -120,8 +117,8 @@ public class OutlookMessage {
 
 	protected Date lastModificationDate = null;
 	/**
-	 * A list of all outlookAttachments (both {@link FileOutlookAttachment}
-	 * and {@link MsgOutlookAttachment}).
+	 * A list of all outlookAttachments (both {@link OutlookFileAttachment}
+	 * and {@link OutlookMsgAttachment}).
 	 */
 	protected List<OutlookAttachment> outlookAttachments = new ArrayList<>();
 	/**

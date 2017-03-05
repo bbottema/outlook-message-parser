@@ -138,7 +138,7 @@
                 </executions>
                 <configuration>
                     <classes>
-                        <param>org.simplejavamail.outlookmessageparser.OutlookMessage</param>
+                        <param>org.simplejavamail.outlookmessageparser.model.OutlookMessage</param>
                     </classes>
                 </configuration>
             </plugin>

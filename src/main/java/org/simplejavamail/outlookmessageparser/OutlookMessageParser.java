@@ -1,9 +1,13 @@
 package org.simplejavamail.outlookmessageparser;
 
 import org.apache.poi.poifs.filesystem.*;
-import org.simplejavamail.outlookmessageparser.attachment.FileOutlookAttachment;
-import org.simplejavamail.outlookmessageparser.attachment.MsgOutlookAttachment;
-import org.simplejavamail.outlookmessageparser.attachment.OutlookAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookFieldInformation;
+import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
+import org.simplejavamail.outlookmessageparser.model.OutlookMessageProperty;
+import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
 import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
 import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
 
@@ -25,9 +29,9 @@ import static java.util.regex.Pattern.compile;
  * Main parser class that does the actual parsing of the Outlook .msg file. It uses the <a href="http://poi.apache.org/poifs/">POI</a> library for parsing the
  * .msg container file and is based on a description posted by Peter Fiskerstrand at <a href="http://www.fileformat.info/format/outlookmsg/">fileformat.info</a>.
  * <p>
- * It parses the .msg file and stores the information in a {@link OutlookMessage} object. Attachments are put into an {@link FileOutlookAttachment} object. Hence, please keep
+ * It parses the .msg file and stores the information in a {@link OutlookMessage} object. Attachments are put into an {@link OutlookFileAttachment} object. Hence, please keep
  * in mind that the complete mail is held in the memory! If an attachment is another .msg file, this attachment is not processed as a normal attachment but
- * rather included as a {@link MsgOutlookAttachment}. This attached mail is, again, a {@link OutlookMessage} object and may have further outlookAttachments and so on.
+ * rather included as a {@link OutlookMsgAttachment}. This attached mail is, again, a {@link OutlookMessage} object and may have further outlookAttachments and so on.
  * <p>
  * Furthermore there is a feature which allows us to extract HTML bodies when only RTF bodies are available. In order to achieve this a conversion class
  * implementing {@link RTF2HTMLConverter} is used. This can be overridden with a custom implementation as well (see code below for an example).
@@ -584,7 +588,7 @@ public class OutlookMessageParser {
 	 * the given directory entry. The entry may either
 	 * point to an attached file or to an
 	 * attached .msg file, which will be added
-	 * as a {@link MsgOutlookAttachment} object instead.
+	 * as a {@link OutlookMsgAttachment} object instead.
 	 *
 	 * @param dir The directory entry containing the attachment document entry and some other document entries describing the attachment (name, extension, mime
 	 *            type, ...)
@@ -594,7 +598,7 @@ public class OutlookMessageParser {
 	protected void parseAttachment(DirectoryEntry dir, OutlookMessage msg)
 			throws IOException {
 
-		FileOutlookAttachment attachment = new FileOutlookAttachment();
+		OutlookFileAttachment attachment = new OutlookFileAttachment();
 
 		// iterate through all document entries
 		for (Iterator<?> iter = dir.getEntries(); iter.hasNext(); ) {
@@ -616,11 +620,10 @@ public class OutlookMessageParser {
 				// a directory within the attachment directory
 				// entry  means that a .msg file is attached
 				// at this point. we recursively parse
-				// this .msg file and add it as a MsgOutlookAttachment
+				// this .msg file and add it as a OutlookMsgAttachment
 				// object to the current OutlookMessage object.
 				OutlookMessage attachmentMsg = new OutlookMessage();
-				MsgOutlookAttachment msgAttachment = new MsgOutlookAttachment();
-				msgAttachment.setOutlookMessage(attachmentMsg);
+				OutlookMsgAttachment msgAttachment = new OutlookMsgAttachment(attachmentMsg);
 				msg.addAttachment(msgAttachment);
 				this.checkDirectoryEntry((DirectoryEntry) entry, attachmentMsg);
 			}

@@ -1,4 +1,4 @@
-package org.simplejavamail.outlookmessageparser.attachment;
+package org.simplejavamail.outlookmessageparser.model;
 
 /**
  * Interface that defines an attachment.
