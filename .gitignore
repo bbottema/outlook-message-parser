@@ -12,5 +12,5 @@
 hs_err_pid*
 
 .idea/
-msgparser.iml
+outlook-message-parser.iml
 target/

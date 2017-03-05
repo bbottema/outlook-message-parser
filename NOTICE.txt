@@ -1,0 +1,13 @@
+  =========================================================================
+  ==  NOTICE file for use with the Apache License, Version 2.0           ==
+  =========================================================================
+  
+  Outlook Message Parser
+  Copyright 2017 Benny Bottema
+  https://github.com/bbottema/outlook-message-parser
+  
+  This product uses no commercial products.
+  
+  This product uses the following external (Open Source) libraries:
+  
+    - Apache POI

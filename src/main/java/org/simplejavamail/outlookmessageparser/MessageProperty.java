@@ -6,7 +6,7 @@
 // last changed date: $LastChangedDate: $
 // last changed by: $LastChangedBy: $
 // ============================================================================
-package com.auxilii.msgparser;
+package org.simplejavamail.outlookmessageparser;
 
 /**
  * Represents a message property holding the type of data and the data itself.

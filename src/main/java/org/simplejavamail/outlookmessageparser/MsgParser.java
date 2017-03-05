@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.auxilii.msgparser;
+package org.simplejavamail.outlookmessageparser;
 
-import com.auxilii.msgparser.attachment.Attachment;
-import com.auxilii.msgparser.attachment.FileAttachment;
-import com.auxilii.msgparser.attachment.MsgAttachment;
-import com.auxilii.msgparser.rtf.RTF2HTMLConverter;
-import com.auxilii.msgparser.rtf.SimpleRTF2HTMLConverter;
+import org.simplejavamail.outlookmessageparser.attachment.Attachment;
+import org.simplejavamail.outlookmessageparser.attachment.FileAttachment;
+import org.simplejavamail.outlookmessageparser.attachment.MsgAttachment;
+import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
+import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
 import org.apache.poi.poifs.filesystem.*;
 
 import java.io.*;

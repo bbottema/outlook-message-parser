@@ -1,9 +1,9 @@
-package com.auxilii.msgparser;
+package org.simplejavamail.outlookmessageparser;
 
-import com.auxilii.msgparser.attachment.Attachment;
-import com.auxilii.msgparser.attachment.FileAttachment;
-import com.auxilii.msgparser.attachment.MsgAttachment;
 import org.junit.Test;
+import org.simplejavamail.outlookmessageparser.attachment.Attachment;
+import org.simplejavamail.outlookmessageparser.attachment.FileAttachment;
+import org.simplejavamail.outlookmessageparser.attachment.MsgAttachment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +18,12 @@ public class ParserTest {
 	public void testRtfSent()
 			throws IOException {
 		Message msg = parseMsgFile("simple sent.msg");
-		MessageAssert.assertThat(msg).hasFromName("John Doe");
-		MessageAssert.assertThat(msg).hasFromEmail("jdoes@someserver.com");
-		MessageAssert.assertThat(msg).hasSubject("(outlookEMLandMSGconverter Trial Version Import) BitDaddys Software");
-		MessageAssert.assertThat(msg).hasToName("sales@bitdaddys.com");
-		MessageAssert.assertThat(msg).hasToEmail("sales@bitdaddys.com");
-		MessageAssert.assertThat(msg).hasNoAttachments();
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromName("John Doe");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromEmail("jdoes@someserver.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("(outlookEMLandMSGconverter Trial Version Import) BitDaddys Software");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToName("sales@bitdaddys.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToEmail("sales@bitdaddys.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasNoAttachments();
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
@@ -41,10 +41,10 @@ public class ParserTest {
 	public void testUnsentRtfDraft()
 			throws IOException {
 		Message msg = parseMsgFile("unsent draft.msg");
-		MessageAssert.assertThat(msg).hasSubject("MSG Test File");
-		MessageAssert.assertThat(msg).hasToName("time2talk@online-convert.com");
-		MessageAssert.assertThat(msg).hasToEmail("time2talk@online-convert.com");
-		MessageAssert.assertThat(msg).hasNoAttachments();
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("MSG Test File");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToName("time2talk@online-convert.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToEmail("time2talk@online-convert.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasNoAttachments();
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
@@ -106,13 +106,13 @@ public class ParserTest {
 	public void testHtmlMessageChain()
 			throws IOException {
 		Message msg = parseMsgFile("plain chain.msg");
-		MessageAssert.assertThat(msg).hasFromName("Robert Duncan");
-		MessageAssert.assertThat(msg).hasFromEmail(null);
-		MessageAssert.assertThat(msg).hasSubject("RE: [Redmine - Bug #10180] redmine not truncating emails properly");
-		MessageAssert.assertThat(msg).hasRecipients(
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromName("Robert Duncan");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromEmail(null);
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("RE: [Redmine - Bug #10180] redmine not truncating emails properly");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasRecipients(
 				createRecipient("'applsoft-redmine@anca.com'", "applsoft-redmine@anca.com"),
 				createRecipient("'rob@thegopedal.com'", "rob@thegopedal.com"));
-		MessageAssert.assertThat(msg).hasNoAttachments();
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasNoAttachments();
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNotEmpty();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
@@ -171,23 +171,23 @@ public class ParserTest {
 	public void testNestedRtfMsg()
 			throws IOException {
 		Message msg = parseMsgFile("nested simple mail.msg");
-		MessageAssert.assertThat(msg).hasFromName("REISINGER Emanuel");
-		MessageAssert.assertThat(msg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
-		MessageAssert.assertThat(msg).hasSubject("outlookmsg2html Testmail");
-		MessageAssert.assertThat(msg).hasToName("REISINGER Emanuel");
-		MessageAssert.assertThat(msg).hasToEmail("Emanuel.Reisinger@cargonet.software");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromName("REISINGER Emanuel");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("outlookmsg2html Testmail");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToName("REISINGER Emanuel");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToEmail("Emanuel.Reisinger@cargonet.software");
 		List<Attachment> attachments = msg.getAttachments();
 		assertThat(attachments).hasSize(1);
 		Attachment attachment = attachments.get(0);
 		assertThat(attachment).isOfAnyClassIn(MsgAttachment.class);
 		Message nestedMsg = ((MsgAttachment) attachment).getMessage();
 		/* nested message */
-		MessageAssert.assertThat(nestedMsg).hasFromName("REISINGER Emanuel");
-		MessageAssert.assertThat(nestedMsg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
-		MessageAssert.assertThat(nestedMsg).hasSubject("outlookmsg2html Testmail");
-		MessageAssert.assertThat(nestedMsg).hasToName("REISINGER Emanuel");
-		MessageAssert.assertThat(nestedMsg).hasToEmail("Emanuel.Reisinger@cargonet.software");
-		MessageAssert.assertThat(nestedMsg).hasNoAttachments();
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(nestedMsg).hasFromName("REISINGER Emanuel");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(nestedMsg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(nestedMsg).hasSubject("outlookmsg2html Testmail");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(nestedMsg).hasToName("REISINGER Emanuel");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(nestedMsg).hasToEmail("Emanuel.Reisinger@cargonet.software");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(nestedMsg).hasNoAttachments();
 		assertThat(nestedMsg.getBodyText()).isNotEmpty();
 		assertThat(nestedMsg.getBodyHTML()).isNull();
 		assertThat(nestedMsg.getBodyRTF()).isNotEmpty();
@@ -219,11 +219,11 @@ public class ParserTest {
 	public void testFileAttachments()
 			throws IOException {
 		Message msg = parseMsgFile("attachments.msg");
-		MessageAssert.assertThat(msg).hasFromName("Microsoft Outlook");
-		MessageAssert.assertThat(msg).hasFromEmail("MicrosoftExchange329e71ec88ae4615bbc36ab6ce41109e@coab.us");
-		MessageAssert.assertThat(msg).hasSubject("Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
-		MessageAssert.assertThat(msg).hasToName("darlington@coab.us");
-		MessageAssert.assertThat(msg).hasToEmail("darlington@coab.us");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromName("Microsoft Outlook");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromEmail("MicrosoftExchange329e71ec88ae4615bbc36ab6ce41109e@coab.us");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToName("darlington@coab.us");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToEmail("darlington@coab.us");
 		List<Attachment> attachments = msg.getAttachments();
 		assertThat(attachments).hasSize(2);
 		Attachment attachment1 = attachments.get(0);
@@ -365,11 +365,11 @@ public class ParserTest {
 	public void testEmbeddedImage()
 			throws IOException {
 		Message msg = parseMsgFile("embedded image.msg");
-		MessageAssert.assertThat(msg).hasFromName("Paliarik, Martin");
-		MessageAssert.assertThat(msg).hasFromEmail("mpaliarik@mdlz.com");
-		MessageAssert.assertThat(msg).hasSubject("email test");
-		MessageAssert.assertThat(msg).hasToName("Paliarik, Martin");
-		MessageAssert.assertThat(msg).hasToEmail("mpaliarik@mdlz.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromName("Paliarik, Martin");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromEmail("mpaliarik@mdlz.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("email test");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToName("Paliarik, Martin");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToEmail("mpaliarik@mdlz.com");
 		List<Attachment> attachments = msg.getAttachments();
 		assertThat(attachments).hasSize(1);
 		assertAttachmentMetadata(attachments.get(0), "image/png", ".png", "image001.png");
@@ -428,11 +428,11 @@ public class ParserTest {
 	public void testMsgForwardDraftWithBothAttachmentsAndEmbeddedImage()
 			throws IOException {
 		Message msg = parseMsgFile("forward with attachments and embedded images.msg");
-		MessageAssert.assertThat(msg).hasFromName(null);
-		MessageAssert.assertThat(msg).hasFromEmail(null);
-		MessageAssert.assertThat(msg).hasSubject("FW: Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
-		MessageAssert.assertThat(msg).hasToName(null);
-		MessageAssert.assertThat(msg).hasToEmail(null);
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromName(null);
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromEmail(null);
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("FW: Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToName(null);
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToEmail(null);
 		List<Attachment> attachments = msg.getAttachments();
 		assertThat(attachments).hasSize(4);
 		Attachment attachment1 = attachments.get(0);
@@ -591,15 +591,15 @@ public class ParserTest {
 	public void testHtmlTestWithReplyToAndAttachmentsPlusEmbeddedImage()
 			throws IOException {
 		Message msg = parseMsgFile("HTML mail with replyto and attachment and embedded image.msg");
-		MessageAssert.assertThat(msg).hasFromName("lollypop");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromName("lollypop");
 		// Google SMTP overrode this, Outlook recognized it as: Benny Bottema <b.bottema@gmail.com>; on behalf of; lollypop <b.bottema@projectnibble.org>
-		MessageAssert.assertThat(msg).hasFromEmail("b.bottema@projectnibble.org");
-		MessageAssert.assertThat(msg).hasSubject("hey");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasFromEmail("b.bottema@projectnibble.org");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasSubject("hey");
 		// Outlook overrode this when saving the .msg to match the mail account
-		MessageAssert.assertThat(msg).hasToName("Bottema, Benny");
-		MessageAssert.assertThat(msg).hasToEmail("benny.bottema@aegon.nl");
-		MessageAssert.assertThat(msg).hasReplyToName("lollypop-replyto");
-		MessageAssert.assertThat(msg).hasReplyToEmail("lo.pop.replyto@somemail.com");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToName("Bottema, Benny");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasToEmail("benny.bottema@aegon.nl");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasReplyToName("lollypop-replyto");
+		org.simplejavamail.outlookmessageparser.MessageAssert.assertThat(msg).hasReplyToEmail("lo.pop.replyto@somemail.com");
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
 		// Outlook overrode this value too OR converted the original HTML to RTF, from which MsgParser derived this HTML
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).contains(

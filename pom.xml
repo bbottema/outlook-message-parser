@@ -3,18 +3,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.auxilii.msgparser</groupId>
-    <artifactId>msgparser</artifactId>
+    <groupId>org.simplejavamail</groupId>
+    <artifactId>outlook-message-parser</artifactId>
     <packaging>jar</packaging>
-    <name>msgparser</name>
+    <name>Outlook Message Parser</name>
     <version>1.1.16-SNAPSHOT</version>
-    <description>A small open source Java library that parses Outlook .msg files and provides their content using Java objects.</description>
-    <url>https://github.com/bbottema/msgparser</url>
+    <description>A Java parser for Outlook messages (.msg files)</description>
+    <url>https://github.com/bbottema/outlook-message-parser</url>
 
     <licenses>
         <license>
-            <name>GNU General Public License (GPL), Version 3.0</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -24,35 +24,26 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git://github.com/bbottema/msgparser.git</connection>
-        <developerConnection>scm:git:git@github.com:bbottema/msgparser.git</developerConnection>
-        <url>https://github.com/bbottema/msgparser</url>
+        <connection>scm:git:git://github.com/bbottema/outlook-message-parser.git</connection>
+        <developerConnection>scm:git:git@github.com:bbottema/outlook-message-parser.git</developerConnection>
+        <url>https://github.com/bbottema/outlook-message-parser</url>
     </scm>
 
     <developers>
-        <developer>
-            <id>roman_k</id>
-            <name>Roman Kurmanowytsch</name>
-            <email>msgparser@auxilii.com</email>
-            <url>http://www.auxilii.com/</url>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
         <developer>
             <id>benny</id>
             <name>Benny Bottema</name>
             <email>benny@bennybottema.com</email>
             <url>http://www.bennybottema.com</url>
             <roles>
-                <role>packager</role>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/bbottema/msgparser/issues</url>
+        <url>https://github.com/bbottema/outlook-message-parser/issues</url>
     </issueManagement>
 
     <dependencies>
@@ -117,7 +108,7 @@
                 </executions>
                 <configuration>
                     <classes>
-                        <param>com.auxilii.msgparser.Message</param>
+                        <param>org.simplejavamail.outlookmessageparser.Message</param>
                     </classes>
                 </configuration>
             </plugin>

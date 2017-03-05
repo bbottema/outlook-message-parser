@@ -6,7 +6,7 @@
 // last changed date: $LastChangedDate: $
 // last changed by: $LastChangedBy: $
 // ============================================================================
-package com.auxilii.msgparser.rtf;
+package org.simplejavamail.outlookmessageparser.rtf;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;

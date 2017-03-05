@@ -1,4 +1,4 @@
-package com.auxilii.msgparser;
+package org.simplejavamail.outlookmessageparser;
 
 import org.junit.Test;
 

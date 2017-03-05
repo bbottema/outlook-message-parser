@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.auxilii.msgparser.rtf;
+package org.simplejavamail.outlookmessageparser.rtf;
 
 /**
  * This interface defines the structure of the conversion class to be used for extracting HTML code out of an RTF body
