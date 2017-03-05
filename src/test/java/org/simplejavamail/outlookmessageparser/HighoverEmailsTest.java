@@ -12,12 +12,12 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ParserTest {
+public class HighoverEmailsTest {
 
 	@Test
 	public void testRtfSent()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("simple sent.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/simple sent.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName("John Doe");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("jdoes@someserver.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("(outlookEMLandMSGconverter Trial Version Import) BitDaddys Software");
@@ -40,7 +40,7 @@ public class ParserTest {
 	@Test
 	public void testUnsentRtfDraft()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("unsent draft.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/unsent draft.msg");
 		OutlookMessageAssert.assertThat(msg).hasSubject("MSG Test File");
 		OutlookMessageAssert.assertThat(msg).hasToName("time2talk@online-convert.com");
 		OutlookMessageAssert.assertThat(msg).hasToEmail("time2talk@online-convert.com");
@@ -105,7 +105,7 @@ public class ParserTest {
 	@Test
 	public void testHtmlMessageChain()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("plain chain.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/plain chain.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName("Robert Duncan");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail(null);
 		OutlookMessageAssert.assertThat(msg).hasSubject("RE: [Redmine - Bug #10180] redmine not truncating emails properly");
@@ -170,7 +170,7 @@ public class ParserTest {
 	@Test
 	public void testNestedRtfMsg()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("nested simple mail.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/nested simple mail.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName("REISINGER Emanuel");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
 		OutlookMessageAssert.assertThat(msg).hasSubject("outlookmsg2html Testmail");
@@ -218,7 +218,7 @@ public class ParserTest {
 	@Test
 	public void testFileAttachments()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("attachments.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/attachments.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName("Microsoft Outlook");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("MicrosoftExchange329e71ec88ae4615bbc36ab6ce41109e@coab.us");
 		OutlookMessageAssert.assertThat(msg).hasSubject("Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
@@ -364,7 +364,7 @@ public class ParserTest {
 	@Test
 	public void testEmbeddedImage()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("embedded image.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/embedded image.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName("Paliarik, Martin");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("mpaliarik@mdlz.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("email test");
@@ -427,7 +427,7 @@ public class ParserTest {
 	@Test
 	public void testMsgForwardDraftWithBothAttachmentsAndEmbeddedImage()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("forward with attachments and embedded images.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/forward with attachments and embedded images.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName(null);
 		OutlookMessageAssert.assertThat(msg).hasFromEmail(null);
 		OutlookMessageAssert.assertThat(msg).hasSubject("FW: Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
@@ -590,7 +590,7 @@ public class ParserTest {
 	@Test
 	public void testHtmlTestWithReplyToAndAttachmentsPlusEmbeddedImage()
 			throws IOException {
-		OutlookMessage msg = parseMsgFile("HTML mail with replyto and attachment and embedded image.msg");
+		OutlookMessage msg = parseMsgFile("test-messages/HTML mail with replyto and attachment and embedded image.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName("lollypop");
 		// Google SMTP overrode this, Outlook recognized it as: Benny Bottema <b.bottema@gmail.com>; on behalf of; lollypop <b.bottema@projectnibble.org>
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("b.bottema@projectnibble.org");
