@@ -17,6 +17,7 @@ import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -67,11 +68,10 @@ public class OutlookMessageParser {
 	 *
 	 * @param msgFile The .msg file.
 	 * @return A {@link OutlookMessage} object representing the .msg file.
-	 * @throws IOException                   Thrown if the file could not be loaded or parsed.
-	 * @throws UnsupportedOperationException Thrown if the .msg file cannot be parsed correctly.
+	 * @throws IOException Thrown if the file could not be loaded or parsed.
 	 */
-	public OutlookMessage parseMsg(File msgFile)
-			throws IOException, UnsupportedOperationException {
+	public OutlookMessage parseMsg(@Nonnull File msgFile)
+			throws IOException {
 		return parseMsg(new FileInputStream(msgFile));
 	}
 
@@ -80,11 +80,10 @@ public class OutlookMessageParser {
 	 *
 	 * @param msgFile The .msg file as a String path.
 	 * @return A {@link OutlookMessage} object representing the .msg file.
-	 * @throws IOException                   Thrown if the file could not be loaded or parsed.
-	 * @throws UnsupportedOperationException Thrown if the .msg file cannot be parsed correctly.
+	 * @throws IOException Thrown if the file could not be loaded or parsed.
 	 */
-	public OutlookMessage parseMsg(String msgFile)
-			throws IOException, UnsupportedOperationException {
+	public OutlookMessage parseMsg(@Nonnull String msgFile)
+			throws IOException {
 		return parseMsg(new FileInputStream(msgFile));
 	}
 
@@ -93,11 +92,10 @@ public class OutlookMessageParser {
 	 *
 	 * @param msgFileStream The .msg file as a InputStream.
 	 * @return A {@link OutlookMessage} object representing the .msg file.
-	 * @throws IOException                   Thrown if the file could not be loaded or parsed.
-	 * @throws UnsupportedOperationException Thrown if the .msg file cannot be parsed correctly.
+	 * @throws IOException Thrown if the file could not be loaded or parsed.
 	 */
-	public OutlookMessage parseMsg(InputStream msgFileStream)
-			throws IOException, UnsupportedOperationException {
+	public OutlookMessage parseMsg(@Nonnull InputStream msgFileStream)
+			throws IOException {
 		// the .msg file, like a file system, contains directories and documents within this directories
 		// we now gain access to the root node and recursively go through the complete 'filesystem'.
 		OutlookMessage msg;
@@ -106,24 +104,20 @@ public class OutlookMessageParser {
 			msg = new OutlookMessage(rtf2htmlConverter);
 			checkDirectoryEntry(dir, msg);
 		} finally {
-			try {
-				msgFileStream.close();
-			} catch (IOException e) {
-				LOGGER.error("Was unable to close file stream", e);
-			}
+			msgFileStream.close();
 		}
 		convertHeaders(msg);
 		return msg;
 	}
 
-	private void convertHeaders(OutlookMessage msg) {
+	private void convertHeaders(@Nonnull OutlookMessage msg) {
 		String allHeaders = msg.getHeaders();
 		if (allHeaders != null) {
 			extractReplyToHeader(msg, allHeaders);
 		}
 	}
 
-	static void extractReplyToHeader(OutlookMessage msg, String allHeaders) {
+	static void extractReplyToHeader(@Nonnull OutlookMessage msg, @Nonnull String allHeaders) {
 		// Reply-To: Optional Name <adress@somemail.com> // second '<' and '>' kept optional
 		Matcher m = compile("^Reply-To:\\s*(?:<?(?<nameOrAddress>.*?)>?)?\\s*(?:<(?<address>.*?)>)?$", Pattern.MULTILINE).matcher(allHeaders);
 		if (m.find()) {
@@ -149,12 +143,10 @@ public class OutlookMessageParser {
 	 *
 	 * @param dir The current node in the .msg file.
 	 * @param msg The resulting {@link OutlookMessage} object.
-	 * @throws IOException                   Thrown if the .msg file could not be parsed.
-	 * @throws UnsupportedOperationException Thrown if the .msg file contains unknown data.
+	 * @throws IOException Thrown if the .msg file could not be parsed.
 	 */
 	private void checkDirectoryEntry(DirectoryEntry dir, OutlookMessage msg)
-			throws IOException, UnsupportedOperationException {
-
+			throws IOException {
 		// we iterate through all entries in the current directory
 		for (Iterator<?> iter = dir.getEntries(); iter.hasNext(); ) {
 			Entry entry = (Entry) iter.next();
