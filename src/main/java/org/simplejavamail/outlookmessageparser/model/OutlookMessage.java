@@ -120,7 +120,7 @@ public class OutlookMessage {
 	 * A list of all outlookAttachments (both {@link OutlookFileAttachment}
 	 * and {@link OutlookMsgAttachment}).
 	 */
-	protected List<OutlookAttachment> outlookAttachments = new ArrayList<>();
+	protected final List<OutlookAttachment> outlookAttachments = new ArrayList<>();
 	/**
 	 * Contains all properties that are not
 	 * covered by the special properties.
@@ -130,7 +130,8 @@ public class OutlookMessage {
 	 * A list containing all recipients for this message
 	 * (which can be set in the 'to:', 'cc:' and 'bcc:' field, respectively).
 	 */
-	protected List<OutlookRecipient> recipients = new ArrayList<>();
+	protected final List<OutlookRecipient> recipients = new ArrayList<>();
+
 	protected final RTF2HTMLConverter rtf2htmlConverter;
 
 	public OutlookMessage() {
@@ -217,7 +218,7 @@ public class OutlookMessage {
 				this.setDisplayBcc(stringValue);
 				break;
 			case 0x1013: //HTML
-				this.setBodyHTML(stringValue, true);
+				this.setBodyHTML(stringValue);
 				break;
 			case 0x1000: //BODY
 				this.setBodyText(stringValue);
@@ -274,7 +275,7 @@ public class OutlookMessage {
 				return null;
 			}
 		} else {
-			LOGGER.debug("Unexpected body class: {} (expected String or byte[])", value.getClass().getName());
+			LOGGER.trace("Unexpected body class: {} (expected String or byte[])", value.getClass().getName());
 			return value.toString();
 		}
 	}
@@ -408,24 +409,10 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean setter for {@link #outlookAttachments}.
-	 */
-	public void setOutlookAttachments(List<OutlookAttachment> outlookAttachments) {
-		this.outlookAttachments = outlookAttachments;
-	}
-
-	/**
 	 * Bean getter for {@link #recipients}.
 	 */
 	public List<OutlookRecipient> getRecipients() {
 		return recipients;
-	}
-
-	/**
-	 * Bean setter for {@link #recipients}.
-	 */
-	public void setRecipients(List<OutlookRecipient> recipients) {
-		this.recipients = recipients;
 	}
 
 	/**
@@ -496,7 +483,7 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean setter for {@link #displayCcCc}.
+	 * Bean setter for {@link #displayCc}.
 	 */
 	public void setDisplayCc(String displayCc) {
 		if (displayCc != null) {
@@ -713,13 +700,6 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean setter for {@link #bodyHTML}.
-	 */
-	public void setBodyHTML(String bodyHTML) {
-		setBodyHTML(bodyHTML, false);
-	}
-
-	/**
 	 * Bean getter for {@link #convertedBodyHTML}.
 	 */
 	public String getConvertedBodyHTML() {
@@ -735,10 +715,10 @@ public class OutlookMessage {
 
 	/**
 	 * @param bodyToSet the bodyHTML to set
-	 * @param force     forces overwriting of the field if already set
+	 *
 	 */
-	protected void setBodyHTML(String bodyToSet, boolean force) {
-		if ((force || this.bodyHTML == null) && bodyToSet != null) {
+	protected void setBodyHTML(String bodyToSet) {
+		if (bodyToSet != null) {
 			if (!(this.bodyHTML != null && this.bodyHTML.length() > bodyToSet.length())) {
 				//only if the new body to be set is bigger than the current one
 				//thus the short one is most probably wrong

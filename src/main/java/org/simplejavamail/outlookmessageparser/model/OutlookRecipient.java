@@ -1,17 +1,23 @@
 package org.simplejavamail.outlookmessageparser.model;
 
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * This class represents a recipient's entry of the parsed .msg file. It provides informations like the  email address and the display name.
  */
 public class OutlookRecipient {
 
-	protected static final Logger LOGGER = Logger.getLogger(OutlookRecipient.class.getName());
+	protected static final Logger LOGGER = LoggerFactory.getLogger(OutlookRecipient.class);
 
 	/**
 	 * Contains all properties that are not covered by the special properties.
@@ -38,9 +44,9 @@ public class OutlookRecipient {
 
 		int mapiClass = -1;
 		try {
-			mapiClass = Integer.parseInt(name, 16);
+			mapiClass = parseInt(name, 16);
 		} catch (NumberFormatException e) {
-			LOGGER.log(Level.FINEST, "Unexpected mapi class: " + name);
+			LOGGER.error("Unexpected mapi class: {}", name, e);
 		}
 
 		switch (mapiClass) {
@@ -136,9 +142,9 @@ public class OutlookRecipient {
 	public Object getPropertyFromHex(String name) {
 		Integer i = -1;
 		try {
-			i = Integer.parseInt(name, 16);
+			i = parseInt(name, 16);
 		} catch (NumberFormatException e) {
-			LOGGER.log(Level.FINEST, "Could not parse integer: " + name);
+			LOGGER.error("Could not parse integer {}", name, e);
 		}
 		return getPropertyValue(i);
 	}

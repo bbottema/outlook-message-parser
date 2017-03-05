@@ -1,25 +1,34 @@
 package org.simplejavamail.outlookmessageparser;
 
-import org.apache.poi.poifs.filesystem.*;
-import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
-import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
+import org.apache.poi.poifs.filesystem.DirectoryEntry;
+import org.apache.poi.poifs.filesystem.DocumentEntry;
+import org.apache.poi.poifs.filesystem.DocumentInputStream;
+import org.apache.poi.poifs.filesystem.Entry;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFieldInformation;
+import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessageProperty;
+import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
 import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
 import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +53,7 @@ import static java.util.regex.Pattern.compile;
  * your own implementation)<br /> OutlookMessage msg = msgp.parseMsg("test.msg"); </code>
  */
 public class OutlookMessageParser {
-	protected static final Logger LOGGER = Logger.getLogger(OutlookMessageParser.class.getName());
+	protected static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessageParser.class);
 
 	protected static final String PROPS_KEY = "__properties_version1.0";
 
@@ -140,7 +149,8 @@ public class OutlookMessageParser {
 				// found both name and email part
 				msg.setReplyToName(m.group("nameOrAddress"));
 				msg.setReplyToEmail(m.group("address"));
-			} else if (m.group("nameOrAddress") != null) {
+			} else //noinspection StatementWithEmptyBody
+				if (m.group("nameOrAddress") != null) {
 				// assume we found an email
 				msg.setReplyToName(m.group("nameOrAddress"));
 				msg.setReplyToEmail(m.group("nameOrAddress"));
@@ -311,12 +321,13 @@ public class OutlookMessageParser {
 				try {
 					typeNumber = Integer.parseInt(type, 16);
 				} catch (NumberFormatException e) {
-					LOGGER.log(Level.FINEST, "Unexpected type: " + type);
+					LOGGER.error("Unexpected type: {}", type, e);
 				}
 
 				if (!clazz.equals("0000")) {
 					//reading and ignoring flags
 					bytes = new byte[flagsLength];
+					//noinspection ResultOfMethodCallIgnored
 					dstream.read(bytes);
 					//System.out.println("flags: " + bytesToHex(bytes));
 
@@ -330,6 +341,7 @@ public class OutlookMessageParser {
 						//no data available inside the properties stream
 						//reading and ignoring size
 						bytes = null;
+						//noinspection ResultOfMethodCallIgnored
 						dstream.read(new byte[4]);
 					} else if (typeNumber == 0x3 //INT
 							|| typeNumber == 0x4 //FLOAT
@@ -338,7 +350,9 @@ public class OutlookMessageParser {
 							|| typeNumber == 0x2) { //SHORT
 						// 4 bytes
 						bytes = new byte[4];
+						//noinspection ResultOfMethodCallIgnored
 						dstream.read(bytes);
+						//noinspection ResultOfMethodCallIgnored
 						dstream.read(bytes); //read and ignore padding
 					} else if (typeNumber == 0x5 //DOUBLE
 							|| typeNumber == 0x7 //APPTIME
@@ -347,6 +361,7 @@ public class OutlookMessageParser {
 							|| typeNumber == 0x40) { //SYSTIME
 						// 8 bytes
 						bytes = new byte[8];
+						//noinspection ResultOfMethodCallIgnored
 						dstream.read(bytes);
 					}
 					//stream ready for use
@@ -365,13 +380,7 @@ public class OutlookMessageParser {
 			return result;
 
 		} finally {
-			if (dstream != null) {
-				try {
-					dstream.close();
-				} catch (Exception e) {
-					LOGGER.fine("Could not close input stream of document entry: " + de + ": " + e.getMessage());
-				}
-			}
+			dstream.close();
 		}
 
 	}
@@ -393,7 +402,7 @@ public class OutlookMessageParser {
 		// information, either a String or a byte[] will
 		// be returned. other datatypes are not yet supported
 		Object data = this.getData(de, info);
-		LOGGER.finest("  Document data: " + ((data == null) ? "null" : data.toString()));
+		LOGGER.trace("  Document data: {}", data);
 		return new OutlookMessageProperty(info.getClazz(), data, de.getSize());
 	}
 
@@ -456,8 +465,8 @@ public class OutlookMessageParser {
 					// the data is read into a byte[] object
 					// and returned as-is
 					return this.getBytesFromDocumentEntry(de);
-				} catch (Exception e) {
-					LOGGER.fine("Could not get content of byte array of field 0x102: " + e.getMessage());
+				} catch (IOException e) {
+					LOGGER.error("Could not get content of byte array of field 0x102", e);
 					// To keep compatible with previous implementations, we return an empty array here
 					return new byte[0];
 				}
@@ -483,7 +492,7 @@ public class OutlookMessageParser {
 				return new Date(timeLong);
 			default:
 				// this should not happen
-				LOGGER.fine("Unknown field type " + mapiType);
+				LOGGER.trace("Unknown field type {}", mapiType);
 				return null;
 		}
 
@@ -508,8 +517,8 @@ public class OutlookMessageParser {
 			if (is != null) {
 				try {
 					is.close();
-				} catch (Exception e) {
-					LOGGER.fine("Could not close input stream for document entry: " + de + ": " + e.getMessage());
+				} catch (IOException e) {
+					LOGGER.error("Could not close input stream for document entry", e);
 				}
 			}
 		}
@@ -555,7 +564,7 @@ public class OutlookMessageParser {
 		String name = de.getName();
 		// we are only interested in document entries
 		// with names starting with __substg1.
-		LOGGER.finest("Document entry: " + name);
+		LOGGER.trace("Document entry: {}", name);
 		if (name.startsWith(PROPERTY_STREAM_PREFIX)) {
 			String clazz;
 			String type;
@@ -568,15 +577,15 @@ public class OutlookMessageParser {
 				// data type.
 				clazz = val.substring(0, 4);
 				type = val.substring(4);
-				LOGGER.finest("  Found document entry: class=" + clazz + ", type=" + type);
+				LOGGER.trace("  Found document entry: class={}, type={}", clazz, type);
 				mapiType = Integer.parseInt(type, 16);
 			} catch (RuntimeException re) {
-				LOGGER.log(Level.FINE, "Could not parse directory entry " + name, re);
+				LOGGER.error("Could not parse directory entry {}", name, re);
 				return new OutlookFieldInformation();
 			}
 			return new OutlookFieldInformation(clazz, mapiType);
 		} else {
-			LOGGER.finest("Ignoring entry with name " + name);
+			LOGGER.trace("Ignoring entry with name {}", name);
 		}
 		// we are not interested in the field
 		// and return an empty OutlookFieldInformation object

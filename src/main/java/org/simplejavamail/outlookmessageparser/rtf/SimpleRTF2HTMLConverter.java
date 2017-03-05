@@ -1,8 +1,9 @@
 package org.simplejavamail.outlookmessageparser.rtf;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import static java.util.regex.Pattern.compile;
@@ -12,7 +13,7 @@ import static java.util.regex.Pattern.compile;
  */
 public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 
-	protected static final Logger logger = Logger.getLogger(SimpleRTF2HTMLConverter.class.getName());
+	protected static final Logger LOGGER = LoggerFactory.getLogger(SimpleRTF2HTMLConverter.class);
 
 	private static final String[] HTML_START_TAGS = new String[] { "<html ", "<Html ", "<HTML " };
 	private static final String[] HTML_END_TAGS = new String[] { "</html>", "</Html>", "</HTML>" };
@@ -125,13 +126,13 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 		try {
 			i = Integer.parseInt(hex, 16);
 		} catch (NumberFormatException nfe) {
-			logger.warning("Could not interpret " + hex + " as a number.");
+			LOGGER.warn("Could not interpret {} as a number.", hex, nfe);
 			return null;
 		}
 		try {
 			return new String(new byte[] { (byte) i }, WINDOWS_CHARSET);
 		} catch (UnsupportedEncodingException e) {
-			logger.log(Level.FINEST, "Unsupported encoding: " + WINDOWS_CHARSET);
+			LOGGER.error("Unsupported encoding: {}", WINDOWS_CHARSET, e);
 		}
 		return null;
 	}
