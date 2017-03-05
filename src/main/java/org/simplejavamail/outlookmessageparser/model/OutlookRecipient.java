@@ -17,15 +17,15 @@ import static java.lang.Integer.parseInt;
  */
 public class OutlookRecipient {
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(OutlookRecipient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookRecipient.class);
 
 	/**
 	 * Contains all properties that are not covered by the special properties.
 	 */
-	protected final Map<Integer, Object> properties = new TreeMap<>();
+	private final Map<Integer, Object> properties = new TreeMap<>();
 
-	protected String name = null;
-	protected String address = null;
+	private String name = null;
+	private String address = null;
 
 	/**
 	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #address} when the property name
@@ -109,7 +109,7 @@ public class OutlookRecipient {
 	 *
 	 * @return All available keys properties have been found for.
 	 */
-	public Set<String> getPropertiesAsHex() {
+	private Set<String> getPropertiesAsHex() {
 		Set<Integer> keySet = this.properties.keySet();
 		Set<String> result = new HashSet<>();
 		for (Integer k : keySet) {
@@ -139,7 +139,7 @@ public class OutlookRecipient {
 	 *
 	 * @return The value for the requested property for the given name.
 	 */
-	public Object getPropertyFromHex(String name) {
+	private Object getPropertyFromHex(String name) {
 		Integer i = -1;
 		try {
 			i = parseInt(name, 16);
@@ -161,7 +161,7 @@ public class OutlookRecipient {
 	 *
 	 * @return The property value of the specified code.
 	 */
-	public Object getPropertyValue(Integer code) {
+	private Object getPropertyValue(Integer code) {
 		return this.properties.get(code);
 	}
 

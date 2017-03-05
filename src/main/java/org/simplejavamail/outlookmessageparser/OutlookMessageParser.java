@@ -53,13 +53,13 @@ import static java.util.regex.Pattern.compile;
  * your own implementation)<br /> OutlookMessage msg = msgp.parseMsg("test.msg"); </code>
  */
 public class OutlookMessageParser {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessageParser.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessageParser.class);
 
-	protected static final String PROPS_KEY = "__properties_version1.0";
+	private static final String PROPS_KEY = "__properties_version1.0";
 
-	protected static final String PROPERTY_STREAM_PREFIX = "__substg1.0_";
+	private static final String PROPERTY_STREAM_PREFIX = "__substg1.0_";
 
-	protected RTF2HTMLConverter rtf2htmlConverter = new SimpleRTF2HTMLConverter();
+	private RTF2HTMLConverter rtf2htmlConverter = new SimpleRTF2HTMLConverter();
 
 	/**
 	 * Parses a .msg file provided in the specified file.
@@ -95,6 +95,7 @@ public class OutlookMessageParser {
 	 * @throws IOException                   Thrown if the file could not be loaded or parsed.
 	 * @throws UnsupportedOperationException Thrown if the .msg file cannot be parsed correctly.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public OutlookMessage parseMsg(InputStream msgFileStream)
 			throws IOException, UnsupportedOperationException {
 		return this.parseMsg(msgFileStream, true);
@@ -125,8 +126,8 @@ public class OutlookMessageParser {
 			if (closeStream) {
 				try {
 					msgFileStream.close();
-				} catch (Exception e) {
-					// ignore
+				} catch (IOException e) {
+					LOGGER.error("Was unable to close file stream", e);
 				}
 			}
 		}
@@ -170,7 +171,7 @@ public class OutlookMessageParser {
 	 * @throws IOException                   Thrown if the .msg file could not be parsed.
 	 * @throws UnsupportedOperationException Thrown if the .msg file contains unknown data.
 	 */
-	protected void checkDirectoryEntry(DirectoryEntry dir, OutlookMessage msg)
+	private void checkDirectoryEntry(DirectoryEntry dir, OutlookMessage msg)
 			throws IOException, UnsupportedOperationException {
 
 		// we iterate through all entries in the current directory
@@ -214,7 +215,7 @@ public class OutlookMessageParser {
 	 * @param msg The resulting {@link OutlookMessage} object.
 	 * @throws IOException Thrown if the .msg file could not be parsed.
 	 */
-	protected void checkRecipientDirectoryEntry(DirectoryEntry dir, OutlookMessage msg)
+	private void checkRecipientDirectoryEntry(DirectoryEntry dir, OutlookMessage msg)
 			throws IOException {
 
 		OutlookRecipient recipient = new OutlookRecipient();
@@ -252,7 +253,7 @@ public class OutlookMessageParser {
 	 * @param msg The resulting {@link OutlookMessage} object.
 	 * @throws IOException Thrown if the .msg file could not be parsed.
 	 */
-	protected void checkDirectoryDocumentEntry(DocumentEntry de, OutlookMessage msg)
+	private void checkDirectoryDocumentEntry(DocumentEntry de, OutlookMessage msg)
 			throws IOException {
 		if (de.getName().startsWith(PROPS_KEY)) {
 			//TODO: parse properties stream
@@ -275,7 +276,7 @@ public class OutlookMessageParser {
 	 * @param recipient The resulting {@link OutlookRecipient} object.
 	 * @throws IOException Thrown if the .msg file could not be parsed.
 	 */
-	protected void checkRecipientDocumentEntry(DocumentEntry de, OutlookRecipient recipient)
+	private void checkRecipientDocumentEntry(DocumentEntry de, OutlookRecipient recipient)
 			throws IOException {
 		if (de.getName().startsWith(PROPS_KEY)) {
 			//TODO: parse properties stream
@@ -380,7 +381,9 @@ public class OutlookMessageParser {
 			return result;
 
 		} finally {
-			dstream.close();
+			if (dstream != null) {
+				dstream.close();
+			}
 		}
 
 	}
@@ -419,7 +422,7 @@ public class OutlookMessageParser {
 	 * @throws IOException                   Thrown if the .msg file could not be parsed.
 	 * @throws UnsupportedOperationException Thrown if the .msg file contains unknown data.
 	 */
-	protected Object getData(DocumentEntry de, OutlookFieldInformation info)
+	private Object getData(DocumentEntry de, OutlookFieldInformation info)
 			throws IOException {
 		// if there is no field information available, we simply
 		// return null. in that case, we're not interested in the
@@ -560,7 +563,7 @@ public class OutlookMessageParser {
 	 * @return A {@link OutlookFieldInformation} object containing class and type of the document entry or, if the entry is not an interesting field, an empty {@link
 	 * OutlookFieldInformation} object containing {@link OutlookFieldInformation#UNKNOWN} class and type.
 	 */
-	protected OutlookFieldInformation analyzeDocumentEntry(DocumentEntry de) {
+	private OutlookFieldInformation analyzeDocumentEntry(DocumentEntry de) {
 		String name = de.getName();
 		// we are only interested in document entries
 		// with names starting with __substg1.
@@ -604,7 +607,7 @@ public class OutlookMessageParser {
 	 * @param msg The {@link OutlookMessage} object that this attachment should be added to.
 	 * @throws IOException Thrown if the attachment could not be parsed/read.
 	 */
-	protected void parseAttachment(DirectoryEntry dir, OutlookMessage msg)
+	private void parseAttachment(DirectoryEntry dir, OutlookMessage msg)
 			throws IOException {
 
 		OutlookFileAttachment attachment = new OutlookFileAttachment();

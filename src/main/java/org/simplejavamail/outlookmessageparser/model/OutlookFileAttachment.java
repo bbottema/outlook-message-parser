@@ -68,6 +68,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean getter for {@link #extension}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getExtension() {
 		return extension;
 	}
@@ -75,13 +76,14 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #extension}.
 	 */
-	public void setExtension(String extension) {
+	private void setExtension(String extension) {
 		this.extension = extension;
 	}
 
 	/**
 	 * Bean getter for {@link #filename}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getFilename() {
 		return filename;
 	}
@@ -89,7 +91,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #filename}.
 	 */
-	public void setFilename(String filename) {
+	private void setFilename(String filename) {
 		this.filename = filename;
 	}
 
@@ -103,13 +105,14 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #longFilename}.
 	 */
-	public void setLongFilename(String longFilename) {
+	private void setLongFilename(String longFilename) {
 		this.longFilename = longFilename;
 	}
 
 	/**
 	 * Bean getter for {@link #mimeTag}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getMimeTag() {
 		return mimeTag;
 	}
@@ -117,13 +120,14 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #mimeTag}.
 	 */
-	public void setMimeTag(String mimeTag) {
+	private void setMimeTag(String mimeTag) {
 		this.mimeTag = mimeTag;
 	}
 
 	/**
 	 * Bean getter for {@link #data}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public byte[] getData() {
 		return data;
 	}
@@ -131,7 +135,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #data}.
 	 */
-	public void setData(byte[] data) {
+	private void setData(byte[] data) {
 		this.data = data;
 	}
 
@@ -145,7 +149,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #size}.
 	 */
-	public void setSize(long size) {
+	private void setSize(long size) {
 		this.size = size;
 	}
 }

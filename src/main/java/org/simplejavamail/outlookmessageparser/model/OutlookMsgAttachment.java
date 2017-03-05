@@ -23,6 +23,7 @@ public class OutlookMsgAttachment implements OutlookAttachment {
 	/**
 	 * Bean getter for {@link #outlookMessage}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public OutlookMessage getOutlookMessage() {
 		return outlookMessage;
 	}

@@ -27,112 +27,112 @@ import java.util.TreeMap;
  * object.
  */
 public class OutlookMessage {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessage.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessage.class);
 
 	private static final String WINDOWS_CHARSET = "CP1252";
 
 	/**
 	 * The message class as defined in the .msg file.
 	 */
-	protected String messageClass = "IPM.Note";
+	private String messageClass = "IPM.Note";
 	/**
 	 * The message Id.
 	 */
-	protected String messageId = null;
+	private String messageId = null;
 	/**
 	 * The address part of From: mail address.
 	 */
-	protected String fromEmail = null;
+	private String fromEmail = null;
 	/**
 	 * The name part of the From: mail address
 	 */
-	protected String fromName = null;
+	private String fromName = null;
 	/**
 	 * The address part of To: mail address.
 	 */
-	protected String toEmail = null;
+	private String toEmail = null;
 	/**
 	 * The name part of the To: mail address
 	 */
-	protected String toName = null;
+	private String toName = null;
 	/**
 	 * The address part of Reply-To header
 	 */
-	protected String replyToEmail = null;
+	private String replyToEmail = null;
 	/**
 	 * The name part of Reply-To header
 	 */
-	protected String replyToName = null;
+	private String replyToName = null;
 	/**
 	 * The mail's subject.
 	 */
-	protected String subject = null;
+	private String subject = null;
 	/**
 	 * The normalized body text.
 	 */
-	protected String bodyText = null;
+	private String bodyText = null;
 	/**
 	 * The displayed To: field
 	 */
-	protected String displayTo = null;
+	private String displayTo = null;
 	/**
 	 * The displayed Cc: field
 	 */
-	protected String displayCc = null;
+	private String displayCc = null;
 	/**
 	 * The displayed Bcc: field
 	 */
-	protected String displayBcc = null;
+	private String displayBcc = null;
 
 	/**
 	 * The body in RTF format (if available)
 	 */
-	protected String bodyRTF = null;
+	private String bodyRTF = null;
 
 	/**
 	 * The body in HTML format (if available)
 	 */
-	protected String bodyHTML = null;
+	private String bodyHTML = null;
 
 	/**
 	 * The body in HTML format (converted from RTF)
 	 */
-	protected String convertedBodyHTML = null;
+	private String convertedBodyHTML = null;
 	/**
 	 * Email headers (if available)
 	 */
-	protected String headers = null;
+	private String headers = null;
 
 	/**
 	 * Email Date
 	 */
-	protected Date date = null;
+	private Date date = null;
 
 	/**
 	 * Client Submit Time
 	 */
-	protected Date clientSubmitTime = null;
+	private Date clientSubmitTime = null;
 
-	protected Date creationDate = null;
+	private Date creationDate = null;
 
-	protected Date lastModificationDate = null;
+	private Date lastModificationDate = null;
 	/**
 	 * A list of all outlookAttachments (both {@link OutlookFileAttachment}
 	 * and {@link OutlookMsgAttachment}).
 	 */
-	protected final List<OutlookAttachment> outlookAttachments = new ArrayList<>();
+	private final List<OutlookAttachment> outlookAttachments = new ArrayList<>();
 	/**
 	 * Contains all properties that are not
 	 * covered by the special properties.
 	 */
-	protected final Map<Integer, Object> properties = new TreeMap<>();
+	private final Map<Integer, Object> properties = new TreeMap<>();
 	/**
 	 * A list containing all recipients for this message
 	 * (which can be set in the 'to:', 'cc:' and 'bcc:' field, respectively).
 	 */
-	protected final List<OutlookRecipient> recipients = new ArrayList<>();
+	private final List<OutlookRecipient> recipients = new ArrayList<>();
 
-	protected final RTF2HTMLConverter rtf2htmlConverter;
+	private final RTF2HTMLConverter rtf2htmlConverter;
 
 	public OutlookMessage() {
 		this.rtf2htmlConverter = new SimpleRTF2HTMLConverter();
@@ -175,7 +175,7 @@ public class OutlookMessage {
 		try {
 			mapiClass = Integer.parseInt(name, 16);
 		} catch (NumberFormatException e) {
-			LOGGER.trace("Unexpected type: {}", name);
+			LOGGER.trace("Unexpected type: {}", name, e);
 		}
 
 		switch (mapiClass) {
@@ -261,7 +261,7 @@ public class OutlookMessage {
 		// 1008 rtf sync
 	}
 
-	protected String convertValueToString(Object value) {
+	private String convertValueToString(Object value) {
 		if (value == null) {
 			return null;
 		}
@@ -283,7 +283,7 @@ public class OutlookMessage {
 	/**
 	 * Checks if the correct recipient's addresses are set.
 	 */
-	protected void checkToRecipient() {
+	private void checkToRecipient() {
 		OutlookRecipient toRecipient = getToRecipient();
 		if (toRecipient != null) {
 			setToEmail(toRecipient.getAddress(), true);
@@ -297,7 +297,7 @@ public class OutlookMessage {
 	 * @param date The date string to be converted (e.g.: 'Mon Jul 23 15:43:12 CEST 2012')
 	 * @return A {@link Date} object representing the given date string.
 	 */
-	protected static Date parseDateString(String date) {
+	private static Date parseDateString(String date) {
 		//in order to parse the date we try using the US locale before we 
 		//fall back to the default locale.
 		List<SimpleDateFormat> sdfList = new ArrayList<>(2);
@@ -312,7 +312,7 @@ public class OutlookMessage {
 					break;
 				}
 			} catch (ParseException e) {
-				LOGGER.trace("Unexpected date format for date {}", date);
+				LOGGER.trace("Unexpected date format for date {}", date, e);
 			}
 		}
 		return d;
@@ -324,7 +324,7 @@ public class OutlookMessage {
 	 * @param value Data to be decompressed.
 	 * @return A byte array representing the decompressed data.
 	 */
-	protected byte[] decompressRtfBytes(byte[] value) {
+	private byte[] decompressRtfBytes(byte[] value) {
 		byte[] decompressed = null;
 		if (value != null) {
 			try {
@@ -385,7 +385,7 @@ public class OutlookMessage {
 	 * @param name The name part of the address.
 	 * @return A combination of the name and address.
 	 */
-	public String createMailString(String mail, String name) {
+	private String createMailString(String mail, String name) {
 		if ((mail == null) && (name == null)) {
 			return null;
 		}
@@ -404,6 +404,7 @@ public class OutlookMessage {
 	/**
 	 * Bean getter for {@link #outlookAttachments}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public List<OutlookAttachment> getOutlookAttachments() {
 		return outlookAttachments;
 	}
@@ -425,7 +426,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #fromEmail}. Uses force if the email contains a '@' symbol ({@link #setFromEmail(String, boolean)}).
 	 */
-	public void setFromEmail(String fromEmail) {
+	private void setFromEmail(String fromEmail) {
 		if (fromEmail != null && fromEmail.contains("@")) {
 			setFromEmail(fromEmail, true);
 		} else {
@@ -437,7 +438,7 @@ public class OutlookMessage {
 	 * @param fromEmail the fromEmail to set
 	 * @param force     forces overwriting of the field if already set
 	 */
-	public void setFromEmail(String fromEmail, boolean force) {
+	private void setFromEmail(String fromEmail, boolean force) {
 		if ((force || this.fromEmail == null) && fromEmail != null && fromEmail.contains("@")) {
 			this.fromEmail = fromEmail;
 		}
@@ -453,7 +454,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #fromName}.
 	 */
-	public void setFromName(String fromName) {
+	private void setFromName(String fromName) {
 		if (fromName != null) {
 			this.fromName = fromName;
 		}
@@ -469,7 +470,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #displayTo}.
 	 */
-	public void setDisplayTo(String displayTo) {
+	private void setDisplayTo(String displayTo) {
 		if (displayTo != null) {
 			this.displayTo = displayTo;
 		}
@@ -485,7 +486,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #displayCc}.
 	 */
-	public void setDisplayCc(String displayCc) {
+	private void setDisplayCc(String displayCc) {
 		if (displayCc != null) {
 			this.displayCc = displayCc;
 		}
@@ -501,7 +502,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #displayBcc}.
 	 */
-	public void setDisplayBcc(String displayBcc) {
+	private void setDisplayBcc(String displayBcc) {
 		if (displayBcc != null) {
 			this.displayBcc = displayBcc;
 		}
@@ -517,7 +518,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #messageClass}.
 	 */
-	public void setMessageClass(String messageClass) {
+	private void setMessageClass(String messageClass) {
 		if (messageClass != null) {
 			this.messageClass = messageClass;
 		}
@@ -533,7 +534,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #messageId}.
 	 */
-	public void setMessageId(String messageId) {
+	private void setMessageId(String messageId) {
 		if (messageId != null) {
 			this.messageId = messageId;
 		}
@@ -549,7 +550,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #subject}.
 	 */
-	public void setSubject(String subject) {
+	private void setSubject(String subject) {
 		if (subject != null) {
 			this.subject = subject;
 		}
@@ -565,7 +566,7 @@ public class OutlookMessage {
 	/**
 	 * Delegates to {@link #setToEmail(String, boolean)} with {@code force = false}.
 	 */
-	public void setToEmail(String toEmail) {
+	private void setToEmail(String toEmail) {
 		setToEmail(toEmail, false);
 	}
 
@@ -573,7 +574,7 @@ public class OutlookMessage {
 	 * @param toEmail the address to set
 	 * @param force   forces overwriting of the field if already set
 	 */
-	public void setToEmail(String toEmail, boolean force) {
+	private void setToEmail(String toEmail, boolean force) {
 		if ((force || this.toEmail == null) && toEmail != null && toEmail.contains("@")) {
 			this.toEmail = toEmail;
 		}
@@ -589,7 +590,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #toName}.
 	 */
-	public void setToName(String toName) {
+	private void setToName(String toName) {
 		if (toName != null) {
 			this.toName = toName.trim();
 		}
@@ -650,6 +651,7 @@ public class OutlookMessage {
 	/**
 	 * Bean getter for {@link #bodyText}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getBodyText() {
 		return bodyText;
 	}
@@ -657,7 +659,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #bodyText}.
 	 */
-	public void setBodyText(String bodyText) {
+	private void setBodyText(String bodyText) {
 		if (this.bodyText == null && bodyText != null) {
 			this.bodyText = bodyText;
 		}
@@ -666,6 +668,7 @@ public class OutlookMessage {
 	/**
 	 * Bean getter for {@link #bodyRTF}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getBodyRTF() {
 		return bodyRTF;
 	}
@@ -673,7 +676,7 @@ public class OutlookMessage {
 	/**
 	 * @param bodyRTF the bodyRTF to set
 	 */
-	public void setBodyRTF(Object bodyRTF) {
+	private void setBodyRTF(Object bodyRTF) {
 		// we simply try to decompress the RTF data if it's not compressed, the utils class is able to detect this anyway
 		if (this.bodyRTF == null && bodyRTF != null) {
 			if (bodyRTF instanceof byte[]) {
@@ -695,6 +698,7 @@ public class OutlookMessage {
 	/**
 	 * Bean getter for {@link #bodyHTML}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getBodyHTML() {
 		return bodyHTML;
 	}
@@ -702,6 +706,7 @@ public class OutlookMessage {
 	/**
 	 * Bean getter for {@link #convertedBodyHTML}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getConvertedBodyHTML() {
 		return convertedBodyHTML;
 	}
@@ -709,7 +714,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #convertedBodyHTML}.
 	 */
-	public void setConvertedBodyHTML(String convertedBodyHTML) {
+	private void setConvertedBodyHTML(String convertedBodyHTML) {
 		this.convertedBodyHTML = convertedBodyHTML;
 	}
 
@@ -717,7 +722,7 @@ public class OutlookMessage {
 	 * @param bodyToSet the bodyHTML to set
 	 *
 	 */
-	protected void setBodyHTML(String bodyToSet) {
+	private void setBodyHTML(String bodyToSet) {
 		if (bodyToSet != null) {
 			if (!(this.bodyHTML != null && this.bodyHTML.length() > bodyToSet.length())) {
 				//only if the new body to be set is bigger than the current one
@@ -737,7 +742,7 @@ public class OutlookMessage {
 	/**
 	 * @param headers the headers to set
 	 */
-	public void setHeaders(String headers) {
+	private void setHeaders(String headers) {
 		if (headers != null) {
 			this.headers = headers;
 			// try to parse the date from the headers
@@ -758,7 +763,7 @@ public class OutlookMessage {
 	 * @param headers The headers in a single String object
 	 * @return The sender's email or null if nothing was found.
 	 */
-	protected static String getFromEmailFromHeaders(String headers) {
+	private static String getFromEmailFromHeaders(String headers) {
 		if (headers != null) {
 			String[] headerLines = headers.split("\n");
 			for (String headerLine : headerLines) {
@@ -781,7 +786,7 @@ public class OutlookMessage {
 	 * @param headers The headers in a single String object
 	 * @return The Date object or null, if no valid Date: has been found
 	 */
-	public static Date getDateFromHeaders(String headers) {
+	private static Date getDateFromHeaders(String headers) {
 		if (headers != null) {
 			String[] headerLines = headers.split("\n");
 			for (String headerLine : headerLines) {
@@ -814,7 +819,7 @@ public class OutlookMessage {
 	/**
 	 * Bean setter for {@link #date}.
 	 */
-	public void setDate(Date date) {
+	private void setDate(Date date) {
 		this.date = date;
 	}
 
@@ -825,7 +830,7 @@ public class OutlookMessage {
 		return clientSubmitTime;
 	}
 
-	public void setClientSubmitTime(String value) {
+	private void setClientSubmitTime(String value) {
 		if (value != null) {
 			Date d = OutlookMessage.parseDateString(value);
 			if (d != null) {
@@ -841,7 +846,7 @@ public class OutlookMessage {
 		return creationDate;
 	}
 
-	public void setCreationDate(String value) {
+	private void setCreationDate(String value) {
 		if (value != null) {
 			Date d = OutlookMessage.parseDateString(value);
 			if (d != null) {
@@ -858,7 +863,7 @@ public class OutlookMessage {
 		return lastModificationDate;
 	}
 
-	public void setLastModificationDate(String value) {
+	private void setLastModificationDate(String value) {
 		if (value != null) {
 			Date d = OutlookMessage.parseDateString(value);
 			if (d != null) {
@@ -920,7 +925,7 @@ public class OutlookMessage {
 	 * @param name The hex notation of the property to be retrieved.
 	 * @return The value for the requested property.
 	 */
-	public Object getPropertyFromHex(String name) {
+	private Object getPropertyFromHex(String name) {
 		try {
 			return getPropertyValue(Integer.parseInt(name, 16));
 		} catch (NumberFormatException e) {
@@ -946,7 +951,7 @@ public class OutlookMessage {
 	 * @param code The key for the property to be retrieved.
 	 * @return The value of the specified property.
 	 */
-	public Object getPropertyValue(Integer code) {
+	private Object getPropertyValue(Integer code) {
 		return this.properties.get(code);
 	}
 
@@ -973,13 +978,14 @@ public class OutlookMessage {
 	 * @param propCode The value to be formatted.
 	 * @return A hex formatted number.
 	 */
-	public String convertToHex(Integer propCode) {
+	private String convertToHex(Integer propCode) {
 		return String.format("%04x", propCode);
 	}
 
 	/**
 	 * Bean getter for {@link #replyToEmail}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getReplyToEmail() {
 		return replyToEmail;
 	}
@@ -994,6 +1000,7 @@ public class OutlookMessage {
 	/**
 	 * Bean getter for {@link #replyToName}.
 	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public String getReplyToName() {
 		return replyToName;
 	}

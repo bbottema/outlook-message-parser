@@ -13,7 +13,7 @@ import static java.util.regex.Pattern.compile;
  */
 public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(SimpleRTF2HTMLConverter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleRTF2HTMLConverter.class);
 
 	private static final String[] HTML_START_TAGS = new String[] { "<html ", "<Html ", "<HTML " };
 	private static final String[] HTML_END_TAGS = new String[] { "</html>", "</Html>", "</HTML>" };

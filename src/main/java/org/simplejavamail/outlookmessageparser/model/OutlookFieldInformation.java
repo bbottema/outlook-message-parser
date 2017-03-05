@@ -21,17 +21,17 @@ public class OutlookFieldInformation {
 	/**
 	 * The class of the {@link DocumentEntry}.
 	 */
-	protected final String clazz;
+	private final String clazz;
 
 	/**
 	 * The type of the {@link DocumentEntry}.
 	 */
-	protected final String type;
+	private final String type;
 
 	/**
 	 * The mapi type of the {@link DocumentEntry}.
 	 */
-	protected final int mapiType;
+	private final int mapiType;
 
 	/**
 	 * Delegates to {@link #OutlookFieldInformation(String, String, int)} with values {@value #UNKNOWN}, {@value #UNKNOWN} and {@value #UNKNOWN_MAPITYPE}.
