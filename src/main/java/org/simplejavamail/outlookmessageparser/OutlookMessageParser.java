@@ -98,11 +98,9 @@ public class OutlookMessageParser {
 			throws IOException {
 		// the .msg file, like a file system, contains directories and documents within this directories
 		// we now gain access to the root node and recursively go through the complete 'filesystem'.
-		OutlookMessage msg;
+		final OutlookMessage msg = new OutlookMessage(rtf2htmlConverter);
 		try {
-			DirectoryEntry dir = new POIFSFileSystem(msgFileStream).getRoot();
-			msg = new OutlookMessage(rtf2htmlConverter);
-			checkDirectoryEntry(dir, msg);
+			checkDirectoryEntry(new POIFSFileSystem(msgFileStream).getRoot(), msg);
 		} finally {
 			msgFileStream.close();
 		}
@@ -137,9 +135,7 @@ public class OutlookMessageParser {
 	}
 
 	/**
-	 * Recursively parses the complete .msg file with the
-	 * help of the POI library. The parsed information is
-	 * put into the {@link OutlookMessage} object.
+	 * Recursively parses the complete .msg file with the help of the POI library. The parsed information is put into the {@link OutlookMessage} object.
 	 *
 	 * @param dir The current node in the .msg file.
 	 * @param msg The resulting {@link OutlookMessage} object.
@@ -151,27 +147,23 @@ public class OutlookMessageParser {
 		for (Iterator<?> iter = dir.getEntries(); iter.hasNext(); ) {
 			Entry entry = (Entry) iter.next();
 
-			// check whether the entry is either a directory entry
-			// or a document entry
+			// check whether the entry is either a directory entry or a document entry
 
 			if (entry.isDirectoryEntry()) {
 				DirectoryEntry de = (DirectoryEntry) entry;
-				// outlookAttachments have a special name and
-				// have to be handled separately at this point
+				// outlookAttachments have a special name and have to be handled separately at this point
 				if (de.getName().startsWith("__attach_version1.0")) {
 					parseAttachment(de, msg);
 				} else if (de.getName().startsWith("__recip_version1.0")) {
 					// a recipient entry has been found (which is also a directory entry itself)
 					checkRecipientDirectoryEntry(de, msg);
 				} else {
-					// a directory entry has been found. this
-					// node will be recursively checked
+					// a directory entry has been found. this node will be recursively checked
 					checkDirectoryEntry(de, msg);
 				}
 			} else //noinspection StatementWithEmptyBody
 				if (entry.isDocumentEntry()) {
-					// a document entry contains information about
-					// the mail (e.g, from, to, subject, ...)
+					// a document entry contains information about the mail (e.g, from, to, subject, ...)
 					DocumentEntry de = (DocumentEntry) entry;
 					checkDirectoryDocumentEntry(de, msg);
 				} else {
@@ -590,23 +582,16 @@ public class OutlookMessageParser {
 			Entry entry = (Entry) iter.next();
 			if (entry.isDocumentEntry()) {
 
-				// the document entry may contain information
-				// about the attachment
+				// the document entry may contain information about the attachment
 				DocumentEntry de = (DocumentEntry) entry;
 				OutlookMessageProperty msgProp = getMessagePropertyFromDocumentEntry(de);
 
-				// we provide the class and data of the document
-				// entry to the attachment. the attachment implementation
-				// has to know the semantics of the field names
+				// we provide the class and data of the document entry to the attachment.
+				// The attachment implementation has to know the semantics of the field names
 				attachment.setProperty(msgProp);
-
 			} else {
-
-				// a directory within the attachment directory
-				// entry  means that a .msg file is attached
-				// at this point. we recursively parse
-				// this .msg file and add it as a OutlookMsgAttachment
-				// object to the current OutlookMessage object.
+				// a directory within the attachment directory entry  means that a .msg file is attached at this point.
+				// we recursively parse this .msg file and add it as a OutlookMsgAttachment object to the current OutlookMessage object.
 				OutlookMessage attachmentMsg = new OutlookMessage();
 				OutlookMsgAttachment msgAttachment = new OutlookMsgAttachment(attachmentMsg);
 				msg.addAttachment(msgAttachment);
@@ -614,12 +599,10 @@ public class OutlookMessageParser {
 			}
 		}
 
-		// only if there was really an attachment, we
-		// add this object to the OutlookMessage object
+		// only if there was really an attachment, we add this object to the OutlookMessage object
 		if (attachment.getSize() > -1) {
 			msg.addAttachment(attachment);
 		}
-
 	}
 
 	/**
