@@ -34,29 +34,31 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	/**
 	 * @return The text with removed newlines as they are only part of the RTF document and should not be inside the HTML.
 	 */
-	private String replaceLineBreaks(String text) {
-		text = text.replaceAll("( <br/> ( <br/> )+)", " <br/> ");
-		text = text.replaceAll("[\\n\\r]+", "");
-		return text;
+	private String replaceLineBreaks(final String text) {
+		String replacedText = text;
+		replacedText = replacedText.replaceAll("( <br/> ( <br/> )+)", " <br/> ");
+		replacedText = replacedText.replaceAll("[\\n\\r]+", "");
+		return replacedText;
 	}
 
 	/**
 	 * @return The text with replaced special characters that denote hex codes for strings using Windows CP1252 encoding.
 	 */
-	private String replaceHexSequences(String text) {
+	private String replaceHexSequences(final String text) {
 		Matcher m = compile("\\\\'(..)").matcher(text);
 
+		String replacedText = text;
 		while (m.find()) {
 			for (int g = 1; g <= m.groupCount(); g++) {
 				String hex = m.group(g);
 				String hexToString = hexToString(hex);
 				if (hexToString != null) {
-					text = text.replaceAll("\\\\'" + hex, hexToString);
+					replacedText = replacedText.replaceAll("\\\\'" + hex, hexToString);
 				}
 			}
 		}
 
-		return text;
+		return replacedText;
 	}
 
 	/**
@@ -94,28 +96,29 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	/**
 	 * @return The text with special sequences replaced by equivalent representations.
 	 */
-	private String replaceSpecialSequences(String text) {
+	private String replaceSpecialSequences(final String text) {
+		String replacedText = text;
 		//filtering whatever color control sequence, e.g. {\sp{\sn fillColor}{\sv 14935011}}{\sp{\sn fFilled}{\sv 1}}
-		text = text.replaceAll("\\{\\\\S+ [^\\s\\\\}]*\\}", "");
+		replacedText = replacedText.replaceAll("\\{\\\\S+ [^\\s\\\\}]*\\}", "");
 		//filtering hyperlink sequences like {HYPERLINK "http://xyz.com/print.jpg"}
-		text = text.replaceAll("\\{HYPERLINK[^\\}]*\\}", "");
-		//filtering plain text sequences like {\pntext *\tab}
-		text = text.replaceAll("\\{\\\\pntext[^\\}]*\\}", "");
+		replacedText = replacedText.replaceAll("\\{HYPERLINK[^\\}]*\\}", "");
+		//filtering plain replacedText sequences like {\pntext *\tab}
+		replacedText = replacedText.replaceAll("\\{\\\\pntext[^\\}]*\\}", "");
 		//filtering rtf style headers like {\f0\fswiss\fcharset0 Arial;}
-		text = text.replaceAll("\\{\\\\f\\d+[^\\}]*\\}", "");
+		replacedText = replacedText.replaceAll("\\{\\\\f\\d+[^\\}]*\\}", "");
 		//filtering embedded tags like {\*\htmltag64 <tr>}                                          }
-		text = text.replaceAll("\\{\\\\\\*\\\\htmltag\\d+[^\\}<]+(<.+>)\\}", "$1");
+		replacedText = replacedText.replaceAll("\\{\\\\\\*\\\\htmltag\\d+[^\\}<]+(<.+>)\\}", "$1");
 		//filtering embedded tags like {\*\htmltag84 &#43;}
-		text = text.replaceAll("\\{\\\\\\*\\\\htmltag\\d+[^\\}<]+\\}", "");
+		replacedText = replacedText.replaceAll("\\{\\\\\\*\\\\htmltag\\d+[^\\}<]+\\}", "");
 		//filtering curly braces that are NOT escaped with backslash },
 		//thus marking the end of an RTF sequence
-		text = text.replaceAll("([^\\\\])" + "\\}+", "$1");
-		text = text.replaceAll("([^\\\\])" + "\\{+", "$1");
+		replacedText = replacedText.replaceAll("([^\\\\])" + "\\}+", "$1");
+		replacedText = replacedText.replaceAll("([^\\\\])" + "\\{+", "$1");
 		//filtering curly braces that are escaped with backslash \},
 		//thus representing an actual brace
-		text = text.replaceAll("\\\\\\}", "}");
-		text = text.replaceAll("\\\\\\{", "{");
-		return text;
+		replacedText = replacedText.replaceAll("\\\\\\}", "}");
+		replacedText = replacedText.replaceAll("\\\\\\{", "{");
+		return replacedText;
 	}
 
 	/**
@@ -140,15 +143,16 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	/**
 	 * @return The text with all control sequences replaced, such as line breaks with plain text breaks or equivalent representations.
 	 */
-	private String replaceRemainingControlSequences(String text) {
+	private String replaceRemainingControlSequences(final String text) {
+		String replacedText = text;
 		//filtering \par sequences
-		text = text.replaceAll("\\\\pard*", "\n");
+		replacedText = replacedText.replaceAll("\\\\pard*", "\n");
 		//filtering \tab sequences
-		text = text.replaceAll("\\\\tab", "\t");
+		replacedText = replacedText.replaceAll("\\\\tab", "\t");
 		//filtering \*\<rtfsequence> like e.g.: \*\fldinst
-		text = text.replaceAll("\\\\\\*\\\\\\S+", "");
+		replacedText = replacedText.replaceAll("\\\\\\*\\\\\\S+", "");
 		//filtering \<rtfsequence> like e.g.: \htmlrtf
-		text = text.replaceAll("\\\\\\S+", "");
-		return text;
+		replacedText = replacedText.replaceAll("\\\\\\S+", "");
+		return replacedText;
 	}
 }
