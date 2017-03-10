@@ -5,6 +5,8 @@
   Outlook Message Parser
   Copyright 2017 Benny Bottema
   https://github.com/bbottema/outlook-message-parser
+
+  Originally based on msgparser, https://github.com/bbottema/msgparser
   
   This product uses no commercial products.
   

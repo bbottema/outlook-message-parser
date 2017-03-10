@@ -1,4 +1,5 @@
-1.1.16 First Maven deployment, continueing version number from 1.1.15 of msgparser (https://github.com/bbottema/msgparser)
+1.1.16 First Maven deployment, continuing version number from 1.1.15 of msgparser (https://github.com/bbottema/msgparser)
 
 1.16:
  - Added support for replyTo name and address
+ - cleaned up code (1st wave)
