@@ -766,15 +766,13 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * @param bodyToSet the bodyHTML to set
+	 * Sets {@link #bodyHTML} if empty or if given bodySet is longer
 	 */
 	private void setBodyHTML(String bodyToSet) {
-		if (bodyToSet != null) {
-			if (!(bodyHTML != null && bodyHTML.length() > bodyToSet.length())) {
-				//only if the new body to be set is bigger than the current one
-				//thus the short one is most probably wrong
-				bodyHTML = bodyToSet;
-			}
+		if (bodyToSet != null && (bodyHTML == null || bodyHTML.length() <= bodyToSet.length())) {
+			//only if the new body to be set is bigger than the current one
+			//thus the short one is most probably wrong
+			bodyHTML = bodyToSet;
 		}
 	}
 

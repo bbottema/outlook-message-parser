@@ -256,8 +256,8 @@ public class OutlookMessageParser {
 	}
 
 	/**
-	 * Parses a document entry which has been detected to be a stream of document entries itself.
-	 * This stream is identified by the key "__properties_version1.0".
+	 * Parses a document entry which has been detected to be a stream of document entries itself. This stream is identified by the key
+	 * "__properties_version1.0".
 	 *
 	 * @param de The stream to be parsed.
 	 * @return A list of document entries for further processing.
@@ -290,7 +290,7 @@ public class OutlookMessageParser {
 					LOGGER.error("Unexpected type: {}", type, e);
 				}
 
-				if (!clazz.equals("0000")) {
+				if (!clazz.equals("0000")) { // what is this?
 					//reading and ignoring flags
 					bytes = new byte[flagsLength];
 					//noinspection ResultOfMethodCallIgnored
