@@ -123,14 +123,13 @@ public class OutlookMessageParser {
 				// found both name and email part
 				msg.setReplyToName(m.group("nameOrAddress"));
 				msg.setReplyToEmail(m.group("address"));
-			} else //noinspection StatementWithEmptyBody
-				if (m.group("nameOrAddress") != null) {
-					// assume we found an email
-					msg.setReplyToName(m.group("nameOrAddress"));
-					msg.setReplyToEmail(m.group("nameOrAddress"));
-				} else {
-					// unknown results, ignore Reply-To data
-				}
+			} else if (m.group("nameOrAddress") != null) {
+				// assume we found an email
+				msg.setReplyToName(m.group("nameOrAddress"));
+				msg.setReplyToEmail(m.group("nameOrAddress"));
+			} /* else {
+				// unknown results, ignore Reply-To data
+			} */
 		}
 	}
 
@@ -161,14 +160,13 @@ public class OutlookMessageParser {
 					// a directory entry has been found. this node will be recursively checked
 					checkDirectoryEntry(de, msg);
 				}
-			} else //noinspection StatementWithEmptyBody
-				if (entry.isDocumentEntry()) {
-					// a document entry contains information about the mail (e.g, from, to, subject, ...)
-					DocumentEntry de = (DocumentEntry) entry;
-					checkDirectoryDocumentEntry(de, msg);
-				} else {
-					// any other type is not supported
-				}
+			} else if (entry.isDocumentEntry()) {
+				// a document entry contains information about the mail (e.g, from, to, subject, ...)
+				DocumentEntry de = (DocumentEntry) entry;
+				checkDirectoryDocumentEntry(de, msg);
+			} /* else {
+				// any other type is not supported
+			} */
 		}
 	}
 
@@ -191,18 +189,19 @@ public class OutlookMessageParser {
 
 			// check whether the entry is either a directory entry
 			// or a document entry, while we are just interested in document entries on this level			
-			//noinspection StatementWithEmptyBody
-			if (entry.isDirectoryEntry()) {
-				// not expected within a recipient entry
-			} else //noinspection StatementWithEmptyBody
+			if (!entry.isDirectoryEntry()) {
 				if (entry.isDocumentEntry()) {
 					// a document entry contains information about
 					// the mail (e.g, from, to, subject, ...)
 					DocumentEntry de = (DocumentEntry) entry;
 					checkRecipientDocumentEntry(de, recipient);
-				} else {
+				} /*else {
 					// any other type is not supported
-				}
+				}*/
+			} /* else {
+				// not expected within a recipient entry
+			} */
+
 		}
 
 		//after all properties are set -> add recipient to msg object
