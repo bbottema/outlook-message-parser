@@ -49,14 +49,10 @@ public class OutlookRecipient {
 			LOGGER.error("Unexpected mapi class: {}", name, e);
 		}
 
-		switch (mapiClass) {
-			case 0x3003: //EMAIL ADDRESS
-			case 0x39fe:
-				setAddress((String) value);
-				break;
-			case 0x3001: //DISPLAY NAME
-				setName((String) value);
-				break;
+		if (mapiClass == 0x3003 || mapiClass == 0x39fe) {
+			setAddress((String) value);
+		} else if (mapiClass == 0x3001) {
+			setName((String) value);
 		}
 
 		// save all properties (incl. those identified above)
