@@ -180,7 +180,6 @@ public class OutlookMessageParser {
 	 */
 	private void checkRecipientDirectoryEntry(DirectoryEntry dir, OutlookMessage msg)
 			throws IOException {
-
 		OutlookRecipient recipient = new OutlookRecipient();
 
 		// we iterate through all entries in the current directory
@@ -189,19 +188,11 @@ public class OutlookMessageParser {
 
 			// check whether the entry is either a directory entry
 			// or a document entry, while we are just interested in document entries on this level			
-			if (!entry.isDirectoryEntry()) {
-				if (entry.isDocumentEntry()) {
-					// a document entry contains information about
-					// the mail (e.g, from, to, subject, ...)
-					DocumentEntry de = (DocumentEntry) entry;
-					checkRecipientDocumentEntry(de, recipient);
-				} /*else {
-					// any other type is not supported
-				}*/
-			} /* else {
-				// not expected within a recipient entry
-			} */
-
+			if (!entry.isDirectoryEntry() && entry.isDocumentEntry()) {
+				// a document entry contains information about the mail (e.g, from, to, subject, ...)
+				DocumentEntry de = (DocumentEntry) entry;
+				checkRecipientDocumentEntry(de, recipient);
+			}
 		}
 
 		//after all properties are set -> add recipient to msg object

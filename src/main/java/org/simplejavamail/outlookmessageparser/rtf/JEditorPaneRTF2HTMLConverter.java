@@ -24,7 +24,7 @@ public class JEditorPaneRTF2HTMLConverter implements RTF2HTMLConverter {
 			editorKitForContentType.write(writer, p.getDocument(), 0, p.getDocument().getLength());
 			return writer.toString();
 		} catch (IOException | BadLocationException e) {
-			throw new RuntimeException("Could not convert RTF to HTML.", e);
+			throw new RTF2HTMLException("Could not convert RTF to HTML.", e);
 		}
 	}
 }

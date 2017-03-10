@@ -56,6 +56,8 @@ public class OutlookFileAttachment implements OutlookAttachment {
 				case "3703":
 					setExtension((String) value);
 					break;
+				default:
+					// don't do anything, currently I don't even know if this is a functionally legal state
 			}
 		}
 	}
