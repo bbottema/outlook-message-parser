@@ -190,8 +190,7 @@ public class OutlookMessageParser {
 			// or a document entry, while we are just interested in document entries on this level			
 			if (!entry.isDirectoryEntry() && entry.isDocumentEntry()) {
 				// a document entry contains information about the mail (e.g, from, to, subject, ...)
-				DocumentEntry de = (DocumentEntry) entry;
-				checkRecipientDocumentEntry(de, recipient);
+				checkRecipientDocumentEntry((DocumentEntry) entry, recipient);
 			}
 		}
 
