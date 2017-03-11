@@ -418,7 +418,7 @@ public class OutlookMessage {
 		if (bodyText != null) {
 			sb.append(bodyText);
 		}
-		if (outlookAttachments.size() > 0) {
+		if (!outlookAttachments.isEmpty()) {
 			sb.append("\n");
 			sb.append("").append(outlookAttachments.size()).append(" outlookAttachments.\n");
 			for (final OutlookAttachment att : outlookAttachments) {
