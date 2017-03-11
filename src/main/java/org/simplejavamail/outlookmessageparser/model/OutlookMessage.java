@@ -167,7 +167,7 @@ public class OutlookMessage {
 		final String name = msgProp.getClazz();
 		final Object value = msgProp.getData();
 
-		if ((name == null) || (value == null)) {
+		if (name == null || value == null) {
 			return;
 		}
 
@@ -269,7 +269,7 @@ public class OutlookMessage {
 			return null;
 		}
 		if (value instanceof String) {
-			return ((String) value);
+			return (String) value;
 		} else if (value instanceof byte[]) {
 			try {
 				return new String((byte[]) value, "CP1252");
@@ -436,7 +436,7 @@ public class OutlookMessage {
 	 * @return A combination of the name and address.
 	 */
 	private String createMailString(final String mail, final String name) {
-		if ((mail == null) && (name == null)) {
+		if (mail == null && name == null) {
 			return null;
 		}
 		if (name == null) {

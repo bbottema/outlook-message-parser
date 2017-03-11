@@ -262,7 +262,7 @@ public class OutlookMessageParser {
 			final int headerLength = 4;
 			final int flagsLength = 4;
 			byte[] bytes = new byte[headerLength];
-			while ((dstream.read(bytes)) == headerLength) {
+			while (dstream.read(bytes) == headerLength) {
 				final StringBuilder header = new StringBuilder();
 				for (int i = bytes.length - 1; i >= 0; i--) {
 					header.append(bytesToHex(new byte[] { bytes[i] }));

@@ -35,7 +35,7 @@ public class OutlookRecipient {
 		String name = msgProp.getClazz();
 		final Object value = msgProp.getData();
 
-		if ((name == null) || (value == null)) {
+		if (name == null || value == null) {
 			return;
 		}
 		name = name.intern();
@@ -82,7 +82,7 @@ public class OutlookRecipient {
 		if (sb.length() > 0) {
 			sb.append(" ");
 		}
-		if ((address != null) && (address.length() > 0)) {
+		if (address != null && address.length() > 0) {
 			sb.append("<").append(address).append(">");
 		}
 		return sb.toString();
