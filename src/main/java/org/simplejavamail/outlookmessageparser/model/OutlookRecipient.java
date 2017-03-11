@@ -33,9 +33,9 @@ public class OutlookRecipient {
 	 *
 	 * @param msgProp The property to be set.
 	 */
-	public void setProperty(OutlookMessageProperty msgProp) {
+	public void setProperty(final OutlookMessageProperty msgProp) {
 		String name = msgProp.getClazz();
-		Object value = msgProp.getData();
+		final Object value = msgProp.getData();
 
 		if ((name == null) || (value == null)) {
 			return;
@@ -45,7 +45,7 @@ public class OutlookRecipient {
 		int mapiClass = -1;
 		try {
 			mapiClass = parseInt(name, 16);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			LOGGER.error("Unexpected mapi class: {}", name, e);
 		}
 
@@ -60,12 +60,12 @@ public class OutlookRecipient {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		OutlookRecipient that = (OutlookRecipient) o;
+		final OutlookRecipient that = (OutlookRecipient) o;
 		return Objects.equals(address, that.address) &&
 				Objects.equals(name, that.name);
 	}
@@ -77,7 +77,7 @@ public class OutlookRecipient {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		if (sb.length() > 0) {
 			sb.append(" ");
@@ -106,10 +106,10 @@ public class OutlookRecipient {
 	 * @return All available keys properties have been found for.
 	 */
 	private Set<String> getPropertiesAsHex() {
-		Set<Integer> keySet = properties.keySet();
-		Set<String> result = new HashSet<>();
-		for (Integer k : keySet) {
-			String s = String.format("%04x", k);
+		final Set<Integer> keySet = properties.keySet();
+		final Set<String> result = new HashSet<>();
+		for (final Integer k : keySet) {
+			final String s = String.format("%04x", k);
 			result.add(s);
 		}
 
@@ -124,7 +124,7 @@ public class OutlookRecipient {
 	 * @return The value for the requested property.
 	 */
 	@Deprecated
-	public Object getProperty(String name) {
+	public Object getProperty(final String name) {
 		return getPropertyFromHex(name);
 	}
 
@@ -135,11 +135,11 @@ public class OutlookRecipient {
 	 *
 	 * @return The value for the requested property for the given name.
 	 */
-	private Object getPropertyFromHex(String name) {
+	private Object getPropertyFromHex(final String name) {
 		Integer i = -1;
 		try {
 			i = parseInt(name, 16);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			LOGGER.error("Could not parse integer {}", name, e);
 		}
 		return getPropertyValue(i);
@@ -157,7 +157,7 @@ public class OutlookRecipient {
 	 *
 	 * @return The property value of the specified code.
 	 */
-	private Object getPropertyValue(Integer code) {
+	private Object getPropertyValue(final Integer code) {
 		return properties.get(code);
 	}
 
@@ -171,7 +171,7 @@ public class OutlookRecipient {
 	/**
 	 * Bean setter for {@link #address}.
 	 */
-	public void setAddress(String address) {
+	public void setAddress(final String address) {
 		if (this.address == null && address != null && address.contains("@")) {
 			this.address = address;
 		}
@@ -187,7 +187,7 @@ public class OutlookRecipient {
 	/**
 	 * Bean setter for {@link #name}.
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		if (name != null) {
 			this.name = name;
 		}

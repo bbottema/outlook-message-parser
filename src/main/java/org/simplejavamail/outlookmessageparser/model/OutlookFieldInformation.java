@@ -46,14 +46,14 @@ public class OutlookFieldInformation {
 	 * @deprecated
 	 */
 	@Deprecated
-	public OutlookFieldInformation(String clazz, String type) {
+	public OutlookFieldInformation(final String clazz, final String type) {
 		this(clazz, type, UNKNOWN_MAPITYPE);
 	}
 
 	/**
 	 * Delegates to {@link #OutlookFieldInformation(String, String, int)} with given class, {@value #UNKNOWN} and given mapiType.
 	 */
-	public OutlookFieldInformation(String clazz, int mapiType) {
+	public OutlookFieldInformation(final String clazz, final int mapiType) {
 		this(clazz, UNKNOWN, mapiType);
 	}
 
@@ -62,7 +62,7 @@ public class OutlookFieldInformation {
 	 * @param type     The type of the {@link DocumentEntry} (see {@link MAPIProperty}).
 	 * @param mapiType The mapiType of the {@link DocumentEntry} (see {@link MAPIProperty}).
 	 */
-	private OutlookFieldInformation(String clazz, String type, int mapiType) {
+	private OutlookFieldInformation(final String clazz, final String type, final int mapiType) {
 		this.clazz = clazz;
 		this.type = type;
 		this.mapiType = mapiType;

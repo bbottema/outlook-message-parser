@@ -13,14 +13,14 @@ import java.io.Writer;
  */
 public class JEditorPaneRTF2HTMLConverter implements RTF2HTMLConverter {
 
-	public String rtf2html(String rtf) {
-		JEditorPane p = new JEditorPane();
+	public String rtf2html(final String rtf) {
+		final JEditorPane p = new JEditorPane();
 		p.setContentType("text/rtf");
-		EditorKit kitRtf = p.getEditorKitForContentType("text/rtf");
+		final EditorKit kitRtf = p.getEditorKitForContentType("text/rtf");
 		try {
 			kitRtf.read(new StringReader(rtf), p.getDocument(), 0);
-			Writer writer = new StringWriter();
-			EditorKit editorKitForContentType = p.getEditorKitForContentType("text/html");
+			final Writer writer = new StringWriter();
+			final EditorKit editorKitForContentType = p.getEditorKitForContentType("text/html");
 			editorKitForContentType.write(writer, p.getDocument(), 0, p.getDocument().getLength());
 			return writer.toString();
 		} catch (IOException | BadLocationException e) {

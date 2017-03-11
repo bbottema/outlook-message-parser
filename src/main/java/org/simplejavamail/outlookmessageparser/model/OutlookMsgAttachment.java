@@ -11,7 +11,7 @@ public class OutlookMsgAttachment implements OutlookAttachment {
 	 */
 	private final OutlookMessage outlookMessage;
 
-	public OutlookMsgAttachment(OutlookMessage outlookMessage) {
+	public OutlookMsgAttachment(final OutlookMessage outlookMessage) {
 		this.outlookMessage = outlookMessage;
 	}
 

@@ -12,7 +12,7 @@ public class OutlookMessageProperty {
 	private final Object data;
 	private final int size;
 
-	public OutlookMessageProperty(String clazz, Object data, int size) {
+	public OutlookMessageProperty(final String clazz, final Object data, final int size) {
 		this.clazz = clazz;
 		this.data = data;
 		this.size = size;

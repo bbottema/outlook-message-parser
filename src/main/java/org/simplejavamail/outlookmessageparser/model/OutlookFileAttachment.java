@@ -34,9 +34,9 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Sets the property specified by the name parameter. Unknown names are ignored.
 	 */
-	public void setProperty(OutlookMessageProperty msgProp) {
-		String name = msgProp.getClazz();
-		Object value = msgProp.getData();
+	public void setProperty(final OutlookMessageProperty msgProp) {
+		final String name = msgProp.getClazz();
+		final Object value = msgProp.getData();
 
 		if (name != null && value != null) {
 			switch (name) {
@@ -78,7 +78,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #extension}.
 	 */
-	private void setExtension(String extension) {
+	private void setExtension(final String extension) {
 		this.extension = extension;
 	}
 
@@ -93,7 +93,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #filename}.
 	 */
-	private void setFilename(String filename) {
+	private void setFilename(final String filename) {
 		this.filename = filename;
 	}
 
@@ -107,7 +107,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #longFilename}.
 	 */
-	private void setLongFilename(String longFilename) {
+	private void setLongFilename(final String longFilename) {
 		this.longFilename = longFilename;
 	}
 
@@ -122,7 +122,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #mimeTag}.
 	 */
-	private void setMimeTag(String mimeTag) {
+	private void setMimeTag(final String mimeTag) {
 		this.mimeTag = mimeTag;
 	}
 
@@ -137,7 +137,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #data}.
 	 */
-	private void setData(byte[] data) {
+	private void setData(final byte[] data) {
 		this.data = data;
 	}
 
@@ -151,7 +151,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #size}.
 	 */
-	private void setSize(long size) {
+	private void setSize(final long size) {
 		this.size = size;
 	}
 }

@@ -19,7 +19,7 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	private static final String[] HTML_END_TAGS = { "</html>", "</Html>", "</HTML>" };
 	private static final String WINDOWS_CHARSET = "CP1252";
 
-	public String rtf2html(String rtf) {
+	public String rtf2html(final String rtf) {
 		if (rtf != null) {
 			String plain = fetchHtmlSection(rtf);
 			plain = replaceHexSequences(plain);
@@ -45,13 +45,13 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	 * @return The text with replaced special characters that denote hex codes for strings using Windows CP1252 encoding.
 	 */
 	private String replaceHexSequences(final String text) {
-		Matcher m = compile("\\\\'(..)").matcher(text);
+		final Matcher m = compile("\\\\'(..)").matcher(text);
 
 		String replacedText = text;
 		while (m.find()) {
 			for (int g = 1; g <= m.groupCount(); g++) {
-				String hex = m.group(g);
-				String hexToString = hexToString(hex);
+				final String hex = m.group(g);
+				final String hexToString = hexToString(hex);
 				if (hexToString != null) {
 					replacedText = replacedText.replaceAll("\\\\'" + hex, hexToString);
 				}
@@ -64,7 +64,7 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	/**
 	 * @return The actual HTML block / section only but still with RTF code inside (still needs to be cleaned).
 	 */
-	private String fetchHtmlSection(String text) {
+	private String fetchHtmlSection(final String text) {
 		int htmlStart = -1;
 		int htmlEnd = -1;
 
@@ -124,17 +124,17 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 	/**
 	 * @return The string representing the hex value of a special character.
 	 */
-	private static String hexToString(String hex) {
+	private static String hexToString(final String hex) {
 		final int i;
 		try {
 			i = Integer.parseInt(hex, 16);
-		} catch (NumberFormatException nfe) {
+		} catch (final NumberFormatException nfe) {
 			LOGGER.warn("Could not interpret {} as a number.", hex, nfe);
 			return null;
 		}
 		try {
 			return new String(new byte[] { (byte) i }, WINDOWS_CHARSET);
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			LOGGER.error("Unsupported encoding: {}", WINDOWS_CHARSET, e);
 		}
 		return null;
