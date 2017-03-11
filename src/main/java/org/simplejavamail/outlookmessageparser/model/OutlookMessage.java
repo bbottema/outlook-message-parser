@@ -940,23 +940,6 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * This method provides a convenient way of retrieving properties for all guys that like to stick to hex values. <br>
-	 * Note that this method includes parsing of string values to integers which will be less efficient than using
-	 * {@link #getPropertyValue(Integer)}.
-	 *
-	 * @param name The hex notation of the property to be retrieved.
-	 * @return The value for the requested property.
-	 */
-	private Object getPropertyFromHex(final String name) {
-		try {
-			return getPropertyValue(Integer.parseInt(name, 16));
-		} catch (final NumberFormatException e) {
-			LOGGER.error("Could not parse integer: {}", name, e);
-		}
-		return getPropertyValue(-1);
-	}
-
-	/**
 	 * This method returns a list of all available properties.
 	 *
 	 * @return All available keys properties have been found for.
