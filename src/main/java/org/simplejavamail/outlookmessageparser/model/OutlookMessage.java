@@ -917,18 +917,6 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * This method should no longer be used due to the fact that
-	 * message properties are now stored with their keys being represented
-	 * as integers.
-	 *
-	 * @return All available keys properties have been found for.
-	 */
-	@Deprecated
-	public Set<String> getProperties() {
-		return getPropertiesAsHex();
-	}
-
-	/**
 	 * This method provides a convenient way of retrieving
 	 * property keys for all guys that like to stick to hex values.
 	 * <br>Note that this method includes parsing of string values
@@ -946,19 +934,6 @@ public class OutlookMessage {
 		}
 
 		return result;
-	}
-
-	/**
-	 * This method should no longer be used due to the fact that message properties are now stored with their keys being
-	 * represented as integers. <br>
-	 * <br>
-	 * Please refer to {@link #getPropertyCodes()} for dealing with integer based keys.
-	 *
-	 * @return The value for the requested property.
-	 */
-	@Deprecated
-	public Object getProperty(final String name) {
-		return getPropertyFromHex(name);
 	}
 
 	/**

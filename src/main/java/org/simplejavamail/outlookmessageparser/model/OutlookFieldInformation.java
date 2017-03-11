@@ -34,37 +34,19 @@ public class OutlookFieldInformation {
 	private final int mapiType;
 
 	/**
-	 * Delegates to {@link #OutlookFieldInformation(String, String, int)} with values {@value #UNKNOWN}, {@value #UNKNOWN} and {@value #UNKNOWN_MAPITYPE}.
+	 * Delegates to {@link #OutlookFieldInformation(String, int)} with values {@value #UNKNOWN}, {@value #UNKNOWN} and {@value #UNKNOWN_MAPITYPE}.
 	 */
 	public OutlookFieldInformation() {
-		this(UNKNOWN, UNKNOWN, UNKNOWN_MAPITYPE);
-	}
-
-	/**
-	 * Delegates to {@link #OutlookFieldInformation(String, String, int)} with given class, type and value {@value #UNKNOWN_MAPITYPE}.
-	 *
-	 * @deprecated
-	 */
-	@Deprecated
-	public OutlookFieldInformation(final String clazz, final String type) {
-		this(clazz, type, UNKNOWN_MAPITYPE);
-	}
-
-	/**
-	 * Delegates to {@link #OutlookFieldInformation(String, String, int)} with given class, {@value #UNKNOWN} and given mapiType.
-	 */
-	public OutlookFieldInformation(final String clazz, final int mapiType) {
-		this(clazz, UNKNOWN, mapiType);
+		this(UNKNOWN, UNKNOWN_MAPITYPE);
 	}
 
 	/**
 	 * @param clazz    The class of the {@link DocumentEntry}.
-	 * @param type     The type of the {@link DocumentEntry} (see {@link MAPIProperty}).
 	 * @param mapiType The mapiType of the {@link DocumentEntry} (see {@link MAPIProperty}).
 	 */
-	private OutlookFieldInformation(final String clazz, final String type, final int mapiType) {
+	public OutlookFieldInformation(final String clazz, final int mapiType) {
 		this.clazz = clazz;
-		this.type = type;
+		this.type = UNKNOWN;
 		this.mapiType = mapiType;
 	}
 

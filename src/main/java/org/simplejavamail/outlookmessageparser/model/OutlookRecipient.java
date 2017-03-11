@@ -1,10 +1,8 @@
 package org.simplejavamail.outlookmessageparser.model;
 
-import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -89,76 +87,10 @@ public class OutlookRecipient {
 	}
 
 	/**
-	 * This method should no longer be used due to the fact that message properties are now stored with their keys being represented as integers.
-	 *
-	 * @return All available keys properties have been found for.
-	 */
-	@Deprecated
-	public Set<String> getProperties() {
-		return getPropertiesAsHex();
-	}
-
-	/**
-	 * This method provides a convenient way of retrieving property keys for all guys that like to stick to hex values.
-	 * <p>
-	 * Note that this method includes parsing of string values to integers which will be less efficient than using {@link #getPropertyCodes()}.
-	 *
-	 * @return All available keys properties have been found for.
-	 */
-	private Set<String> getPropertiesAsHex() {
-		final Set<Integer> keySet = properties.keySet();
-		final Set<String> result = new HashSet<>();
-		for (final Integer k : keySet) {
-			final String s = String.format("%04x", k);
-			result.add(s);
-		}
-
-		return result;
-	}
-
-	/**
-	 * This method should no longer be used due to the fact that message properties are now stored with their keys being represented as integers.
-	 * <p>
-	 * Please refer to {@link #getPropertyCodes()} for dealing with integer based keys.
-	 *
-	 * @return The value for the requested property.
-	 */
-	@Deprecated
-	public Object getProperty(final String name) {
-		return getPropertyFromHex(name);
-	}
-
-	/**
-	 * This method provides a convenient way of retrieving properties for all guys that like to stick to hex values.
-	 * <p>
-	 * Note that this method includes parsing of string values to integers which will be less efficient than using {@link #getPropertyValue(Integer)}.
-	 *
-	 * @return The value for the requested property for the given name.
-	 */
-	private Object getPropertyFromHex(final String name) {
-		Integer i = -1;
-		try {
-			i = parseInt(name, 16);
-		} catch (final NumberFormatException e) {
-			LOGGER.error("Could not parse integer {}", name, e);
-		}
-		return getPropertyValue(i);
-	}
-
-	/**
 	 * @return All available keys for properties found.
 	 */
 	public Set<Integer> getPropertyCodes() {
 		return properties.keySet();
-	}
-
-	/**
-	 * <b>NOTE:</b> You can also use fields defined within {@link MAPIProperty} to easily read certain properties.
-	 *
-	 * @return The property value of the specified code.
-	 */
-	private Object getPropertyValue(final Integer code) {
-		return properties.get(code);
 	}
 
 	/**
