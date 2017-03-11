@@ -393,8 +393,9 @@ public class OutlookMessage {
 			final SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
 			sb.append("Date: ").append(formatter.format(date)).append("\n");
 		}
-		if (subject != null)
+		if (subject != null) {
 			sb.append("Subject: ").append(subject).append("\n");
+		}
 		sb.append("").append(outlookAttachments.size()).append(" outlookAttachments.");
 		return sb.toString();
 	}
@@ -410,11 +411,13 @@ public class OutlookMessage {
 			final SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
 			sb.append("Date: ").append(formatter.format(date)).append("\n");
 		}
-		if (subject != null)
+		if (subject != null) {
 			sb.append("Subject: ").append(subject).append("\n");
+		}
 		sb.append("\n");
-		if (bodyText != null)
+		if (bodyText != null) {
 			sb.append(bodyText);
+		}
 		if (outlookAttachments.size() > 0) {
 			sb.append("\n");
 			sb.append("").append(outlookAttachments.size()).append(" outlookAttachments.\n");
