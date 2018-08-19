@@ -20,6 +20,7 @@ v1.1.17 (19-August-2018)
 - [#3](https://github.com/bbottema/simple-java-mail/issues/3) implemented robust support for character sets / code pages in RTF to HTML 
 conversion (fixes chinese support #3)
 - fixed bug where too much text was cleaned up as part of superfluous RTF cleanup step when converting to HTML
+- Performance boost in the RTF -> HTML converter
 
 
 v1.1.16 (~28-Februari-2017):
