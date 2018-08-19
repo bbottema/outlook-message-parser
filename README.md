@@ -7,13 +7,26 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.1.16</version>
+  <version>1.1.17</version>
 </dependency>
 ```
 
 Outlook Message Parser is a continuation (or fork if that project independently continues) of [msgparser](https://github.com/bbottema/msgparser). 
 
-Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/). 
+Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
- * [Documentation](https://github.com/bbottema/outlook-message-parser/wiki)
- * Forked code from [bbottema/msgparser](https://github.com/bbottema/msgparser)
+v1.1.17 (19-August-2018)
+
+- [#3](https://github.com/bbottema/simple-java-mail/issues/3) implemented robust support for character sets / code pages in RTF to HTML 
+conversion (fixes chinese support #3)
+- fixed bug where too much text was cleaned up as part of superfluous RTF cleanup step when converting to HTML
+
+
+v1.1.16 (~28-Februari-2017):
+
+- First Maven deployment, continuing version number from 1.1.15 of msgparser (https://github.com/bbottema/msgparser)
+
+
+v1.16:
+ - Added support for replyTo name and address
+ - cleaned up code (1st wave)

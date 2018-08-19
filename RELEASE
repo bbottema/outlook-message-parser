@@ -1,4 +1,13 @@
-1.1.16 First Maven deployment, continuing version number from 1.1.15 of msgparser (https://github.com/bbottema/msgparser)
+1.1.17
+
+- implemented robust support for character sets / code pages in RTF to HTML conversion (fixes chinese support #3)
+- fixed bug where too much text was cleaned up as part of superfluous RTF cleanup step when converting to HTML
+
+
+1.1.16:
+
+- First Maven deployment, continuing version number from 1.1.15 of msgparser (https://github.com/bbottema/msgparser)
+
 
 1.16:
  - Added support for replyTo name and address
