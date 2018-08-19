@@ -1,75 +1,92 @@
 package org.simplejavamail.outlookmessageparser.rtf;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 
 import static java.util.regex.Pattern.compile;
+import static org.simplejavamail.outlookmessageparser.rtf.util.ByteUtil.hexToString;
+import static org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper.WINDOWS_CHARSET;
 
 /**
  * This class is intended to be used for certain RTF related operations such as extraction of plain HTML from an RTF text.
  */
 public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleRTF2HTMLConverter.class);
-
 	private static final String[] HTML_START_TAGS = { "<html ", "<Html ", "<HTML " };
 	private static final String[] HTML_END_TAGS = { "</html>", "</Html>", "</HTML>" };
-	private static final String WINDOWS_CHARSET = "CP1252";
-
+	
 	public String rtf2html(final String rtf) {
 		if (rtf != null) {
+			final Charset charset = extractCodepage(rtf);
 			String plain = fetchHtmlSection(rtf);
-			plain = replaceHexSequences(plain);
-			plain = replaceSpecialSequences(plain);
-			plain = replaceRemainingControlSequences(plain);
+			plain = replaceSpecialSequences(plain); // first step, remove known control words or else we'll match single escape hex values in the next step
+			plain = replaceHexSequences(plain, "(?:\\\\f\\d(?:\\\\'..)+)", WINDOWS_CHARSET); // match all header control values with default charset
+			plain = replaceHexSequences(plain, "(?:\\\\'..)+", charset); // match all remaining escaped hex values as encoded text (which might be DBCS like CP936)
+			plain = cleanupRemainingSequences(plain);
 			plain = replaceLineBreaks(plain);
 			return plain;
 		}
 		return null;
 	}
-
+	
+	private String cleanupRemainingSequences(String plain) {
+		return plain
+				.replaceAll("(\\\\f\\d.+?;)+", "") // clear all \f sequences including fontnames like Courier new
+				.replaceAll("\\\\\\S+", "") // filtering all remaining \<rtfsequence> like e.g.: \htmlrtf
+				.replaceAll("BM__MailAutoSig((?s).*?(?-s))BM__MailAutoSig", "$1");
+	}
+	
+	private Charset extractCodepage(String rtf) {
+		Matcher codePageMatcher = compile("(?:\\\\ansicpg(?<codePage>.+?)\\\\)+").matcher(rtf);
+		if (codePageMatcher.find()) {
+			return CharsetHelper.findCharset(codePageMatcher.group("codePage"));
+		} else {
+			return WINDOWS_CHARSET; // fallback
+		}
+	}
+	
 	/**
 	 * @return The text with removed newlines as they are only part of the RTF document and should not be inside the HTML.
 	 */
 	private String replaceLineBreaks(final String text) {
-		String replacedText = text;
-		replacedText = replacedText.replaceAll("( <br/> ( <br/> )+)", " <br/> ");
-		replacedText = replacedText.replaceAll("[\\n\\r]+", "");
-		return replacedText;
+		return text
+				.replaceAll("( <br/> ( <br/> )+)", " <br/> ")
+				.replaceAll("\\r\\n", "\n")
+				.replaceAll("[\\r\\u0000]", "");
 	}
 
 	/**
 	 * @return The text with replaced special characters that denote hex codes for strings using Windows CP1252 encoding.
 	 */
-	private String replaceHexSequences(final String text) {
-		StringBuilder res = null;
-	  	final Matcher m = compile("\\\\'(..)").matcher(text);
-
+	private String replaceHexSequences(final String text, String sequencesToMatch, final Charset charset) {
+		final StringBuilder res = new StringBuilder();
 		int lastPosition = 0;
-
-		while (m.find()) {
-		    if (res == null)
-		        res = new StringBuilder();
-
-			res.append(text, lastPosition, m.start());
-
-			final String hex = m.group(1);
-			final String hexToString = hexToString(hex);
-			if (hexToString != null) {
-				res.append(hexToString);
+		
+	  	final Matcher escapedHexGroupMatcher = compile(sequencesToMatch).matcher(text);
+		while (escapedHexGroupMatcher.find()) {
+			res.append(text, lastPosition, escapedHexGroupMatcher.start());
+			
+			StringBuilder hexText = new StringBuilder();
+			
+			String escapedHexGroup = escapedHexGroupMatcher.group(0);
+			final Matcher unescapedHexCharacterMatcher = compile("\\\\'(..)").matcher(escapedHexGroup);
+			while (unescapedHexCharacterMatcher.find()) {
+				hexText.append(unescapedHexCharacterMatcher.group(1));
 			}
-
-			lastPosition = m.end();
+			
+			res.append(hexToString(hexText.toString(), charset));
+			
+			lastPosition = escapedHexGroupMatcher.end();
 		}
-
-        if (res == null)
-            return text;
-
-		res.append(text, lastPosition, text.length());
-
+		
+		if (res.length() == 0) {
+			res.append(text);
+		} else {
+			res.append(text, lastPosition, text.length());
+		}
+		
 		return res.toString();
 	}
 
@@ -116,8 +133,6 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 		replacedText = replacedText.replaceAll("\\{HYPERLINK[^\\}]*\\}", "");
 		//filtering plain replacedText sequences like {\pntext *\tab}
 		replacedText = replacedText.replaceAll("\\{\\\\pntext[^\\}]*\\}", "");
-		//filtering rtf style headers like {\f0\fswiss\fcharset0 Arial;}
-		replacedText = replacedText.replaceAll("\\{\\\\f\\d+[^\\}]*\\}", "");
 		//filtering embedded tags like {\*\htmltag64 <tr>}                                          }
 		replacedText = replacedText.replaceAll("\\{\\\\\\*\\\\htmltag\\d+[^\\}<]+(<.+>)\\}", "$1");
 		//filtering embedded tags like {\*\htmltag84 &#43;}
@@ -130,41 +145,12 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 		//thus representing an actual brace
 		replacedText = replacedText.replaceAll("\\\\\\}", "}");
 		replacedText = replacedText.replaceAll("\\\\\\{", "{");
-		return replacedText;
-	}
-
-	/**
-	 * @return The string representing the hex value of a special character.
-	 */
-	private static String hexToString(final String hex) {
-		final int i;
-		try {
-			i = Integer.parseInt(hex, 16);
-		} catch (final NumberFormatException nfe) {
-			LOGGER.warn("Could not interpret {} as a number.", hex, nfe);
-			return null;
-		}
-		try {
-			return new String(new byte[] { (byte) i }, WINDOWS_CHARSET);
-		} catch (final UnsupportedEncodingException e) {
-			LOGGER.error("Unsupported encoding: {}", WINDOWS_CHARSET, e);
-		}
-		return null;
-	}
-
-	/**
-	 * @return The text with all control sequences replaced, such as line breaks with plain text breaks or equivalent representations.
-	 */
-	private String replaceRemainingControlSequences(final String text) {
-		String replacedText = text;
 		//filtering \par sequences
 		replacedText = replacedText.replaceAll("\\\\pard*", "\n");
 		//filtering \tab sequences
 		replacedText = replacedText.replaceAll("\\\\tab", "\t");
 		//filtering \*\<rtfsequence> like e.g.: \*\fldinst
 		replacedText = replacedText.replaceAll("\\\\\\*\\\\\\S+", "");
-		//filtering \<rtfsequence> like e.g.: \htmlrtf
-		replacedText = replacedText.replaceAll("\\\\\\S+", "");
 		return replacedText;
 	}
 }

@@ -11,6 +11,7 @@ import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -363,7 +364,7 @@ public class HighoverEmailsTest {
 				+ "MIME-Version: 1.0\n"
 				+ "\n");
 	}
-
+	
 	@Test
 	public void testEmbeddedImage()
 			throws IOException {
@@ -428,6 +429,55 @@ public class HighoverEmailsTest {
 				+ "\n"
 				+ " \n"
 				+ "\n");
+	}
+	
+	@Test
+	public void testChineseMessage()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/chinese message.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName(null);
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("haozl@Ctrip.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("");
+		OutlookMessageAssert.assertThat(msg).hasToName("anjos@163.com");
+		OutlookMessageAssert.assertThat(msg).hasToEmail("anjos@163.com");
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).isEmpty();
+		assertThat(msg.getBodyText()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNotEmpty();
+		assertThat(msg.fetchCIDMap()).isEmpty();
+		assertThat(msg.fetchTrueAttachments()).isEmpty();
+		assertThat(normalizeText(msg.getBodyText())).isEqualTo(" \n" +
+				" \n" +
+				"Dears：\n" +
+				"      经过汇总 大家提前合理安排进房间入住吧。\n" +
+				" \n" +
+				"房型\n" +
+				"时间段\n" +
+				"迷你房\n" +
+				"全天\n" +
+				"大床房\n" +
+				"9:00-12:00\n" +
+				"小床房\n" +
+				"1:00-15:30\n" +
+				"标准房\n" +
+				"15:30-18:00\n" +
+				"三床房\n" +
+				"全天\n" +
+				"四床房\n" +
+				"全天\n" +
+				" \n" +
+				" \n" +
+				"Best Regards\n" +
+				"Tha你\n" +
+				"---------------------------------\n" +
+				"郝竹林\n" +
+				"Seat: 15#3F093 | TEL: 737057\n" +
+				"酒店研发部\n" +
+				" \n");
+		
+		InputStream resourceAsStream = OutlookMessageParser.class.getClassLoader().getResourceAsStream("test-messages/chinese message.html");
+		String expectedHtml = new Scanner(resourceAsStream, "UTF-8").useDelimiter("\\A").next();
+		assertThat(msg.getConvertedBodyHTML()).isEqualTo(expectedHtml);
 	}
 
 	@Test
@@ -618,7 +668,9 @@ public class HighoverEmailsTest {
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
 		// Outlook overrode this value too OR converted the original HTML to RTF, from which OutlookMessageParser derived this HTML
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).contains(
-				"<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">   <br/>      <br/> <b>   We should meet up! <br/>  </b>   <br/>  <img src=\"cid:thumbsup\"> <br/> ");
+				"<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">   <br/> \n" +
+						"     <br/> <b>   We should meet up! <br/>  </b>   <br/>  <img src=\"cid:thumbsup\">\n" +
+						" <br/> </body></html>");
 		// the RTF was probably created by Outlook based on the HTML when the message was saved
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();

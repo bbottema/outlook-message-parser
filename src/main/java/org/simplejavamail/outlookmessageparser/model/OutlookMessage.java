@@ -4,12 +4,12 @@ import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
 import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
+import org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,8 +31,6 @@ import static java.util.regex.Pattern.compile;
  */
 public class OutlookMessage {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessage.class);
-
-	private static final String WINDOWS_CHARSET = "CP1252";
 
 	/**
 	 * The message class as defined in the .msg file.
@@ -271,18 +269,13 @@ public class OutlookMessage {
 		if (value instanceof String) {
 			return (String) value;
 		} else if (value instanceof byte[]) {
-			try {
-				return new String((byte[]) value, "CP1252");
-			} catch (final UnsupportedEncodingException e) {
-				LOGGER.error("Unsupported encoding!", e);
-				return null;
-			}
+			return new String((byte[]) value, CharsetHelper.WINDOWS_CHARSET);
 		} else {
 			LOGGER.trace("Unexpected body class: {} (expected String or byte[])", value.getClass().getName());
 			return value.toString();
 		}
 	}
-
+	
 	/**
 	 * Checks if the correct recipient's addresses are set.
 	 */
@@ -732,12 +725,8 @@ public class OutlookMessage {
 			if (bodyRTF instanceof byte[]) {
 				final byte[] decompressedBytes = decompressRtfBytes((byte[]) bodyRTF);
 				if (decompressedBytes != null) {
-					try {
-						this.bodyRTF = new String(decompressedBytes, WINDOWS_CHARSET);
-						setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
-					} catch (final UnsupportedEncodingException e) {
-						LOGGER.error("Could not convert RTF body to HTML.", e);
-					}
+					this.bodyRTF = new String(decompressedBytes, CharsetHelper.WINDOWS_CHARSET);
+					setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
 				}
 			} else {
 				LOGGER.warn("Unexpected data type {}", bodyRTF.getClass());
