@@ -477,7 +477,7 @@ public class HighoverEmailsTest {
 		
 		InputStream resourceAsStream = OutlookMessageParser.class.getClassLoader().getResourceAsStream("test-messages/chinese message.html");
 		String expectedHtml = new Scanner(resourceAsStream, "UTF-8").useDelimiter("\\A").next();
-		assertThat(msg.getConvertedBodyHTML()).isEqualTo(expectedHtml);
+		assertThat(normalizeText(msg.getConvertedBodyHTML())).isEqualTo(normalizeText(expectedHtml));
 	}
 
 	@Test
