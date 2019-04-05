@@ -1,0 +1,126 @@
+This first partial list explains some of the properties we recognize or ignore
+
+(source: https://github.com/mvz/email-outlook-message-perl/blob/master/lib/Email/Outlook/Message/Base.pm)
+
+{
+  # Envelope properties
+  '0002' => "Alternate Recipient Allowed",
+  '000B' => "Conversation Key",
+  '0017' => "Importance", #TODO: Use this.
+  '001A' => "Message Class",
+  '0023' => "Originator Delivery Report Requested",
+  '0026' => "Priority", #TODO: Use this.
+  '0029' => "Read Receipt Requested", #TODO: Use this.
+  '0036' => "Sensitivity", # As assessed by the Sender
+  '003B' => "Sent Representing Search Key",
+  '003D' => "Subject Prefix",
+  '003F' => "Received By EntryId",
+  '0040' => "Received By Name",
+  # TODO: These two fields are part of the Sender field.
+  '0041' => "Sent Representing EntryId",
+  '0042' => "Sent Representing Name",
+  '0043' => "Received Representing EntryId",
+  '0044' => "Received Representing Name",
+  '0046' => "Read Receipt EntryId",
+  '0051' => "Received By Search Key",
+  '0052' => "Received Representing Search Key",
+  '0053' => "Read Receipt Search Key",
+  # TODO: These two fields are part of the Sender field.
+  '0064' => "Sent Representing Address Type",
+  '0065' => "Sent Representing Email Address",
+  '0070' => "Conversation Topic",
+  '0071' => "Conversation Index",
+  '0075' => "Received By Address Type",
+  '0076' => "Received By Email Address",
+  '0077' => "Received Representing Address Type",
+  '0078' => "Received Representing Email Address",
+  '007F' => "TNEF Correlation Key",
+  # Recipient properties
+  '0C15' => "Recipient Type",
+  # Sender properties
+  '0C19' => "Sender Entry Id",
+  '0C1D' => "Sender Search Key",
+  '0C1E' => "Sender Address Type",
+  # Non-transmittable properties
+  '0E02' => "Display Bcc",
+  '0E06' => "Message Delivery Time",
+  '0E07' => "Message Flags",
+  '0E0A' => "Sent Mail EntryId",
+  '0E0F' => "Responsibility",
+  '0E1B' => "Has Attachments",
+  '0E1D' => "Normalized Subject",
+  '0E1F' => "RTF In Sync",
+  '0E20' => "Attachment Size",
+  '0E21' => "Attachment Number",
+  '0E23' => "Internet Article Number",
+  '0E27' => "Security Descriptor",
+  '0E79' => "Trust Sender",
+  '0FF4' => "Access",
+  '0FF6' => "Instance Key",
+  '0FF7' => "Access Level",
+  '0FF9' => "Record Key",
+  '0FFE' => "Object Type",
+  '0FFF' => "EntryId",
+  # Content properties
+  '1006' => "RTF Sync Body CRC",
+  '1007' => "RTF Sync Body Count",
+  '1008' => "RTF Sync Body Tag",
+  '1010' => "RTF Sync Prefix Count",
+  '1011' => "RTF Sync Trailing Count",
+  '1046' => "Original Message ID",
+  '1080' => "Icon Index",
+  '1081' => "Last Verb Executed",
+  '1082' => "Last Verb Execution Time",
+  '10F3' => "URL Component Name",
+  '10F4' => "Attribute Hidden",
+  '10F5' => "Attribute System",
+  '10F6' => "Attribute Read Only",
+  # 'Common property'
+  '3000' => "Row Id",
+  '3001' => "Display Name",
+  '3002' => "Address Type",
+  '3007' => "Creation Time",
+  '3008' => "Last Modification Time",
+  '300B' => "Search Key",
+  # Message store info
+  '340D' => "Store Support Mask",
+  '3414' => "Message Store Provider",
+  # Attachment properties
+  '3702' => "Attachment Encoding",
+  '3703' => "Attachment Extension",
+  # TODO: Use the following to distinguish between nested msg and other OLE
+  # stores.
+  '3705' => "Attachment Method",
+  '3709' => "Attachment Rendering", # Icon as WMF
+  '370A' => "Tag identifying application that supplied the attachment",
+  '370B' => "Attachment Rendering Position",
+  '3713' => "Attachment Content Location", #TODO: Use this?
+  # 3900 -- 39FF: 'Address book'
+  '3900' => "Address Book Display Type",
+  '39FF' => "Address Book 7 Bit Display Name",
+  # Mail User Object
+  '3A00' => "Account",
+  '3A20' => "Transmittable Display Name",
+  '3A40' => "Send Rich Info",
+  '3FDE' => "Internet Code Page", # TODO: Perhaps use this.
+  # 'Display table properties'
+  '3FF8' => "Creator Name",
+  '3FF9' => "Creator EntryId",
+  '3FFA' => "Last Modifier Name",
+  '3FFB' => "Last Modifier EntryId",
+  '3FFD' => "Message Code Page",
+  # 'Transport-defined envelope property'
+  '4019' => "Sender Flags",
+  '401A' => "Sent Representing Flags",
+  '401B' => "Received By Flags",
+  '401C' => "Received Representing Flags",
+  '4029' => "Read Receipt Address Type",
+  '402A' => "Read Receipt Email Address",
+  '402B' => "Read Receipt Name",
+  '5FF6' => "Recipient Display Name",
+  '5FF7' => "Recipient EntryId",
+  '5FFD' => "Recipient Flags",
+  '5FFF' => "Recipient Track Status",
+  # 'Provider-defined internal non-transmittable property'
+  '664A' => "Has Named Properties",
+  '6740' => "Sent Mail Server EntryId",
