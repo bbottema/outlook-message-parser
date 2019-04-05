@@ -574,7 +574,7 @@ public class OutlookMessageParser {
 				// the document entry may contain information about the attachment
 				final DocumentEntry de = (DocumentEntry) entry;
 				final OutlookMessageProperty msgProp = getMessagePropertyFromDocumentEntry(de);
-
+				
 				// we provide the class and data of the document entry to the attachment.
 				// The attachment implementation has to know the semantics of the field names
 				attachment.setProperty(msgProp);
@@ -590,6 +590,7 @@ public class OutlookMessageParser {
 
 		// only if there was really an attachment, we add this object to the OutlookMessage object
 		if (attachment.getSize() > -1) {
+			attachment.checkMimeTag();
 			msg.addAttachment(attachment);
 		}
 	}

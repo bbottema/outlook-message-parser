@@ -1,5 +1,7 @@
 package org.simplejavamail.outlookmessageparser.model;
 
+import javax.activation.MimetypesFileTypeMap;
+
 /**
  * Implementation of the {@link OutlookAttachment} interface that represents a file attachment. It contains some useful information (as long as it is available
  * in the .msg file) like the attachment name, its size, etc.
@@ -57,7 +59,17 @@ public class OutlookFileAttachment implements OutlookAttachment {
 					setExtension((String) value);
 					break;
 				default:
-					// don't do anything, currently I don't even know if this is a functionally legal state
+					// property to ignore, for full list see properties-list.txt
+			}
+		}
+	}
+	
+	public void checkMimeTag() {
+		if (this.mimeTag == null || this.mimeTag.length() == 0) {
+			if (this.filename != null && this.filename.length() > 0) {
+				this.mimeTag = new MimetypesFileTypeMap().getContentType(this.filename);
+			} else if (this.longFilename != null && this.longFilename.length() > 0) {
+				this.mimeTag = new MimetypesFileTypeMap().getContentType(this.longFilename);
 			}
 		}
 	}
