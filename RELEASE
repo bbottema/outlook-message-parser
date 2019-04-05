@@ -1,3 +1,8 @@
+1.1.18
+
+- Missing mimeTag for attachments should be guessed based on file extension
+
+
 1.1.17
 
 - implemented robust support for character sets / code pages in RTF to HTML conversion (fixes chinese support #3)
