@@ -723,10 +723,14 @@ public class OutlookMessage {
 		// we simply try to decompress the RTF data if it's not compressed, the utils class is able to detect this anyway
 		if (this.bodyRTF == null && bodyRTF != null) {
 			if (bodyRTF instanceof byte[]) {
-				final byte[] decompressedBytes = decompressRtfBytes((byte[]) bodyRTF);
-				if (decompressedBytes != null) {
-					this.bodyRTF = new String(decompressedBytes, CharsetHelper.WINDOWS_CHARSET);
-					setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
+				try {
+					final byte[] decompressedBytes = decompressRtfBytes((byte[]) bodyRTF);
+					if (decompressedBytes != null) {
+						this.bodyRTF = new String(decompressedBytes, CharsetHelper.WINDOWS_CHARSET);
+						setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
+					}
+				} catch (IllegalArgumentException e) {
+					LOGGER.error("Error occurred while  extracting compressed RTF from source msg", e);
 				}
 			} else {
 				LOGGER.warn("Unexpected data type {}", bodyRTF.getClass());
