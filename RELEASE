@@ -1,3 +1,8 @@
+1.1.19
+
+- Log rtf compression error, but otherwise ignore it and keep going and extract what we can.
+
+
 1.1.18
 
 - Missing mimeTag for attachments should be guessed based on file extension
