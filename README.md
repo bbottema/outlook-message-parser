@@ -15,6 +15,11 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
+v1.1.20 (14-April-2019)
+
+- [#7](https://github.com/bbottema/outlook-message-parser/issues/7) Fix missing S/MIME header details that are needed to determine the type of S/MIME application
+
+
 v1.1.19 (10-April-2019)
 
 - Log rtf compression error, but otherwise ignore it and keep going and extract what we can.
