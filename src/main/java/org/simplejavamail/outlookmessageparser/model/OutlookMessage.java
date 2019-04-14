@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static java.util.Arrays.copyOfRange;
 import static java.util.regex.Pattern.compile;
 
 /**
@@ -64,6 +65,18 @@ public class OutlookMessage {
 	 * The name part of Reply-To header
 	 */
 	private String replyToName;
+	/**
+	 * The MIME part of the S/MIME header
+	 */
+	private String smimeMime;
+	/**
+	 * The S/MIME type part of the S/MIME header
+	 */
+	private String smimeType;
+	/**
+	 * The S/MIME name part of the S/MIME header
+	 */
+	private String smimeName;
 	/**
 	 * The mail's subject.
 	 */
@@ -239,6 +252,9 @@ public class OutlookMessage {
 			case 0x39: //CLIENT SUBMIT TIME
 				setClientSubmitTime(stringValue);
 				break;
+			case  0x8005: // S/MIME details
+				setSmime(stringValue);
+				break;
 		}
 
 		// save all properties (incl. those identified above)
@@ -261,7 +277,7 @@ public class OutlookMessage {
 		// 3003: email address
 		// 1008 rtf sync
 	}
-
+	
 	private String convertValueToString(final Object value) {
 		if (value == null) {
 			return null;
@@ -379,46 +395,42 @@ public class OutlookMessage {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("From: ").append(createMailString(fromEmail, fromName)).append("\n");
-		sb.append("To: ").append(createMailString(toEmail, toName)).append("\n");
-		if (date != null) {
-			final SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-			sb.append("Date: ").append(formatter.format(date)).append("\n");
-		}
-		if (subject != null) {
-			sb.append("Subject: ").append(subject).append("\n");
-		}
-		sb.append("").append(outlookAttachments.size()).append(" outlookAttachments.");
+		final StringBuilder sb = commonToString();
+		sb.append(outlookAttachments.size()).append(" outlookAttachments.");
 		return sb.toString();
 	}
-
+	
 	/**
 	 * @return All information of this message object.
 	 */
 	public String toLongString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("From: ").append(createMailString(fromEmail, fromName)).append("\n");
-		sb.append("To: ").append(createMailString(toEmail, toName)).append("\n");
-		if (date != null) {
-			final SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-			sb.append("Date: ").append(formatter.format(date)).append("\n");
-		}
-		if (subject != null) {
-			sb.append("Subject: ").append(subject).append("\n");
-		}
+		final StringBuilder sb = commonToString();
 		sb.append("\n");
 		if (bodyText != null) {
 			sb.append(bodyText);
 		}
 		if (!outlookAttachments.isEmpty()) {
 			sb.append("\n");
-			sb.append("").append(outlookAttachments.size()).append(" outlookAttachments.\n");
+			sb.append(outlookAttachments.size()).append(" outlookAttachments.\n");
 			for (final OutlookAttachment att : outlookAttachments) {
 				sb.append(att).append("\n");
 			}
 		}
 		return sb.toString();
+	}
+	
+	private StringBuilder commonToString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("From: ").append(createMailString(fromEmail, fromName)).append("\n");
+		sb.append("To: ").append(createMailString(toEmail, toName)).append("\n");
+		if (date != null) {
+			final SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+			sb.append("Date: ").append(formatter.format(date)).append("\n");
+		}
+		if (subject != null) {
+			sb.append("Subject: ").append(subject).append("\n");
+		}
+		return sb;
 	}
 
 	/**
@@ -442,6 +454,22 @@ public class OutlookMessage {
 			return mail;
 		}
 		return "\"" + name + "\" <" + mail + ">";
+	}
+	
+	void setSmime(String smimeHeader) {
+		// application/pkcs7-mime;smime-type=signed-data;name=smime.p7m
+		if (smimeHeader != null) {
+			final String[] smimeHeaderParts = smimeHeader.split(";");
+			setSmimeMime(smimeHeaderParts[0]);
+			for (String smimeHeaderParam : copyOfRange(smimeHeaderParts, 1, smimeHeaderParts.length)) {
+				final String[] smimeParamParts = smimeHeaderParam.split("=");
+				if (smimeParamParts[0].equals("smime-type")) {
+					setSmimeType(smimeParamParts[1]);
+				} else if (smimeParamParts[0].equals("name")) {
+					setSmimeName(smimeParamParts[1]);
+				}
+			}
+		}
 	}
 
 	/**
@@ -1002,11 +1030,53 @@ public class OutlookMessage {
 	public String getReplyToName() {
 		return replyToName;
 	}
-
+	
 	/**
 	 * Bean setter for {@link #replyToName}.
 	 */
 	public void setReplyToName(final String replyToName) {
 		this.replyToName = replyToName;
+	}
+	
+	/**
+	 * Bean getter for {@link #smimeMime}.
+	 */
+	public String getSmimeMime() {
+		return smimeMime;
+	}
+	
+	/**
+	 * Bean setter for {@link #smimeMime}.
+	 */
+	public void setSmimeMime(String smimeMime) {
+		this.smimeMime = smimeMime;
+	}
+	
+	/**
+	 * Bean getter for {@link #smimeType}.
+	 */
+	public String getSmimeType() {
+		return smimeType;
+	}
+	
+	/**
+	 * Bean setter for {@link #smimeType}.
+	 */
+	public void setSmimeType(String smimeType) {
+		this.smimeType = smimeType;
+	}
+	
+	/**
+	 * Bean getter for {@link #smimeName}.
+	 */
+	public String getSmimeName() {
+		return smimeName;
+	}
+	
+	/**
+	 * Bean setter for {@link #smimeName}.
+	 */
+	public void setSmimeName(String smimeName) {
+		this.smimeName = smimeName;
 	}
 }
