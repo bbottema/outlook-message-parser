@@ -7,6 +7,8 @@ import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessageAssert;
 import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeMultipartSigned;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -651,7 +653,82 @@ public class HighoverEmailsTest {
 				+ "boundary=\"_000_73ade2cb375f4f39b9e210a57d087900ABMAIL13ciatlanticbeach_\"\n"
 				+ "MIME-Version: 1.0\n");
 	}
-
+	
+	@Test
+	public void testSmimeMsgSigned()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/S_MIME test message signed.msg");
+		
+		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("S/MIME test message signed");
+		OutlookMessageAssert.assertThat(msg).hasToName("Benny Bottema");
+		OutlookMessageAssert.assertThat(msg).hasToEmail("benny@bennybottema.com");
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).hasSize(1);
+		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
+		// Outlook overrode dresscode.txt, presumably because it was more than 8 character long??
+		assertAttachmentMetadata(outlookAttachment1, "multipart/signed", null, "smime.p7s", null);
+		
+		assertThat(msg.fetchCIDMap()).hasSize(0);
+		assertThat(msg.fetchTrueAttachments()).hasSize(1);
+		
+		OutlookSmimeMultipartSigned smime = (OutlookSmimeMultipartSigned) msg.getSmime();
+		assertThat(smime.getSmimeMime()).isEqualTo("multipart/signed");
+		assertThat(smime.getSmimeProtocol()).isEqualTo("application/pkcs7-signature");
+		assertThat(smime.getSmimeMicalg()).isEqualTo("sha-512");
+	}
+	
+	@Test
+	public void testSmimeMsgEncrypted()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/S_MIME test message encrypted.msg");
+		
+		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("S/MIME test message encrypted");
+		OutlookMessageAssert.assertThat(msg).hasToName("Benny Bottema");
+		OutlookMessageAssert.assertThat(msg).hasToEmail("benny@bennybottema.com");
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).hasSize(1);
+		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
+		// Outlook overrode dresscode.txt, presumably because it was more than 8 character long??
+		assertAttachmentMetadata(outlookAttachment1, "application/pkcs7-mime", null, "smime.p7m", "smime.p7m");
+		
+		assertThat(msg.fetchCIDMap()).hasSize(0);
+		assertThat(msg.fetchTrueAttachments()).hasSize(1);
+		
+		OutlookSmimeApplicationSmime smime = (OutlookSmimeApplicationSmime) msg.getSmime();
+		assertThat(smime.getSmimeMime()).isEqualTo("application/pkcs7-mime");
+		assertThat(smime.getSmimeName()).isEqualTo("smime.p7m");
+		assertThat(smime.getSmimeType()).isEqualTo("enveloped-data");
+	}
+	
+	@Test
+	public void testSmimeMsgSignedAndEncrypted()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/S_MIME test message signed & encrypted.msg");
+		
+		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("S/MIME test message signed & encrypted");
+		OutlookMessageAssert.assertThat(msg).hasToName("Benny Bottema");
+		OutlookMessageAssert.assertThat(msg).hasToEmail("benny@bennybottema.com");
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).hasSize(1);
+		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
+		// Outlook overrode dresscode.txt, presumably because it was more than 8 character long??
+		assertAttachmentMetadata(outlookAttachment1, "application/pkcs7-mime", null, "smime.p7m", "smime.p7m");
+		
+		assertThat(msg.fetchCIDMap()).hasSize(0);
+		assertThat(msg.fetchTrueAttachments()).hasSize(1);
+		
+		OutlookSmimeApplicationSmime smime = (OutlookSmimeApplicationSmime) msg.getSmime();
+		assertThat(smime.getSmimeMime()).isEqualTo("application/pkcs7-mime");
+		assertThat(smime.getSmimeName()).isEqualTo("smime.p7m");
+		assertThat(smime.getSmimeType()).isEqualTo("enveloped-data");
+	}
+	
 	@Test
 	public void testHtmlTestWithReplyToAndAttachmentsPlusEmbeddedImage()
 			throws IOException {
@@ -694,12 +771,12 @@ public class HighoverEmailsTest {
 		assertThat(attachmentContent2).isEqualTo("On the moon!");
 	}
 
-	private void assertAttachmentMetadata(OutlookAttachment embeddedImg, String mimeType, String fileExt, String filename, String fullname) {
-		assertThat(embeddedImg).isOfAnyClassIn(OutlookFileAttachment.class);
-		assertThat(((OutlookFileAttachment) embeddedImg).getMimeTag()).isEqualTo(mimeType);
-		assertThat(((OutlookFileAttachment) embeddedImg).getExtension()).isEqualTo(fileExt);
-		assertThat(((OutlookFileAttachment) embeddedImg).getFilename()).isEqualTo(filename);
-		assertThat(((OutlookFileAttachment) embeddedImg).getLongFilename()).isEqualTo(fullname);
+	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {
+		assertThat(attachment).isOfAnyClassIn(OutlookFileAttachment.class);
+		assertThat(((OutlookFileAttachment) attachment).getMimeTag()).isEqualTo(mimeType);
+		assertThat(((OutlookFileAttachment) attachment).getExtension()).isEqualTo(fileExt);
+		assertThat(((OutlookFileAttachment) attachment).getFilename()).isEqualTo(filename);
+		assertThat(((OutlookFileAttachment) attachment).getLongFilename()).isEqualTo(fullname);
 	}
 
 	private static OutlookRecipient createRecipient(String toName, String toEmail) {

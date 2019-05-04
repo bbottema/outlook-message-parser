@@ -1,14 +1,26 @@
 package org.simplejavamail.outlookmessageparser.model;
 
 import org.junit.Test;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OutlookMessageTest {
+	
 	@Test
-	public void testSetSmime() {
+	public void testSetSmimeNull() {
+		OutlookMessage msg = new OutlookMessage();
+		msg.setSmimeApplicationSmime(null);
+		assertThat(msg.getSmime()).isNull();
+		msg.setSmimeApplicationSmime("");
+		assertThat(msg.getSmime()).isNull();
+		msg.setSmimeApplicationSmime("moomoo");
+		assertThat(msg.getSmime()).isNull();
+	}
+	
+	@Test
+	public void testSetSmimeNonNull() {
 		// application/pkcs7-mime;smime-type=signed-data;name=smime.p7m
-		testSmime(null, null, null, null);
 		testSmime("application/pkcs7-mime", "application/pkcs7-mime", null, null);
 		testSmime("application/pkcs7-mime;", "application/pkcs7-mime", null, null);
 		testSmime("application/pkcs7-mime;name=moo", "application/pkcs7-mime", null, "moo");
@@ -19,9 +31,11 @@ public class OutlookMessageTest {
 	
 	private void testSmime(String smimeHeader, String smimeMime, String smimeType, String smimeName) {
 		OutlookMessage msg = new OutlookMessage();
-		msg.setSmime(smimeHeader);
-		assertThat(msg.getSmimeMime()).isEqualTo(smimeMime);
-		assertThat(msg.getSmimeType()).isEqualTo(smimeType);
-		assertThat(msg.getSmimeName()).isEqualTo(smimeName);
+		msg.setSmimeApplicationSmime(smimeHeader);
+		
+		OutlookSmimeApplicationSmime smime = (OutlookSmimeApplicationSmime) msg.getSmime();
+		assertThat(smime.getSmimeMime()).isEqualTo(smimeMime);
+		assertThat(smime.getSmimeType()).isEqualTo(smimeType);
+		assertThat(smime.getSmimeName()).isEqualTo(smimeName);
 	}
 }

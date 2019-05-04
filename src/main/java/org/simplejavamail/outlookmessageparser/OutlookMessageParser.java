@@ -12,6 +12,7 @@ import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessageProperty;
 import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
 import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
 import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
 import org.slf4j.Logger;
@@ -112,6 +113,7 @@ public class OutlookMessageParser {
 		final String allHeaders = msg.getHeaders();
 		if (allHeaders != null) {
 			extractReplyToHeader(msg, allHeaders);
+			extractSMimeHeader(msg, allHeaders);
 		}
 	}
 	
@@ -130,6 +132,16 @@ public class OutlookMessageParser {
 			} /* else {
 				// unknown results, ignore Reply-To data
 			} */
+		}
+	}
+	
+	static void extractSMimeHeader(@Nonnull final OutlookMessage msg, @Nonnull final String allHeaders) {
+		if (msg.getSmime() == null) {
+			// https://regex101.com/r/AE0Uys/1
+			final Matcher m = compile("^Content-Type: (?<contenttype>.*?)(?:; name=\"(?<name>smime.p7m)\")?(?:; smime-type=(?<smimetype>enveloped-data))?$", Pattern.MULTILINE).matcher(allHeaders);
+			if (m.find()) {
+				msg.setSmime(new OutlookSmimeApplicationSmime(m.group("contenttype"), m.group("smimetype"), m.group("name")));
+			}
 		}
 	}
 
@@ -590,6 +602,7 @@ public class OutlookMessageParser {
 
 		// only if there was really an attachment, we add this object to the OutlookMessage object
 		if (attachment.getSize() > -1) {
+			attachment.checkSmimeFilename();
 			attachment.checkMimeTag();
 			msg.addAttachment(attachment);
 		}

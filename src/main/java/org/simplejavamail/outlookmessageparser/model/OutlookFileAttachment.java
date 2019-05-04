@@ -64,6 +64,16 @@ public class OutlookFileAttachment implements OutlookAttachment {
 		}
 	}
 	
+	public void checkSmimeFilename() {
+		if (this.filename == null && this.mimeTag != null) {
+			if (this.mimeTag.contains("multipart/signed")) {
+				if (!this.mimeTag.contains("protocol") || this.mimeTag.contains("protocol=\"application/pkcs7-signature\"")) {
+					this.filename = "smime.p7s";
+				}
+			}
+		}
+	}
+	
 	public void checkMimeTag() {
 		if (this.mimeTag == null || this.mimeTag.length() == 0) {
 			if (this.filename != null && this.filename.length() > 0) {
@@ -90,7 +100,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #extension}.
 	 */
-	private void setExtension(final String extension) {
+	void setExtension(final String extension) {
 		this.extension = extension;
 	}
 
@@ -105,7 +115,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #filename}.
 	 */
-	private void setFilename(final String filename) {
+	void setFilename(final String filename) {
 		this.filename = filename;
 	}
 
@@ -119,7 +129,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #longFilename}.
 	 */
-	private void setLongFilename(final String longFilename) {
+	void setLongFilename(final String longFilename) {
 		this.longFilename = longFilename;
 	}
 
@@ -134,7 +144,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #mimeTag}.
 	 */
-	private void setMimeTag(final String mimeTag) {
+	void setMimeTag(final String mimeTag) {
 		this.mimeTag = mimeTag;
 	}
 
@@ -149,7 +159,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #data}.
 	 */
-	private void setData(final byte[] data) {
+	void setData(final byte[] data) {
 		this.data = data;
 	}
 
@@ -163,7 +173,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	/**
 	 * Bean setter for {@link #size}.
 	 */
-	private void setSize(final long size) {
+	void setSize(final long size) {
 		this.size = size;
 	}
 }

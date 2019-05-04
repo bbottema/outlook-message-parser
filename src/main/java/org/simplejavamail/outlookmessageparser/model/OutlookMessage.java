@@ -66,17 +66,9 @@ public class OutlookMessage {
 	 */
 	private String replyToName;
 	/**
-	 * The MIME part of the S/MIME header
+	 * The S/MIME part of the S/MIME header
 	 */
-	private String smimeMime;
-	/**
-	 * The S/MIME type part of the S/MIME header
-	 */
-	private String smimeType;
-	/**
-	 * The S/MIME name part of the S/MIME header
-	 */
-	private String smimeName;
+	private OutlookSmime smime;
 	/**
 	 * The mail's subject.
 	 */
@@ -252,8 +244,11 @@ public class OutlookMessage {
 			case 0x39: //CLIENT SUBMIT TIME
 				setClientSubmitTime(stringValue);
 				break;
+			case  0x8003: // S/MIME details
+				setSmimeMultipartSigned(stringValue);
+				break;
 			case  0x8005: // S/MIME details
-				setSmime(stringValue);
+				setSmimeApplicationSmime(stringValue);
 				break;
 		}
 
@@ -400,25 +395,6 @@ public class OutlookMessage {
 		return sb.toString();
 	}
 	
-	/**
-	 * @return All information of this message object.
-	 */
-	public String toLongString() {
-		final StringBuilder sb = commonToString();
-		sb.append("\n");
-		if (bodyText != null) {
-			sb.append(bodyText);
-		}
-		if (!outlookAttachments.isEmpty()) {
-			sb.append("\n");
-			sb.append(outlookAttachments.size()).append(" outlookAttachments.\n");
-			for (final OutlookAttachment att : outlookAttachments) {
-				sb.append(att).append("\n");
-			}
-		}
-		return sb.toString();
-	}
-	
 	private StringBuilder commonToString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("From: ").append(createMailString(fromEmail, fromName)).append("\n");
@@ -456,19 +432,46 @@ public class OutlookMessage {
 		return "\"" + name + "\" <" + mail + ">";
 	}
 	
-	void setSmime(String smimeHeader) {
+	void setSmimeApplicationSmime(String smimeHeader) {
 		// application/pkcs7-mime;smime-type=signed-data;name=smime.p7m
-		if (smimeHeader != null) {
+		if (smimeHeader != null && smimeHeader.contains("application/")) {
 			final String[] smimeHeaderParts = smimeHeader.split(";");
-			setSmimeMime(smimeHeaderParts[0]);
+			String smimeMime = smimeHeaderParts[0].trim();
+			String smimeType = null;
+			String smimeName = null;
 			for (String smimeHeaderParam : copyOfRange(smimeHeaderParts, 1, smimeHeaderParts.length)) {
 				final String[] smimeParamParts = smimeHeaderParam.split("=");
-				if (smimeParamParts[0].equals("smime-type")) {
-					setSmimeType(smimeParamParts[1]);
-				} else if (smimeParamParts[0].equals("name")) {
-					setSmimeName(smimeParamParts[1]);
+				String paramName = smimeParamParts[0].trim();
+				String paramValue = smimeParamParts[1].trim();
+				if (paramName.equals("smime-type")) {
+					smimeType = paramValue;
+				} else if (paramName.equals("name")) {
+					smimeName = paramValue;
 				}
 			}
+			setSmime(new OutlookSmime.OutlookSmimeApplicationSmime(smimeMime, smimeType, smimeName));
+		}
+	}
+	
+	void setSmimeMultipartSigned(String smimeHeader) {
+		// multipart/signed;protocol="application/pkcs7-signature";micalg=sha1
+		if (smimeHeader != null && smimeHeader.contains("multipart/signed")) {
+			final String[] smimeHeaderParts = smimeHeader.split(";");
+			String smimeMime = smimeHeaderParts[0].trim();
+			String smimeProtocol = null;
+			String smimeMicalg = null;
+			for (String smimeHeaderParam : copyOfRange(smimeHeaderParts, 1, smimeHeaderParts.length)) {
+				final String[] smimeParamParts = smimeHeaderParam.split("=");
+				final String paramName = smimeParamParts[0].trim();
+				final String paramValue = smimeParamParts[1].trim().replaceFirst("^\"(.*)\"$", "$1");
+				
+				if (paramName.equals("protocol")) {
+					smimeProtocol = paramValue;
+				} else if (paramName.equals("micalg")) {
+					smimeMicalg = paramValue;
+				}
+			}
+			setSmime(new OutlookSmime.OutlookSmimeMultipartSigned(smimeMime, smimeProtocol, smimeMicalg));
 		}
 	}
 
@@ -1039,44 +1042,16 @@ public class OutlookMessage {
 	}
 	
 	/**
-	 * Bean getter for {@link #smimeMime}.
+	 * Bean setter for {@link #smime}.
 	 */
-	public String getSmimeMime() {
-		return smimeMime;
+	public void setSmime(OutlookSmime smime) {
+		this.smime = smime;
 	}
 	
 	/**
-	 * Bean setter for {@link #smimeMime}.
+	 * Bean getter for {@link #smime}.
 	 */
-	public void setSmimeMime(String smimeMime) {
-		this.smimeMime = smimeMime;
-	}
-	
-	/**
-	 * Bean getter for {@link #smimeType}.
-	 */
-	public String getSmimeType() {
-		return smimeType;
-	}
-	
-	/**
-	 * Bean setter for {@link #smimeType}.
-	 */
-	public void setSmimeType(String smimeType) {
-		this.smimeType = smimeType;
-	}
-	
-	/**
-	 * Bean getter for {@link #smimeName}.
-	 */
-	public String getSmimeName() {
-		return smimeName;
-	}
-	
-	/**
-	 * Bean setter for {@link #smimeName}.
-	 */
-	public void setSmimeName(String smimeName) {
-		this.smimeName = smimeName;
+	public OutlookSmime getSmime() {
+		return smime;
 	}
 }
