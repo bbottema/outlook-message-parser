@@ -67,9 +67,9 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	public void checkMimeTag() {
 		if (this.mimeTag == null || this.mimeTag.length() == 0) {
 			if (this.filename != null && this.filename.length() > 0) {
-				this.mimeTag = new MimetypesFileTypeMap().getContentType(this.filename);
+				this.mimeTag = MimeType.getContentType(this.filename);
 			} else if (this.longFilename != null && this.longFilename.length() > 0) {
-				this.mimeTag = new MimetypesFileTypeMap().getContentType(this.longFilename);
+				this.mimeTag = MimeType.getContentType(this.longFilename);
 			}
 		}
 	}
