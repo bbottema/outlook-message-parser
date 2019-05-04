@@ -387,7 +387,7 @@ public class OutlookMessage {
 				final CompressedRTF crtf = new CompressedRTF();
 				decompressed = crtf.decompress(new ByteArrayInputStream(value));
 			} catch (final IOException e) {
-				LOGGER.error("Could not decompress RTF data", e);
+				LOGGER.info("Could not decompress RTF data", e);
 			}
 		}
 		return decompressed;
@@ -758,7 +758,7 @@ public class OutlookMessage {
 						setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
 					}
 				} catch (IllegalArgumentException e) {
-					LOGGER.error("Error occurred while  extracting compressed RTF from source msg", e);
+					LOGGER.info("Error occurred while extracting compressed RTF from source msg", e);
 				}
 			} else {
 				LOGGER.warn("Unexpected data type {}", bodyRTF.getClass());

@@ -114,7 +114,7 @@ public class OutlookMessageParser {
 			extractReplyToHeader(msg, allHeaders);
 		}
 	}
-
+	
 	static void extractReplyToHeader(@Nonnull final OutlookMessage msg, @Nonnull final String allHeaders) {
 		// Reply-To: Optional Name <adress@somemail.com> // second '<' and '>' kept optional
 		final Matcher m = compile("^Reply-To:\\s*(?:<?(?<nameOrAddress>.*?)>?)?\\s*(?:<(?<address>.*?)>)?$", Pattern.MULTILINE).matcher(allHeaders);
@@ -537,7 +537,7 @@ public class OutlookMessageParser {
 				LOGGER.trace("  Found document entry: class={}, type={}", clazz, type);
 				mapiType = Integer.parseInt(type, 16);
 			} catch (final RuntimeException re) {
-				LOGGER.error("Could not parse directory entry {}", name, re);
+				LOGGER.info("Could not parse directory entry {}", name, re);
 				return new OutlookFieldInformation();
 			}
 			return new OutlookFieldInformation(clazz, mapiType);
