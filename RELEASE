@@ -1,3 +1,9 @@
+v1.2.1
+
+- Ignore non S/MIME related content types when extracting S/MIME metadata
+- Added toString and equals methods to the S/MIME data classes
+
+
 v1.1.21
 
 - Upgraded mediatype recognition based on file extension for incomplete attachments
