@@ -764,6 +764,8 @@ public class HighoverEmailsTest {
 		assertThat(msg.fetchCIDMap()).containsEntry("thumbsup", embeddedImg);
 		assertThat(msg.fetchTrueAttachments()).hasSize(2);
 		assertThat(msg.fetchTrueAttachments()).contains(outlookAttachment1, outlookAttachment2);
+		
+		assertThat(msg.getSmime()).isNull();
 
 		String attachmentContent1 = normalizeText(new String(outlookAttachment1.getData(), UTF_8));
 		String attachmentContent2 = normalizeText(new String(outlookAttachment2.getData(), UTF_8));

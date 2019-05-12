@@ -34,7 +34,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
+import static java.util.regex.Pattern.quote;
 
 /**
  * Main parser class that does the actual parsing of the Outlook .msg file. It uses the <a href="http://poi.apache.org/poifs/">POI</a> library for parsing the
@@ -61,6 +63,10 @@ public class OutlookMessageParser {
 	private static final String PROPS_KEY = "__properties_version1.0";
 
 	private static final String PROPERTY_STREAM_PREFIX = "__substg1.0_";
+	
+	private static final Pattern SMIME_CONTENT_TYPE_PATTERN = compile(format("^Content-Type: (?<contenttype>%s)(?:; name=\"(?<name>smime.p7m)\")?(?:; smime-type=(?<smimetype>enveloped-data))?$",
+			"application\\/pkcs7-mime|multipart\\/signed|application\\/octet-stream|application\\/pkcs7-signature"),
+			Pattern.MULTILINE);
 
 	private RTF2HTMLConverter rtf2htmlConverter = new SimpleRTF2HTMLConverter();
 
@@ -138,7 +144,7 @@ public class OutlookMessageParser {
 	static void extractSMimeHeader(@Nonnull final OutlookMessage msg, @Nonnull final String allHeaders) {
 		if (msg.getSmime() == null) {
 			// https://regex101.com/r/AE0Uys/1
-			final Matcher m = compile("^Content-Type: (?<contenttype>.*?)(?:; name=\"(?<name>smime.p7m)\")?(?:; smime-type=(?<smimetype>enveloped-data))?$", Pattern.MULTILINE).matcher(allHeaders);
+			final Matcher m = SMIME_CONTENT_TYPE_PATTERN.matcher(allHeaders);
 			if (m.find()) {
 				msg.setSmime(new OutlookSmimeApplicationSmime(m.group("contenttype"), m.group("smimetype"), m.group("name")));
 			}
@@ -514,7 +520,7 @@ public class OutlookMessageParser {
 	private String bytesToHex(final byte[] bytes) {
 		final StringBuilder byteStr = new StringBuilder();
 		for (final byte aByte : bytes) {
-			byteStr.append(String.format("%02X", aByte & 0xff));
+			byteStr.append(format("%02X", aByte & 0xff));
 		}
 		return byteStr.toString();
 	}
