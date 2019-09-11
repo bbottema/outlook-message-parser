@@ -16,6 +16,9 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 
 	private static final String[] HTML_START_TAGS = { "<html ", "<Html ", "<HTML " };
 	private static final String[] HTML_END_TAGS = { "</html>", "</Html>", "</HTML>" };
+
+	private static final String RTF_HTML_TAG = "{\\*\\htmltag";
+	private static final String RTF_HTML_END = "\\htmlrtf0";
 	
 	public String rtf2html(final String rtf) {
 		if (rtf != null) {
@@ -101,10 +104,24 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 		for (int i = 0; i < HTML_START_TAGS.length && htmlStart < 0; i++) {
 			htmlStart = text.indexOf(HTML_START_TAGS[i]);
 		}
-		for (int i = 0; i < HTML_END_TAGS.length && htmlEnd < 0; i++) {
-			htmlEnd = text.indexOf(HTML_END_TAGS[i]);
-			if (htmlEnd > 0) {
-				htmlEnd = htmlEnd + HTML_END_TAGS[i].length();
+
+		// If no HTML start tag was found, check if a sloppy client embedded tags without enclosing HTML tags
+		if (htmlStart < 0) {
+			htmlStart = text.indexOf(RTF_HTML_TAG);
+
+			if (htmlStart > 0) {
+				htmlEnd = text.lastIndexOf(RTF_HTML_END);
+
+				if (htmlEnd > 0) {
+					htmlEnd += RTF_HTML_END.length();
+				}
+			}
+		} else {
+			for (int i = 0; i < HTML_END_TAGS.length && htmlEnd < 0; i++) {
+				htmlEnd = text.indexOf(HTML_END_TAGS[i]);
+				if (htmlEnd > 0) {
+					htmlEnd = htmlEnd + HTML_END_TAGS[i].length();
+				}
 			}
 		}
 
@@ -117,7 +134,7 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 			//replace linebreaks with html breaks
 			html = html.replaceAll("[\\n\\r]+", " <br/> ");
 			//create hyperlinks
-			html = html.replaceAll("(http://\\S+)", "<a href=\"$1\">$1</a>");
+			html = html.replaceAll("(http[s]?://\\S+)", "<a href=\"$1\">$1</a>");
 			return html.replaceAll("mailto:(\\S+@\\S+)", "<a href=\"mailto:$1\">$1</a>");
 		}
 	}
