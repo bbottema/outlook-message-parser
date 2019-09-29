@@ -745,9 +745,9 @@ public class HighoverEmailsTest {
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
 		// Outlook overrode this value too OR converted the original HTML to RTF, from which OutlookMessageParser derived this HTML
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).contains(
-				"<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">   <br/> \n" +
-						"     <br/> <b>   We should meet up! <br/>  </b>   <br/>  <img src=\"cid:thumbsup\">\n" +
-						" <br/> </body></html>");
+				"<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">        \n" +
+						"     <b>   We should meet up!  </b>    <img src=\"cid:thumbsup\">\n" +
+						" </body></html>");
 		// the RTF was probably created by Outlook based on the HTML when the message was saved
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();

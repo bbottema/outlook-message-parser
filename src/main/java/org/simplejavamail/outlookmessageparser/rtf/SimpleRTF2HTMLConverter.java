@@ -115,7 +115,7 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 			//embed code within html tags
 			String html = "<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">" + text + "</body></html>";
 			//replace linebreaks with html breaks
-			html = html.replaceAll("[\\n\\r]+", " <br/> ");
+			html = html.replaceAll("[\\n\\r]+", " ");
 			//create hyperlinks
 			html = html.replaceAll("(http://\\S+)", "<a href=\"$1\">$1</a>");
 			return html.replaceAll("mailto:(\\S+@\\S+)", "<a href=\"mailto:$1\">$1</a>");
