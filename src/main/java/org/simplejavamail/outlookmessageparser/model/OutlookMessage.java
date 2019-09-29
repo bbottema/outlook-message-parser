@@ -311,16 +311,23 @@ public class OutlookMessage {
 			for (final OutlookAttachment attachment : getOutlookAttachments()) {
 				if (attachment instanceof OutlookFileAttachment) {
 					final OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
-					final String cid = fileAttachment.getFilename();
-					if (cid != null && cid.length() != 0 && htmlContainsCID(html, cid)) {
-						cidMap.put(cid, fileAttachment);
+					if (!tryAddCid(cidMap, html, fileAttachment, fileAttachment.getFilename())) {
+						tryAddCid(cidMap, html, fileAttachment, fileAttachment.getLongFilename());
 					}
 				}
 			}
 		}
 		return cidMap;
 	}
-
+	
+	private boolean tryAddCid(HashMap<String, OutlookFileAttachment> cidMap, String html, OutlookFileAttachment a, String cid) {
+		final boolean cidFound = cid != null && cid.length() != 0 && htmlContainsCID(html, cid);
+		if (cidFound) {
+			cidMap.put(cid, a);
+		}
+		return cidFound;
+	}
+	
 	/**
 	 * @return Only the downloadable attachments, *not* embedded attachments (as in embedded with cid:attachment, such as images in an email). This includes
 	 * downloadable nested outlook messages as file attachments!
