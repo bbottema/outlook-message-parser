@@ -14,7 +14,7 @@ import static org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper.WIN
  */
 public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 
-	private static final String[] HTML_START_TAGS = { "<html ", "<Html ", "<HTML " };
+	private static final String[] HTML_START_TAGS = { "<html", "<Html", "<HTML" };
 	private static final String[] HTML_END_TAGS = { "</html>", "</Html>", "</HTML>" };
 	
 	public String rtf2html(final String rtf) {
