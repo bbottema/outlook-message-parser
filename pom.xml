@@ -59,6 +59,11 @@
             <artifactId>poi-scratchpad</artifactId>
             <version>3.9</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>1.2.1</version>
+        </dependency>
 
         <!-- logging -->
         <dependency>

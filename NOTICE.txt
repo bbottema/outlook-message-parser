@@ -12,4 +12,5 @@
   
   This product uses the following external (Open Source) libraries:
   
-    - Apache POI
+    - Apache POI (https://poi.apache.org/)
+    - Jakarta Activation (https://eclipse-ee4j.github.io/jaf/)
