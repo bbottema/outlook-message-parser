@@ -133,16 +133,12 @@ public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
 		replacedText = replacedText.replaceAll("\\{HYPERLINK[^\\}]*\\}", "");
 		//filtering plain replacedText sequences like {\pntext *\tab}
 		replacedText = replacedText.replaceAll("\\{\\\\pntext[^\\}]*\\}", "");
-		//filtering embedded tags like {\*\htmltag64 <tr>}                                          }
-		replacedText = replacedText.replaceAll("\\{\\\\\\*\\\\htmltag\\d+[^\\}<]+(<.+>)\\}", "$1");
 		//filtering embedded tags like {\*\htmltag84 &#43;}
-		replacedText = replacedText.replaceAll("\\{\\\\\\*\\\\htmltag\\d+[^\\}<]+\\}", "");
-		//filtering curly braces that are NOT escaped with backslash },
-		//thus marking the end of an RTF sequence
+		replacedText = replacedText.replaceAll("\\{\\\\\\*\\\\htmltag\\d+ (&[#\\w]+;)}\\\\htmlrtf.*\\\\htmlrtf0 ", "$1");
+		//filtering curly braces that are NOT escaped with backslash }, thus marking the end of an RTF sequence
 		replacedText = replacedText.replaceAll("([^\\\\])" + "\\}+", "$1");
 		replacedText = replacedText.replaceAll("([^\\\\])" + "\\{+", "$1");
-		//filtering curly braces that are escaped with backslash \},
-		//thus representing an actual brace
+		//filtering curly braces that are escaped with backslash \}, thus representing an actual brace
 		replacedText = replacedText.replaceAll("\\\\\\}", "}");
 		replacedText = replacedText.replaceAll("\\\\\\{", "{");
 		//filtering \par sequences
