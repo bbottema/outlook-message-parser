@@ -476,9 +476,9 @@ public class HighoverEmailsTest {
 				"Seat: 15#3F093 | TEL: 737057\n" +
 				"酒店研发部\n" +
 				" \n");
-		
+
 		InputStream resourceAsStream = OutlookMessageParser.class.getClassLoader().getResourceAsStream("test-messages/chinese message.html");
-		String expectedHtml = new Scanner(resourceAsStream, "UTF-8").useDelimiter("\\A").next();
+		String expectedHtml = new Scanner(resourceAsStream, UTF_8.name()).useDelimiter("\\A").next();
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).isEqualTo(normalizeText(expectedHtml));
 	}
 
@@ -744,7 +744,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasReplyToEmail("lo.pop.replyto@somemail.com");
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
 		// Outlook overrode this value too OR converted the original HTML to RTF, from which OutlookMessageParser derived this HTML
-		assertThat(normalizeText(msg.getConvertedBodyHTML())).contains(
+		assertThat(normalizeText(msg.getConvertedBodyHTML())).isEqualTo(
 				"<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">        \n" +
 						"     <b>   We should meet up!  </b>    <img src=\"cid:thumbsup\">\n" +
 						" </body></html>");
