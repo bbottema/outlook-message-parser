@@ -7,7 +7,7 @@
     <artifactId>outlook-message-parser</artifactId>
     <packaging>jar</packaging>
     <name>Outlook Message Parser</name>
-    <version>1.2.1</version>
+    <version>1.3.0</version>
     <description>A Java parser for Outlook messages (.msg files)</description>
     <url>https://github.com/bbottema/outlook-message-parser</url>
 
