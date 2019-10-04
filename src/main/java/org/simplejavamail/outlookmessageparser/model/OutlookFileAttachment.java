@@ -153,7 +153,7 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	 */
 	@SuppressWarnings("ElementOnlyUsedFromTestCode")
 	public byte[] getData() {
-		return data;
+		return data.clone();
 	}
 
 	/**

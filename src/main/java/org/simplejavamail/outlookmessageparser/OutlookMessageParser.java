@@ -1,10 +1,12 @@
 package org.simplejavamail.outlookmessageparser;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.jetbrains.annotations.NotNull;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFieldInformation;
 import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
@@ -18,7 +20,6 @@ import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,7 +37,6 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
-import static java.util.regex.Pattern.quote;
 
 /**
  * Main parser class that does the actual parsing of the Outlook .msg file. It uses the <a href="http://poi.apache.org/poifs/">POI</a> library for parsing the
@@ -77,9 +77,11 @@ public class OutlookMessageParser {
 	 * @return A {@link OutlookMessage} object representing the .msg file.
 	 * @throws IOException Thrown if the file could not be loaded or parsed.
 	 */
-	public OutlookMessage parseMsg(@Nonnull final File msgFile)
+	public OutlookMessage parseMsg(@NotNull final File msgFile)
 			throws IOException {
-		return parseMsg(new FileInputStream(msgFile));
+		try (FileInputStream msgFileInputStream = new FileInputStream(msgFile)) {
+			return parseMsg(msgFileInputStream);
+		}
 	}
 
 	/**
@@ -89,33 +91,33 @@ public class OutlookMessageParser {
 	 * @return A {@link OutlookMessage} object representing the .msg file.
 	 * @throws IOException Thrown if the file could not be loaded or parsed.
 	 */
-	public OutlookMessage parseMsg(@Nonnull final String msgFile)
+	public OutlookMessage parseMsg(@NotNull final String msgFile)
 			throws IOException {
-		return parseMsg(new FileInputStream(msgFile));
+		try (FileInputStream msgFileInputStream = new FileInputStream(msgFile)) {
+			return parseMsg(msgFileInputStream);
+		}
 	}
 
 	/**
 	 * Parses a .msg file provided by an input stream.
 	 *
-	 * @param msgFileStream The .msg file as a InputStream.
+	 * @param msgFileInputStream The .msg file as a InputStream.
 	 * @return A {@link OutlookMessage} object representing the .msg file.
 	 * @throws IOException Thrown if the file could not be loaded or parsed.
 	 */
-	public OutlookMessage parseMsg(@Nonnull final InputStream msgFileStream)
+	public OutlookMessage parseMsg(@NotNull final InputStream msgFileInputStream)
 			throws IOException {
-		// the .msg file, like a file system, contains directories and documents within this directories
-		// we now gain access to the root node and recursively go through the complete 'filesystem'.
-		final OutlookMessage msg = new OutlookMessage(rtf2htmlConverter);
-		try {
-			checkDirectoryEntry(new POIFSFileSystem(msgFileStream).getRoot(), msg);
-		} finally {
-			msgFileStream.close();
+		try (InputStream managedMsgFileInputStream = msgFileInputStream) {
+			// the .msg file, like a file system, contains directories and documents within this directories
+			// we now gain access to the root node and recursively go through the complete 'filesystem'.
+			final OutlookMessage msg = new OutlookMessage(rtf2htmlConverter);
+			checkDirectoryEntry(new POIFSFileSystem(managedMsgFileInputStream).getRoot(), msg);
+			convertHeaders(msg);
+			return msg;
 		}
-		convertHeaders(msg);
-		return msg;
 	}
 
-	private void convertHeaders(@Nonnull final OutlookMessage msg) {
+	private void convertHeaders(@NotNull final OutlookMessage msg) {
 		final String allHeaders = msg.getHeaders();
 		if (allHeaders != null) {
 			extractReplyToHeader(msg, allHeaders);
@@ -123,7 +125,7 @@ public class OutlookMessageParser {
 		}
 	}
 	
-	static void extractReplyToHeader(@Nonnull final OutlookMessage msg, @Nonnull final String allHeaders) {
+	static void extractReplyToHeader(@NotNull final OutlookMessage msg, @NotNull final String allHeaders) {
 		// Reply-To: Optional Name <adress@somemail.com> // second '<' and '>' kept optional
 		final Matcher m = compile("^Reply-To:\\s*(?:<?(?<nameOrAddress>.*?)>?)?\\s*(?:<(?<address>.*?)>)?$", Pattern.MULTILINE).matcher(allHeaders);
 		if (m.find()) {
@@ -141,7 +143,7 @@ public class OutlookMessageParser {
 		}
 	}
 	
-	static void extractSMimeHeader(@Nonnull final OutlookMessage msg, @Nonnull final String allHeaders) {
+	static void extractSMimeHeader(@NotNull final OutlookMessage msg, @NotNull final String allHeaders) {
 		if (msg.getSmime() == null) {
 			// https://regex101.com/r/AE0Uys/1
 			final Matcher m = SMIME_CONTENT_TYPE_PATTERN.matcher(allHeaders);
@@ -270,6 +272,7 @@ public class OutlookMessageParser {
 	 * @return A list of document entries for further processing.
 	 * @throws IOException Thrown if the properties stream could not be parsed.
 	 */
+	@SuppressFBWarnings("RR_NOT_CHECKED")
 	private List<DocumentEntry> getDocumentEntriesFromPropertiesStream(final DocumentEntry de)
 			throws IOException {
 		final List<DocumentEntry> result = new ArrayList<>();

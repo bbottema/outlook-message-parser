@@ -1,5 +1,6 @@
 package org.simplejavamail.outlookmessageparser.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
@@ -166,6 +167,7 @@ public class OutlookMessage {
 	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #toEmail} when the property name
 	 * is '0076').
 	 */
+	@SuppressFBWarnings("SF_SWITCH_NO_DEFAULT")
 	public void setProperty(final OutlookMessageProperty msgProp) {
 		final String name = msgProp.getClazz();
 		final Object value = msgProp.getData();
@@ -891,7 +893,7 @@ public class OutlookMessage {
 	 * Bean getter for {@link #date}.
 	 */
 	public Date getDate() {
-		return date;
+		return (Date) date.clone();
 	}
 
 	/**
@@ -905,7 +907,7 @@ public class OutlookMessage {
 	 * Bean getter for {@link #clientSubmitTime}.
 	 */
 	public Date getClientSubmitTime() {
-		return clientSubmitTime;
+		return (Date) clientSubmitTime.clone();
 	}
 
 	private void setClientSubmitTime(final String value) {
@@ -921,7 +923,7 @@ public class OutlookMessage {
 	 * Bean getter for {@link #creationDate}.
 	 */
 	public Date getCreationDate() {
-		return creationDate;
+		return (Date) creationDate.clone();
 	}
 
 	private void setCreationDate(final String value) {
@@ -938,7 +940,7 @@ public class OutlookMessage {
 	 * Bean getter for {@link #lastModificationDate}.
 	 */
 	public Date getLastModificationDate() {
-		return lastModificationDate;
+		return (Date) lastModificationDate.clone();
 	}
 
 	private void setLastModificationDate(final String value) {

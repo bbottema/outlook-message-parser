@@ -91,10 +91,17 @@
         </dependency>
 
         <!-- utility -->
-        <dependency><!-- gives us @NonNull annotations-->
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.1</version>
+        <dependency><!-- Gives us @NotNull and @Nullable -->
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>16.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency><!-- Gives us Spotbugs maven build directives -->
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>3.1.3</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- testing -->
@@ -148,6 +155,22 @@
                     <failOnError>false</failOnError>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>3.1.6</version>
+                <!-- this will make findbugs run during mvn verify -->
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
