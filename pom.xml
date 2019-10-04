@@ -242,30 +242,6 @@
             </plugin>
 
             <plugin>
-                <groupId>se.eris</groupId>
-                <artifactId>notnull-instrumenter-maven-plugin</artifactId>
-                <version>0.6.8</version>
-                <executions>
-                    <execution>
-                        <id>instrument</id>
-                        <goals>
-                            <goal>instrument</goal>
-                            <goal>tests-instrument</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <implicit>true</implicit>
-                    <nullable>
-                        <param>org.jetbrains.annotations.Nullable</param>
-                    </nullable>
-                    <notNull>
-                        <param>org.jetbrains.annotations.NotNull</param>
-                    </notNull>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
