@@ -7,7 +7,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.2.1</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 
@@ -15,10 +15,20 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
+v1.3.0 (4-October-2019)
+
+- [#14](https://github.com/bbottema/outlook-message-parser/issues/14) Dependency problem with Java9+, missing Jakarta Activation Framework
+- [#13](https://github.com/bbottema/outlook-message-parser/issues/13) HTML start tags with extra space not handled correctly
+- [#11](https://github.com/bbottema/outlook-message-parser/issues/11) SimpleRTF2HTMLConverter inserts too many <br/> tags
+- [#10](https://github.com/bbottema/outlook-message-parser/issues/10) Embedded images with DOS-like names are classified as attachments
+- [#9](https://github.com/bbottema/outlook-message-parser/issues/9) SimpleRTF2HTMLConverter removes some valid tags during conversion
+
+
 v1.2.1 (12-May-2019)
 
 - Ignore non S/MIME related content types when extracting S/MIME metadata
 - Added toString and equals methods to the S/MIME data classes
+
 
 v1.1.21 (4-May-2019)
 
@@ -49,11 +59,11 @@ conversion (fixes chinese support #3)
 - Performance boost in the RTF -> HTML converter
 
 
-v1.1.16 (~28-Februari-2017):
+v1.1.16 (~28-Februari-2017)
 
 - First Maven deployment, continuing version number from 1.1.15 of msgparser (https://github.com/bbottema/msgparser)
 
 
-v1.16:
+v1.16
  - Added support for replyTo name and address
  - cleaned up code (1st wave)

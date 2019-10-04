@@ -1,42 +1,51 @@
-v1.2.1
+v1.3.0 (4-October-2019)
+
+- #14: Dependency problem with Java9+, missing Jakarta Activation Framework
+- #13: HTML start tags with extra space not handled correctly
+- #11: SimpleRTF2HTMLConverter inserts too many <br/> tags
+- #10: Embedded images with DOS-like names are classified as attachments
+- #9: SimpleRTF2HTMLConverter removes some valid tags during conversion
+
+
+v1.2.1 (12-May-2019)
 
 - Ignore non S/MIME related content types when extracting S/MIME metadata
 - Added toString and equals methods to the S/MIME data classes
 
 
-v1.1.21
+v1.1.21 (4-May-2019)
 
 - Upgraded mediatype recognition based on file extension for incomplete attachments
 - Added / improved support for public S/MIME meta data
 
 
-1.1.20
+1.1.20 (14-April-2019)
 
 - #7: Fix missing S/MIME header details that are needed to determine the type of S/MIME application
 
 
-1.1.19
+1.1.19 (10-April-2019)
 
 - Log rtf compression error, but otherwise ignore it and keep going and extract what we can.
 
 
-1.1.18
+1.1.18 (5-April-2019)
 
 - #6: Missing mimeTag for attachments should be guessed based on file extension
 
 
-1.1.17
+1.1.17 (19-August-2018)
 
 - implemented robust support for character sets / code pages in RTF to HTML conversion (fixes chinese support #3)
 - fixed bug where too much text was cleaned up as part of superfluous RTF cleanup step when converting to HTML
 - Performance boost in the RTF -> HTML converter
 
 
-1.1.16:
+1.1.16 (~28-Februari-2017)
 
 - First Maven deployment, continuing version number from 1.1.15 of msgparser (https://github.com/bbottema/msgparser)
 
 
-1.16:
+1.16
  - Added support for replyTo name and address
  - cleaned up code (1st wave)
