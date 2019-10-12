@@ -18,9 +18,10 @@ package org.simplejavamail.outlookmessageparser.rtf;
 import org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper;
 
 import java.nio.charset.Charset;
+import java.util.LinkedList;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.compile;
 import static org.simplejavamail.outlookmessageparser.rtf.util.ByteUtil.hexToString;
 import static org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper.WINDOWS_CHARSET;
 
@@ -28,140 +29,138 @@ import static org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper.WIN
  * This class is intended to be used for certain RTF related operations such as extraction of plain HTML from an RTF text.
  */
 public class SimpleRTF2HTMLConverter implements RTF2HTMLConverter {
+    private static Pattern CONTROL_WORD = Pattern.compile("\\\\(([^a-zA-Z])|(([a-zA-Z]+)(-?[\\d]*) ?))");
+    private static Pattern ENCODED_CHARACTER = Pattern.compile("\\\\'([0-9a-fA-F]{2})");
 
-	private static final String[] HTML_START_TAGS = { "<html", "<Html", "<HTML" };
-	private static final String[] HTML_END_TAGS = { "</html>", "</Html>", "</HTML>" };
-	
-	public String rtf2html(final String rtf) {
-		if (rtf != null) {
-			final Charset charset = extractCodepage(rtf);
-			String plain = fetchHtmlSection(rtf);
-			plain = replaceSpecialSequences(plain); // first step, remove known control words or else we'll match single escape hex values in the next step
-			plain = replaceHexSequences(plain, "(?:\\\\f\\d(?:\\\\'..)+)", WINDOWS_CHARSET); // match all header control values with default charset
-			plain = replaceHexSequences(plain, "(?:\\\\'..)+", charset); // match all remaining escaped hex values as encoded text (which might be DBCS like CP936)
-			plain = cleanupRemainingSequences(plain);
-			plain = replaceLineBreaks(plain);
-			return plain;
-		}
-		return null;
-	}
-	
-	private String cleanupRemainingSequences(String plain) {
-		return plain
-				.replaceAll("(\\\\f\\d.+?;)+", "") // clear all \f sequences including fontnames like Courier new
-				.replaceAll("\\\\\\S+", "") // filtering all remaining \<rtfsequence> like e.g.: \htmlrtf
-				.replaceAll("BM__MailAutoSig((?s).*?(?-s))BM__MailAutoSig", "$1");
-	}
-	
-	private Charset extractCodepage(String rtf) {
-		Matcher codePageMatcher = compile("(?:\\\\ansicpg(?<codePage>.+?)\\\\)+").matcher(rtf);
-		if (codePageMatcher.find()) {
-			return CharsetHelper.findCharset(codePageMatcher.group("codePage"));
-		} else {
-			return WINDOWS_CHARSET; // fallback
-		}
-	}
-	
-	/**
-	 * @return The text with removed newlines as they are only part of the RTF document and should not be inside the HTML.
-	 */
-	private String replaceLineBreaks(final String text) {
-		return text
-				.replaceAll("( <br/> ( <br/> )+)", " <br/> ")
-				.replaceAll("\\r\\n", "\n")
-				.replaceAll("[\\r\\u0000]", "");
-	}
+    public String rtf2html(String rtf) {
+        Charset charset = WINDOWS_CHARSET;
 
-	/**
-	 * @return The text with replaced special characters that denote hex codes for strings using Windows CP1252 encoding.
-	 */
-	private String replaceHexSequences(final String text, String sequencesToMatch, final Charset charset) {
-		final StringBuilder res = new StringBuilder();
-		int lastPosition = 0;
-		
-	  	final Matcher escapedHexGroupMatcher = compile(sequencesToMatch).matcher(text);
-		while (escapedHexGroupMatcher.find()) {
-			res.append(text, lastPosition, escapedHexGroupMatcher.start());
-			
-			StringBuilder hexText = new StringBuilder();
-			
-			String escapedHexGroup = escapedHexGroupMatcher.group(0);
-			final Matcher unescapedHexCharacterMatcher = compile("\\\\'(..)").matcher(escapedHexGroup);
-			while (unescapedHexCharacterMatcher.find()) {
-				hexText.append(unescapedHexCharacterMatcher.group(1));
-			}
-			
-			res.append(hexToString(hexText.toString(), charset));
-			
-			lastPosition = escapedHexGroupMatcher.end();
-		}
-		
-		if (res.length() == 0) {
-			res.append(text);
-		} else {
-			res.append(text, lastPosition, text.length());
-		}
-		
-		return res.toString();
-	}
+        // RTF processing requires stack holding current settings, each group adds new settings to stack
+        LinkedList<Group> groupStack = new LinkedList<>();
+        groupStack.add(new Group());
 
-	/**
-	 * @return The actual HTML block / section only but still with RTF code inside (still needs to be cleaned).
-	 */
-	private String fetchHtmlSection(final String text) {
-		int htmlStart = -1;
-		int htmlEnd = -1;
+        Matcher controlWordMatcher = CONTROL_WORD.matcher(rtf);
+        Matcher encodedCharMatcher = ENCODED_CHARACTER.matcher(rtf);
+        StringBuilder result = new StringBuilder();
+        int length = rtf.length();
+        int charIndex = 0;
 
-		//determine html tags
-		for (int i = 0; i < HTML_START_TAGS.length && htmlStart < 0; i++) {
-			htmlStart = text.indexOf(HTML_START_TAGS[i]);
-		}
-		for (int i = 0; i < HTML_END_TAGS.length && htmlEnd < 0; i++) {
-			htmlEnd = text.indexOf(HTML_END_TAGS[i]);
-			if (htmlEnd > 0) {
-				htmlEnd = htmlEnd + HTML_END_TAGS[i].length();
-			}
-		}
+        while (charIndex < length) {
+            char c = rtf.charAt(charIndex);
+            Group currentGroup = groupStack.getFirst();
+            if (c == '\r' || c == '\n') {
+                charIndex++;
+            } else if (c == '{') {  //entering group
+                groupStack.addFirst(currentGroup.copy());
+                charIndex++;
+            } else if (c == '}') {  //exiting group
+                groupStack.removeFirst();
+                //Not outputting anything after last closing brace matching opening brace.
+                if (groupStack.size() == 1) {
+                    break;
+                }
+                charIndex++;
+            } else if (c == '\\') {
 
-		if (htmlStart > -1 && htmlEnd > -1) {
-			//trim rtf code
-			return text.substring(htmlStart, htmlEnd + 1);
-		} else {
-			//embed code within html tags
-			String html = "<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">" + text + "</body></html>";
-			//replace linebreaks with html breaks
-			html = html.replaceAll("[\\n\\r]+", " ");
-			//create hyperlinks
-			html = html.replaceAll("(http://\\S+)", "<a href=\"$1\">$1</a>");
-			return html.replaceAll("mailto:(\\S+@\\S+)", "<a href=\"mailto:$1\">$1</a>");
-		}
-	}
+                // matching ansi-encoded sequences  like \'f5\'93
+                encodedCharMatcher.region(charIndex, length);
+                if (encodedCharMatcher.lookingAt()) {
+                    StringBuilder encodedSequence = new StringBuilder();
+                    while (encodedCharMatcher.lookingAt()) {
+                        encodedSequence.append(encodedCharMatcher.group(1));
+                        charIndex += 4;
+                        encodedCharMatcher.region(charIndex, length);
+                    }
+                    String decoded = hexToString(encodedSequence.toString(), charset);
+                    append(result, decoded, currentGroup);
+                    continue;
+                }
 
-	/**
-	 * @return The text with special sequences replaced by equivalent representations.
-	 */
-	private String replaceSpecialSequences(final String text) {
-		String replacedText = text;
-		//filtering whatever color control sequence, e.g. {\sp{\sn fillColor}{\sv 14935011}}{\sp{\sn fFilled}{\sv 1}}
-		replacedText = replacedText.replaceAll("\\{\\\\S+ [^\\s\\\\}]*\\}", "");
-		//filtering hyperlink sequences like {HYPERLINK "http://xyz.com/print.jpg"}
-		replacedText = replacedText.replaceAll("\\{HYPERLINK[^\\}]*\\}", "");
-		//filtering plain replacedText sequences like {\pntext *\tab}
-		replacedText = replacedText.replaceAll("\\{\\\\pntext[^\\}]*\\}", "");
-		//filtering embedded tags like {\*\htmltag84 &#43;}
-		replacedText = replacedText.replaceAll("\\{\\\\\\*\\\\htmltag\\d+ (&[#\\w]+;)}\\\\htmlrtf.*\\\\htmlrtf0 ", "$1");
-		//filtering curly braces that are NOT escaped with backslash }, thus marking the end of an RTF sequence
-		replacedText = replacedText.replaceAll("([^\\\\])" + "\\}+", "$1");
-		replacedText = replacedText.replaceAll("([^\\\\])" + "\\{+", "$1");
-		//filtering curly braces that are escaped with backslash \}, thus representing an actual brace
-		replacedText = replacedText.replaceAll("\\\\\\}", "}");
-		replacedText = replacedText.replaceAll("\\\\\\{", "{");
-		//filtering \par sequences
-		replacedText = replacedText.replaceAll("\\\\pard*", "\n");
-		//filtering \tab sequences
-		replacedText = replacedText.replaceAll("\\\\tab", "\t");
-		//filtering \*\<rtfsequence> like e.g.: \*\fldinst
-		replacedText = replacedText.replaceAll("\\\\\\*\\\\\\S+", "");
-		return replacedText;
-	}
+                // set matcher to current char position and match from it
+                controlWordMatcher.region(charIndex, length);
+                if (!controlWordMatcher.lookingAt()) {
+                    throw new IllegalStateException("RTF file has invalid structure. Failed to match character '" +
+                            c + "' at [" + charIndex + "/" + length + "] to a control symbol or word.");
+                }
+
+                //checking for control symbol or control word
+                //control word can have optional number following it and the option space as well
+                Integer controlNumber = null;
+                String controlWord = controlWordMatcher.group(2); // group(2) matches control symbol
+                if (controlWord == null) {
+                    controlWord = controlWordMatcher.group(4); // group(2) matches control word
+                    String controlNumberString = controlWordMatcher.group(5);
+                    if (!"".equals(controlNumberString)) {
+                        controlNumber = Integer.valueOf(controlNumberString);
+                    }
+                }
+                charIndex += controlWordMatcher.end() - controlWordMatcher.start();
+
+                switch (controlWord) {
+                    case "par":
+                        append(result, "\n", currentGroup);
+                        break;
+                    case "tab":
+                        append(result, "\t", currentGroup);
+                        break;
+                    case "htmlrtf":
+                        //htmlrtf starts ignored text area, htmlrtf0 ends it
+                        //Though technically this is not a group, it's easier to treat it as such to ignore everything in between
+                        currentGroup.htmlRtf = controlNumber == null;
+                        break;
+                    case "ansicpg":
+                        //charset definition is important for decoding ansi encoded values
+                        charset = CharsetHelper.findCharset(controlNumber);
+                        break;
+                    case "fonttbl": // skipping these groups contents - these are font and color settings
+                    case "colortbl":
+                        currentGroup.ignore = true;
+                        break;
+                    case "uc": // This denotes a number of characters to skip after unicode symbols
+                        currentGroup.unicodeCharLength = controlNumber == null ? 1 : controlNumber;
+                        break;
+                    case "u": // Unicode symbols
+                        if (controlNumber != null) {
+                            char unicodeSymbol = (char) controlNumber.intValue();
+                            append(result, Character.toString(unicodeSymbol), currentGroup);
+                            charIndex += currentGroup.unicodeCharLength;
+                        }
+                        break;
+                    case "{":  // Escaped characters
+                    case "}":
+                    case "\\":
+                        append(result, controlWord, currentGroup);
+                        break;
+                    default:
+                }
+
+            } else {
+                append(result, c + "", currentGroup);
+                charIndex++;
+            }
+        }
+        return result.toString();
+    }
+
+
+    private void append(StringBuilder result, String symbol, Group group) {
+        if (group.ignore || group.htmlRtf) {
+            return;
+        }
+        result.append(symbol);
+    }
+
+    private static class Group {
+        boolean ignore = false;
+        int unicodeCharLength = 1;
+        boolean htmlRtf = false;
+
+        Group copy() {
+            Group newGroup = new Group();
+            newGroup.ignore = this.ignore;
+            newGroup.unicodeCharLength = this.unicodeCharLength;
+            newGroup.htmlRtf = this.htmlRtf;
+            return newGroup;
+        }
+    }
 }

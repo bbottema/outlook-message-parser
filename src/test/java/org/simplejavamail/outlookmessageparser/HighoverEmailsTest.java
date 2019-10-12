@@ -28,10 +28,11 @@ import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeMu
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.simplejavamail.outlookmessageparser.TestUtils.classpathFileToString;
+import static org.simplejavamail.outlookmessageparser.TestUtils.normalizeText;
 
 public class HighoverEmailsTest {
 
@@ -492,8 +493,7 @@ public class HighoverEmailsTest {
 				"酒店研发部\n" +
 				" \n");
 
-		InputStream resourceAsStream = OutlookMessageParser.class.getClassLoader().getResourceAsStream("test-messages/chinese message.html");
-		String expectedHtml = new Scanner(resourceAsStream, UTF_8.name()).useDelimiter("\\A").next();
+		String expectedHtml = classpathFileToString("/test-messages/chinese message.html", UTF_8);
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).isEqualTo(normalizeText(expectedHtml));
 	}
 
@@ -760,9 +760,7 @@ public class HighoverEmailsTest {
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
 		// Outlook overrode this value too OR converted the original HTML to RTF, from which OutlookMessageParser derived this HTML
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).isEqualTo(
-				"<html><body style=\"font-family:'Courier',monospace;font-size:10pt;\">        \n" +
-						"      <b>   We should meet up!  </b>    <img src=\"cid:thumbsup\">\n" +
-						" </body></html>");
+				"<b>We should meet up!</b><img src=\"cid:thumbsup\">");
 		// the RTF was probably created by Outlook based on the HTML when the message was saved
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
@@ -801,10 +799,6 @@ public class HighoverEmailsTest {
 		recipient.setName(toName);
 		recipient.setAddress(toEmail);
 		return recipient;
-	}
-
-	private static String normalizeText(String text) {
-		return text.replaceAll("\\r\\n", "\n").replaceAll("\\r", "\n");
 	}
 
 	private static OutlookMessage parseMsgFile(String msgPath)
