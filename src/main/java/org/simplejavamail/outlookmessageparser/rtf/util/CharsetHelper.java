@@ -8,7 +8,7 @@ public class CharsetHelper {
 	
 	public static final Charset WINDOWS_CHARSET = Charset.forName("CP1252");
 	
-	public static Charset findCharset(String rtfCodePage) {
+	public static Charset findCharset(Integer rtfCodePage) {
 		for (String prefix : CHARSET_PREFIXES) {
 			try {
 				return Charset.forName(prefix + rtfCodePage);
@@ -16,6 +16,6 @@ public class CharsetHelper {
 				// ignore
 			}
 		}
-		throw new UnsupportedCharsetException(rtfCodePage);
+		throw new UnsupportedCharsetException("" + rtfCodePage);
 	}
 }
