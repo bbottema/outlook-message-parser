@@ -1,3 +1,8 @@
+v1.4.0 (13-October-2019)
+
+- #9: Replaced the RFC to HTML converter with a brand new RFC-compliant convert! (thanks to @fadeyev!)
+
+
 v1.3.0 (4-October-2019)
 
 - #14: Dependency problem with Java9+, missing Jakarta Activation Framework
