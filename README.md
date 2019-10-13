@@ -1,4 +1,7 @@
-[![APACHE v2 License](https://img.shields.io/badge/license-apachev2-blue.svg?style=flat)](LICENSE-2.0.txt) [![Latest Release](https://img.shields.io/maven-central/v/org.simplejavamail/outlook-message-parser.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.simplejavamail%22%20AND%20a%3A%22outlook-message-parser%22) [![Javadocs](http://www.javadoc.io/badge/org.simplejavamail/outlook-message-parser.svg)](http://www.javadoc.io/doc/org.simplejavamail/outlook-message-parser) [![Build Status](https://img.shields.io/travis/bbottema/outlook-message-parser.svg?style=flat)](https://travis-ci.org/bbottema/outlook-message-parser) [![Codacy](https://img.shields.io/codacy/db23d489d8374704a7a7e145f2dc6129.svg?style=flat)](https://www.codacy.com/app/b-bottema/outlook-message-parser)
+[![APACHE v2 License](https://img.shields.io/badge/license-apachev2-blue.svg?style=flat)](LICENSE-2.0.txt) 
+[![Latest Release](https://img.shields.io/maven-central/v/org.simplejavamail/outlook-message-parser.svg?style=flat)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.simplejavamail%22%20AND%20a%3A%22outlook-message-parser%22) 
+[![Javadocs](http://www.javadoc.io/badge/org.simplejavamail/outlook-message-parser.svg)](http://www.javadoc.io/doc/org.simplejavamail/outlook-message-parser) 
+[![Codacy](https://img.shields.io/codacy/db23d489d8374704a7a7e145f2dc6129.svg?style=flat)](https://www.codacy.com/app/b-bottema/outlook-message-parser)
 
 # Outlook Message Parser
 *Outlook Message Parser* is a small open source Java library that parses Outlook .msg files.
