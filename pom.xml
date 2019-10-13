@@ -69,6 +69,11 @@
             <artifactId>jakarta.activation</artifactId>
             <version>1.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.bbottema</groupId>
+            <artifactId>rtf-to-html</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!-- logging -->
         <dependency>

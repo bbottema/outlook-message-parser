@@ -6,6 +6,8 @@ import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.bbottema.rtftohtml.RTF2HTMLConverter;
+import org.bbottema.rtftohtml.impl.RTF2HTMLConverterRFCCompliant;
 import org.jetbrains.annotations.NotNull;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFieldInformation;
@@ -15,8 +17,6 @@ import org.simplejavamail.outlookmessageparser.model.OutlookMessageProperty;
 import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
-import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
-import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class OutlookMessageParser {
 			"application\\/pkcs7-mime|multipart\\/signed|application\\/octet-stream|application\\/pkcs7-signature"),
 			Pattern.MULTILINE);
 
-	private RTF2HTMLConverter rtf2htmlConverter = new SimpleRTF2HTMLConverter();
+	private RTF2HTMLConverter rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
 
 	/**
 	 * Parses a .msg file provided in the specified file.

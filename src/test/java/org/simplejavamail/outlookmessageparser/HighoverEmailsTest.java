@@ -16,7 +16,6 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.simplejavamail.outlookmessageparser.TestUtils.classpathFileToString;
 import static org.simplejavamail.outlookmessageparser.TestUtils.normalizeText;
 
 public class HighoverEmailsTest {
@@ -477,9 +476,6 @@ public class HighoverEmailsTest {
 				"Seat: 15#3F093 | TEL: 737057\n" +
 				"酒店研发部\n" +
 				" \n");
-
-		String expectedHtml = classpathFileToString("/test-messages/chinese message.html", UTF_8);
-		assertThat(normalizeText(msg.getConvertedBodyHTML())).isEqualTo(normalizeText(expectedHtml));
 	}
 
 	@Test

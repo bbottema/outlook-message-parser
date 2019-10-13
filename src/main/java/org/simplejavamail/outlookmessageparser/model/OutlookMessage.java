@@ -3,8 +3,8 @@ package org.simplejavamail.outlookmessageparser.model;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
-import org.simplejavamail.outlookmessageparser.rtf.RTF2HTMLConverter;
-import org.simplejavamail.outlookmessageparser.rtf.SimpleRTF2HTMLConverter;
+import org.bbottema.rtftohtml.RTF2HTMLConverter;
+import org.bbottema.rtftohtml.impl.RTF2HTMLConverterRFCCompliant;
 import org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,11 +142,11 @@ public class OutlookMessage {
 	private final RTF2HTMLConverter rtf2htmlConverter;
 
 	public OutlookMessage() {
-		rtf2htmlConverter = new SimpleRTF2HTMLConverter();
+		rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
 	}
 
 	public OutlookMessage(final RTF2HTMLConverter rtf2htmlConverter) {
-		this.rtf2htmlConverter = (rtf2htmlConverter != null) ? rtf2htmlConverter : new SimpleRTF2HTMLConverter();
+		this.rtf2htmlConverter = (rtf2htmlConverter != null) ? rtf2htmlConverter : RTF2HTMLConverterRFCCompliant.INSTANCE;
 	}
 
 	public void addAttachment(final OutlookAttachment outlookAttachment) {
