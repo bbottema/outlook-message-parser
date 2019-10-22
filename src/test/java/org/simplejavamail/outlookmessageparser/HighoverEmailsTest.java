@@ -432,7 +432,7 @@ public class HighoverEmailsTest {
 				+ " \n"
 				+ "\n");
 	}
-	
+
 	@Test
 	public void testChineseMessage()
 			throws IOException {
@@ -475,6 +475,36 @@ public class HighoverEmailsTest {
 				"郝竹林\n" +
 				"Seat: 15#3F093 | TEL: 737057\n" +
 				"酒店研发部\n" +
+				" \n");
+	}
+
+	@Test
+	public void testUnicodeMessage()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/tst_unicode.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName("m.kalejs@outlook.com");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("m.kalejs@outlook.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("Testcase");
+		OutlookMessageAssert.assertThat(msg).hasToName("doesnotexist@doesnt.com");
+		OutlookMessageAssert.assertThat(msg).hasToEmail(null);
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).isEmpty();
+		assertThat(msg.getBodyText()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.fetchCIDMap()).isEmpty();
+		assertThat(msg.fetchTrueAttachments()).isEmpty();
+		assertThat(normalizeText(msg.getBodyText())).isEqualTo("-/-\n" +
+				"Char-å-Char\n" +
+				"-/-\n" +
+				"Char-Å-Char\n" +
+				"-/-\n" +
+				"Char-ø-Char\n" +
+				"-/-\n" +
+				"Char-Ø-Char\n" +
+				"-/-\n" +
+				"Char-æ-Char\n" +
+				"-/-\n" +
+				"Char-Æ-Char\n" +
 				" \n");
 	}
 

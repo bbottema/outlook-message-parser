@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.github.bbottema</groupId>
             <artifactId>rtf-to-html</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- logging -->
