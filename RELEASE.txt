@@ -1,3 +1,8 @@
+v1.4.1 (22-October-2019)
+
+- #17: Fixed encoding error for UTF-8's Windows legacy name (cp)65001
+
+
 v1.4.0 (13-October-2019)
 
 - #9: Replaced the RFC to HTML converter with a brand new RFC-compliant convert! (thanks to @fadeyev!)
