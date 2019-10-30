@@ -10,6 +10,7 @@
     <version>1.4.1</version>
     <description>A Java parser for Outlook messages (.msg files)</description>
     <url>https://github.com/bbottema/outlook-message-parser</url>
+    <inceptionYear>2017</inceptionYear>
 
     <licenses>
         <license>
@@ -317,8 +318,8 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>compile-format</id>
-                        <phase>compile</phase>
+                        <id>before-compile-format</id>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>format</goal>
                         </goals>
