@@ -7,9 +7,10 @@
     <artifactId>outlook-message-parser</artifactId>
     <packaging>jar</packaging>
     <name>Outlook Message Parser</name>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <description>A Java parser for Outlook messages (.msg files)</description>
     <url>https://github.com/bbottema/outlook-message-parser</url>
+    <inceptionYear>2017</inceptionYear>
 
     <licenses>
         <license>
@@ -72,7 +73,7 @@
         <dependency>
             <groupId>com.github.bbottema</groupId>
             <artifactId>rtf-to-html</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- logging -->
