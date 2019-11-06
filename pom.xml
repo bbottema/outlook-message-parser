@@ -309,20 +309,9 @@
                     </includes>
                 </configuration>
                 <executions>
-                    <execution>
-                        <id>clean-remove</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>remove</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>compile-format</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                    </execution>
+                    <execution><id>remove-licence-boilerplate-on-clean</id><phase>clean</phase><goals><goal>remove</goal></goals></execution>
+                    <execution><id>add-licence-boilerplate-on-compile</id><phase>process-sources</phase><goals><goal>format</goal></goals></execution>
+                    <execution><id>remove-licence-boilerplate-after-package</id><phase>package</phase><goals><goal>remove</goal></goals></execution>
                 </executions>
             </plugin>
         </plugins>
