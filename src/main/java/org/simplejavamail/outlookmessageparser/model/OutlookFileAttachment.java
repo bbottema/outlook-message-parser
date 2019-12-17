@@ -21,6 +21,10 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	 */
 	private String mimeTag;
 	/**
+	 * CID of the attachment
+	 */
+	private String contentId;
+	/**
 	 * The extension of the attachment (may not be set).
 	 */
 	private String extension;
@@ -58,6 +62,9 @@ public class OutlookFileAttachment implements OutlookAttachment {
 				case "3703":
 					setExtension((String) value);
 					break;
+				case "3712":
+					setContentId((String) value);
+					break;
 				default:
 					// property to ignore, for full list see properties-list.txt
 			}
@@ -87,6 +94,21 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	@Override
 	public String toString() {
 		return (longFilename != null) ? longFilename : filename;
+	}
+
+	/**
+	 * Bean getter for {@link #contentId}.
+	 */
+	@SuppressWarnings("ElementOnlyUsedFromTestCode")
+	public String getContentId() {
+		return contentId;
+	}
+
+	/**
+	 * Bean setter for {@link #contentId}.
+	 */
+	void setContentId(final String contentId) {
+		this.contentId = contentId;
 	}
 
 	/**
