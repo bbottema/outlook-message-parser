@@ -21,6 +21,7 @@ Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) li
 
 v1.5.0 (18-December-2019)
 
+- [#20](https://github.com/bbottema/outlook-message-parser/issues/20) CC and BCC recipients are not parsed properly
 - [#19](https://github.com/bbottema/outlook-message-parser/issues/19) Use real Outlook ContentId Attribute to resolve CID Attachments
 
 

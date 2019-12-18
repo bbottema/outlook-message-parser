@@ -1,5 +1,6 @@
 v1.5.0 (18-December-2019)
 
+- #20: CC and BCC recipients are not parsed properly
 - #19: Use real Outlook ContentId Attribute to resolve CID Attachments
 
 
