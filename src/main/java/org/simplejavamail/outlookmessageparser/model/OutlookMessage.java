@@ -705,15 +705,15 @@ public class OutlookMessage {
 	 * @return the CC recipients of the message.
 	 */
 	public List<OutlookRecipient> getCcRecipients() {
-		final List<OutlookRecipient> recipients = new ArrayList<>();
+		final List<OutlookRecipient> ccRecipients = new ArrayList<>();
 		final String recipientKey = getDisplayCc().trim();
 		for (final OutlookRecipient entry : recipients) {
 			final String name = entry.getName().trim();
 			if (recipientKey.contains(name)) {
-				recipients.add(entry);
+				ccRecipients.add(entry);
 			}
 		}
-		return recipients;
+		return ccRecipients;
 	}
 
 	/**
@@ -722,15 +722,15 @@ public class OutlookMessage {
 	 * @return the BCC recipients of the message.
 	 */
 	public List<OutlookRecipient> getBccRecipients() {
-		final List<OutlookRecipient> recipients = new ArrayList<>();
+		final List<OutlookRecipient> bccRecipients = new ArrayList<>();
 		final String recipientKey = getDisplayBcc().trim();
 		for (final OutlookRecipient entry : recipients) {
 			final String name = entry.getName().trim();
 			if (recipientKey.contains(name)) {
-				recipients.add(entry);
+				bccRecipients.add(entry);
 			}
 		}
-		return recipients;
+		return bccRecipients;
 	}
 
 	/**

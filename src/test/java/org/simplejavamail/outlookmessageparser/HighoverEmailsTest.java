@@ -477,7 +477,7 @@ public class HighoverEmailsTest {
 				"酒店研发部\n" +
 				" \n");
 	}
-
+	
 	@Test
 	public void testUnicodeMessage()
 			throws IOException {
@@ -506,6 +506,25 @@ public class HighoverEmailsTest {
 				"-/-\n" +
 				"Char-Æ-Char\n" +
 				" \n");
+	}
+	
+	@Test
+	public void testToCcBcc()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/simple reply with CC.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("Re: Sent by CV Contact Form");
+		OutlookMessageAssert.assertThat(msg).hasToName("David Johnston");
+		OutlookMessageAssert.assertThat(msg).hasToEmail("davidjono555@gmail.com");
+		assertThat(msg.getCcRecipients()).extracting("name").containsExactlyInAnyOrder("Benny Bottema", "Benny Bottema");
+		assertThat(msg.getCcRecipients()).extracting("address").containsExactlyInAnyOrder("b.bottema@projectnibble.org", "b.bottema@gmail.com");
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).isEmpty();
+		assertThat(msg.getBodyText()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.fetchCIDMap()).isEmpty();
+		assertThat(msg.fetchTrueAttachments()).isEmpty();
 	}
 
 	@Test
