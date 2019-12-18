@@ -313,7 +313,11 @@ public class OutlookMessage {
 			for (final OutlookAttachment attachment : getOutlookAttachments()) {
 				if (attachment instanceof OutlookFileAttachment) {
 					final OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
-					tryAddCid(cidMap, html, fileAttachment, fileAttachment.getContentId());
+					if (!tryAddCid(cidMap, html, fileAttachment, fileAttachment.getContentId())) {
+						if (!tryAddCid(cidMap, html, fileAttachment, fileAttachment.getFilename())) {
+							tryAddCid(cidMap, html, fileAttachment, fileAttachment.getLongFilename());
+						}
+					}
 				}
 			}
 		}
