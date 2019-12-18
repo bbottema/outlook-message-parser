@@ -1,3 +1,8 @@
+v1.5.0 (18-December-2019)
+
+- #19: Use real Outlook ContentId Attribute to resolve CID Attachments
+
+
 v1.4.1 (22-October-2019)
 
 - #17: Fixed encoding error for UTF-8's Windows legacy name (cp)65001

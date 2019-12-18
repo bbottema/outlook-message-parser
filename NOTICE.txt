@@ -3,7 +3,7 @@
   =========================================================================
   
   Outlook Message Parser
-  Copyright 2017 Benny Bottema
+  Copyright (C) 2017 Benny Bottema (benny@bennybottema.com)
   https://github.com/bbottema/outlook-message-parser
 
   Originally based on msgparser, https://github.com/bbottema/msgparser
