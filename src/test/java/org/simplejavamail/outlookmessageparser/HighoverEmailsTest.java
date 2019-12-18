@@ -383,7 +383,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).contains("cid:image001.png");
 		assertThat(msg.fetchCIDMap()).hasSize(1);
-		assertThat(msg.fetchCIDMap()).containsEntry("image001.png", (OutlookFileAttachment) outlookAttachments.get(0));
+		assertThat(msg.fetchCIDMap()).containsEntry("image001.png@01CDC1CA.B3005370", (OutlookFileAttachment) outlookAttachments.get(0));
 		assertThat(msg.fetchTrueAttachments()).isEmpty();
 		assertThat(normalizeText(msg.getBodyText())).contains("This should pass into the kayako\n"
 				+ "\n"
@@ -529,8 +529,8 @@ public class HighoverEmailsTest {
 		assertAttachmentMetadata(outlookAttachment4, "text/rfc822-headers", "", "", "");
 
 		assertThat(msg.fetchCIDMap()).hasSize(2);
-		assertThat(msg.fetchCIDMap()).containsEntry("image001.png", outlookAttachment2);
-		assertThat(msg.fetchCIDMap()).containsEntry("image002.png", outlookAttachment3);
+		assertThat(msg.fetchCIDMap()).containsEntry("image001.png@01D2951D.C5191030", outlookAttachment2);
+		assertThat(msg.fetchCIDMap()).containsEntry("image002.png@01D2951D.C5191030", outlookAttachment3);
 		assertThat(msg.fetchTrueAttachments()).hasSize(2);
 		assertThat(msg.fetchTrueAttachments()).contains(outlookAttachment1, outlookAttachment4);
 
