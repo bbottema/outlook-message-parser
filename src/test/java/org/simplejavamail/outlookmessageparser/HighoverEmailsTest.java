@@ -27,8 +27,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("John Doe");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("jdoes@someserver.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("(outlookEMLandMSGconverter Trial Version Import) BitDaddys Software");
-		OutlookMessageAssert.assertThat(msg).hasToName("sales@bitdaddys.com");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("sales@bitdaddys.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("sales@bitdaddys.com", "sales@bitdaddys.com"));
 		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
@@ -42,14 +41,55 @@ public class HighoverEmailsTest {
 				+ "John Doe\n"
 				+ "Some Server Company\n");
 	}
-
+	
+	@Test
+	public void testToAndCCAreSeparated_Single()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/simple email with TO and CC_single.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName("Elias Laugher");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("elias.laugher@gmail.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("Test E-Mail");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(
+				createRecipient("Sven Sielenkemper", "sielenkemper@otris.de"));
+		OutlookMessageAssert.assertThat(msg).hasOnlyCcRecipients(
+				createRecipient("niklas.lindson@gmail.com", "niklas.lindson@gmail.com"));
+		OutlookMessageAssert.assertThat(msg).hasNoBccRecipients();
+		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
+		assertThat(msg.getBodyText()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with one cc recipient.\n");
+	}
+	
+	@Test
+	public void testToAndCCAreSeparated_Multiple()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/simple email with TO and CC_multiple.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName("elias.laugher@gmail.com");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("elias.laugher@gmail.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("Test E-Mail");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(
+				createRecipient("elias.laugher@gmail.com", "elias.laugher@gmail.com"),
+				createRecipient("niklas.lindson@gmail.com", "niklas.lindson@gmail.com"));
+		OutlookMessageAssert.assertThat(msg).hasOnlyCcRecipients(
+				createRecipient("egi.champi.titu@gmail.com", "egi.champi.titu@gmail.com"),
+				createRecipient("egi.han.tzu@gmail.com", "egi.han.tzu@gmail.com"));
+		OutlookMessageAssert.assertThat(msg).hasOnlyBccRecipients(
+				createRecipient("egi.carn.carby@gmail.com", "egi.carn.carby@gmail.com"),
+				createRecipient("egi.dink.meeker@gmail.com", "egi.dink.meeker@gmail.com"));
+		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
+		assertThat(msg.getBodyText()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with multiple to/cc/bcc recipients.\n\n \n\n");
+	}
+	
 	@Test
 	public void testUnsentRtfDraft()
 			throws IOException {
 		OutlookMessage msg = parseMsgFile("test-messages/unsent draft.msg");
 		OutlookMessageAssert.assertThat(msg).hasSubject("MSG Test File");
-		OutlookMessageAssert.assertThat(msg).hasToName("time2talk@online-convert.com");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("time2talk@online-convert.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("time2talk@online-convert.com", "time2talk@online-convert.com"));
 		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
@@ -180,8 +220,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("REISINGER Emanuel");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
 		OutlookMessageAssert.assertThat(msg).hasSubject("outlookmsg2html Testmail");
-		OutlookMessageAssert.assertThat(msg).hasToName("REISINGER Emanuel");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("Emanuel.Reisinger@cargonet.software");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("REISINGER Emanuel", "Emanuel.Reisinger@cargonet.software"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(1);
 		OutlookAttachment outlookAttachment = outlookAttachments.get(0);
@@ -191,8 +230,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(nestedMsg).hasFromName("REISINGER Emanuel");
 		OutlookMessageAssert.assertThat(nestedMsg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
 		OutlookMessageAssert.assertThat(nestedMsg).hasSubject("outlookmsg2html Testmail");
-		OutlookMessageAssert.assertThat(nestedMsg).hasToName("REISINGER Emanuel");
-		OutlookMessageAssert.assertThat(nestedMsg).hasToEmail("Emanuel.Reisinger@cargonet.software");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("REISINGER Emanuel", "Emanuel.Reisinger@cargonet.software"));
 		OutlookMessageAssert.assertThat(nestedMsg).hasNoOutlookAttachments();
 		assertThat(nestedMsg.getBodyText()).isNotEmpty();
 		assertThat(nestedMsg.getBodyHTML()).isNull();
@@ -228,8 +266,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("Microsoft Outlook");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("MicrosoftExchange329e71ec88ae4615bbc36ab6ce41109e@coab.us");
 		OutlookMessageAssert.assertThat(msg).hasSubject("Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
-		OutlookMessageAssert.assertThat(msg).hasToName("darlington@coab.us");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("darlington@coab.us");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("darlington@coab.us", "darlington@coab.us"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(2);
 		OutlookAttachment outlookAttachment1 = outlookAttachments.get(0);
@@ -374,8 +411,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("Paliarik, Martin");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("mpaliarik@mdlz.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("email test");
-		OutlookMessageAssert.assertThat(msg).hasToName("Paliarik, Martin");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("mpaliarik@mdlz.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("Paliarik, Martin", "mpaliarik@mdlz.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(1);
 		assertAttachmentMetadata(outlookAttachments.get(0), "image/png", ".png", "image001.png", "image001.png");
@@ -440,8 +476,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName(null);
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("haozl@Ctrip.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("");
-		OutlookMessageAssert.assertThat(msg).hasToName("anjos@163.com");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("anjos@163.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("anjos@163.com", "anjos@163.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).isEmpty();
 		assertThat(msg.getBodyText()).isNotEmpty();
@@ -485,8 +520,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("m.kalejs@outlook.com");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("m.kalejs@outlook.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("Testcase");
-		OutlookMessageAssert.assertThat(msg).hasToName("doesnotexist@doesnt.com");
-		OutlookMessageAssert.assertThat(msg).hasToEmail(null);
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("doesnotexist@doesnt.com", null));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).isEmpty();
 		assertThat(msg.getBodyText()).isNotEmpty();
@@ -515,10 +549,10 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("Re: Sent by CV Contact Form");
-		OutlookMessageAssert.assertThat(msg).hasToName("David Johnston");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("davidjono555@gmail.com");
-		assertThat(msg.getCcRecipients()).extracting("name").containsExactlyInAnyOrder("Benny Bottema", "Benny Bottema");
-		assertThat(msg.getCcRecipients()).extracting("address").containsExactlyInAnyOrder("b.bottema@projectnibble.org", "b.bottema@gmail.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("David Johnston", "davidjono555@gmail.com"));
+		OutlookMessageAssert.assertThat(msg).hasOnlyCcRecipients(
+				createRecipient("Benny Bottema", "b.bottema@projectnibble.org"),
+				createRecipient("Benny Bottema", "b.bottema@gmail.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).isEmpty();
 		assertThat(msg.getBodyText()).isNotEmpty();
@@ -534,8 +568,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName(null);
 		OutlookMessageAssert.assertThat(msg).hasFromEmail(null);
 		OutlookMessageAssert.assertThat(msg).hasSubject("FW: Delivery delayed:RE: Bosco Fraud Cases [ 2 of 8]");
-		OutlookMessageAssert.assertThat(msg).hasToName(null);
-		OutlookMessageAssert.assertThat(msg).hasToEmail(null);
+		OutlookMessageAssert.assertThat(msg).hasNoToRecipients();
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(4);
 		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
@@ -707,8 +740,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("S/MIME test message signed");
-		OutlookMessageAssert.assertThat(msg).hasToName("Benny Bottema");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("benny@bennybottema.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("Benny Bottema", "benny@bennybottema.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(1);
 		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
@@ -732,8 +764,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("S/MIME test message encrypted");
-		OutlookMessageAssert.assertThat(msg).hasToName("Benny Bottema");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("benny@bennybottema.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("Benny Bottema", "benny@bennybottema.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(1);
 		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
@@ -757,8 +788,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("Benny Bottema");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("benny@bennybottema.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("S/MIME test message signed & encrypted");
-		OutlookMessageAssert.assertThat(msg).hasToName("Benny Bottema");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("benny@bennybottema.com");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("Benny Bottema", "benny@bennybottema.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).hasSize(1);
 		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
@@ -783,8 +813,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("b.bottema@projectnibble.org");
 		OutlookMessageAssert.assertThat(msg).hasSubject("hey");
 		// Outlook overrode this when saving the .msg to match the mail account
-		OutlookMessageAssert.assertThat(msg).hasToName("Bottema, Benny");
-		OutlookMessageAssert.assertThat(msg).hasToEmail("benny.bottema@aegon.nl");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("Bottema, Benny", "benny.bottema@aegon.nl"));
 		OutlookMessageAssert.assertThat(msg).hasReplyToName("lollypop-replyto");
 		OutlookMessageAssert.assertThat(msg).hasReplyToEmail("lo.pop.replyto@somemail.com");
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
@@ -825,10 +854,10 @@ public class HighoverEmailsTest {
 	}
 
 	private static OutlookRecipient createRecipient(String toName, String toEmail) {
-		OutlookRecipient recipient = new OutlookRecipient();
-		recipient.setName(toName);
-		recipient.setAddress(toEmail);
-		return recipient;
+		final OutlookRecipient outlookRecipient = new OutlookRecipient();
+		outlookRecipient.setName(toName);
+		outlookRecipient.setAddress(toEmail);
+		return outlookRecipient;
 	}
 
 	private static OutlookMessage parseMsgFile(String msgPath)

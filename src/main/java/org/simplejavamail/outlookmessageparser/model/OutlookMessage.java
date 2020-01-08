@@ -5,6 +5,7 @@ import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.bbottema.rtftohtml.RTF2HTMLConverter;
 import org.bbottema.rtftohtml.impl.RTF2HTMLConverterRFCCompliant;
+import org.jetbrains.annotations.NotNull;
 import org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,14 +51,6 @@ public class OutlookMessage {
 	 * The name part of the From: mail address
 	 */
 	private String fromName;
-	/**
-	 * The address part of To: mail address.
-	 */
-	private String toEmail;
-	/**
-	 * The name part of the To: mail address
-	 */
-	private String toName;
 	/**
 	 * The address part of Reply-To header
 	 */
@@ -155,17 +148,10 @@ public class OutlookMessage {
 
 	public void addRecipient(final OutlookRecipient recipient) {
 		recipients.add(recipient);
-		if (toEmail == null) {
-			setToEmail(recipient.getAddress());
-		}
-		if (toName == null) {
-			setToName(recipient.getName());
-		}
 	}
 
 	/**
-	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #toEmail} when the property name
-	 * is '0076').
+	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #setSubject(String)} when the property name is '0x37').
 	 */
 	@SuppressFBWarnings("SF_SWITCH_NO_DEFAULT")
 	public void setProperty(final OutlookMessageProperty msgProp) {
@@ -206,15 +192,6 @@ public class OutlookMessage {
 				break;
 			case 0x42: //SENT REPRESENTING NAME
 				setFromName(stringValue);
-				break;
-			case 0x76: //RECEIVED BY EMAIL ADDRESS
-				setToEmail(stringValue, true);
-				break;
-			case 0x8000:
-				setToEmail(stringValue);
-				break;
-			case 0x3001: //DISPLAY NAME
-				setToName(stringValue);
 				break;
 			case 0xe04: //DISPLAY TO
 				setDisplayTo(stringValue);
@@ -257,8 +234,6 @@ public class OutlookMessage {
 		// save all properties (incl. those identified above)
 		properties.put(mapiClass, value);
 
-		checkToRecipient();
-
 		// other possible values (some are duplicates)
 		// 0044: recv name
 		// 004d: author
@@ -289,19 +264,6 @@ public class OutlookMessage {
 		}
 	}
 	
-	/**
-	 * Checks if the correct recipient's addresses are set.
-	 */
-	private void checkToRecipient() {
-		final OutlookRecipient toRecipient = getToRecipient();
-		if (toRecipient != null) {
-			setToEmail(toRecipient.getAddress(), true);
-			setToName(toRecipient.getName());
-			recipients.remove(toRecipient);
-			recipients.add(0, toRecipient);
-		}
-	}
-
 	/**
 	 * @return Only the attachments that are embedded by cid reference.
 	 */
@@ -409,7 +371,9 @@ public class OutlookMessage {
 	private StringBuilder commonToString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("From: ").append(createMailString(fromEmail, fromName)).append("\n");
-		sb.append("To: ").append(createMailString(toEmail, toName)).append("\n");
+		appendRecipients(sb, "To: ", getToRecipients());
+		appendRecipients(sb, "Cc: ", getCcRecipients());
+		appendRecipients(sb, "Bcc: ", getBccRecipients());
 		if (date != null) {
 			final SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
 			sb.append("Date: ").append(formatter.format(date)).append("\n");
@@ -419,7 +383,17 @@ public class OutlookMessage {
 		}
 		return sb;
 	}
-
+	
+	private void appendRecipients(StringBuilder sb, String recipientTypeFormatted, List<OutlookRecipient> recipients) {
+		if (!recipients.isEmpty()) {
+			sb.append(recipientTypeFormatted);
+			for (OutlookRecipient toRecipient : getToRecipients()) {
+				sb.append(createMailString(toRecipient.getName(), toRecipient.getAddress())).append("; ");
+			}
+			sb.delete(sb.lastIndexOf("; "), sb.length());
+		}
+	}
+	
 	/**
 	 * Convenience method for creating an email address expression (including the name, the address, or both).
 	 *
@@ -642,78 +616,21 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean getter for {@link #toEmail}.
-	 */
-	public String getToEmail() {
-		return toEmail;
-	}
-
-	/**
-	 * Delegates to {@link #setToEmail(String, boolean)} with {@code force = false}.
-	 */
-	private void setToEmail(final String toEmail) {
-		setToEmail(toEmail, false);
-	}
-
-	/**
-	 * @param toEmail the address to set
-	 * @param force   forces overwriting of the field if already set
-	 */
-	private void setToEmail(final String toEmail, final boolean force) {
-		if ((force || this.toEmail == null) && toEmail != null && toEmail.contains("@")) {
-			this.toEmail = toEmail;
-		}
-	}
-
-	/**
-	 * Bean getter for {@link #toName}.
-	 */
-	public String getToName() {
-		return toName;
-	}
-
-	/**
-	 * Bean setter for {@link #toName}.
-	 */
-	private void setToName(final String toName) {
-		if (toName != null) {
-			this.toName = toName.trim();
-		}
-	}
-
-	/**
-	 * Retrieves the {@link OutlookRecipient} object that represents the TO recipient of the message.
+	 * Retrieves a list of {@link OutlookRecipient} objects that represent the CC recipients of the message.
 	 *
-	 * @return the TO recipient of the message or null in case no {@link OutlookRecipient} was found.
+	 * @return the TO recipients of the message.
 	 */
-	public OutlookRecipient getToRecipient() {
-		if (getDisplayTo() != null) {
-			final String recipientKey = getDisplayTo().trim();
-			for (final OutlookRecipient entry : recipients) {
-				final String name = entry.getName().trim();
-				if (recipientKey.contains(name)) {
-					return entry;
-				}
-			}
-		}
-		return null;
+	public List<OutlookRecipient> getToRecipients() {
+		return filterRecipients(getDisplayTo());
 	}
-
+	
 	/**
 	 * Retrieves a list of {@link OutlookRecipient} objects that represent the CC recipients of the message.
 	 *
 	 * @return the CC recipients of the message.
 	 */
 	public List<OutlookRecipient> getCcRecipients() {
-		final List<OutlookRecipient> ccRecipients = new ArrayList<>();
-		final String recipientKey = getDisplayCc().trim();
-		for (final OutlookRecipient entry : recipients) {
-			final String name = entry.getName().trim();
-			if (recipientKey.contains(name)) {
-				ccRecipients.add(entry);
-			}
-		}
-		return ccRecipients;
+		return filterRecipients(getDisplayCc());
 	}
 
 	/**
@@ -722,15 +639,20 @@ public class OutlookMessage {
 	 * @return the BCC recipients of the message.
 	 */
 	public List<OutlookRecipient> getBccRecipients() {
-		final List<OutlookRecipient> bccRecipients = new ArrayList<>();
-		final String recipientKey = getDisplayBcc().trim();
+		return filterRecipients(getDisplayBcc());
+	}
+	
+	@NotNull
+	private List<OutlookRecipient> filterRecipients(String displayTo) {
+		final List<OutlookRecipient> toRecipients = new ArrayList<>();
+		final String recipientKey = displayTo.trim();
 		for (final OutlookRecipient entry : recipients) {
 			final String name = entry.getName().trim();
 			if (recipientKey.contains(name)) {
-				bccRecipients.add(entry);
+				toRecipients.add(entry);
 			}
 		}
-		return bccRecipients;
+		return toRecipients;
 	}
 
 	/**
