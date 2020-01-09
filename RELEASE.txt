@@ -1,3 +1,10 @@
+v1.7.0 (9-January-2020)
+
+- #18: Upgrade Apache POI 3.9 -> 4.x
+
+Note: Apache POI requires minimum Java 8
+
+
 v1.6.0 (8-January-2020)
 
 - #21: Multiple TO recipients are not handles properly
