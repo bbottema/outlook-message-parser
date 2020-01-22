@@ -176,6 +176,9 @@ public class OutlookMessageParser {
 				} else if (de.getName().startsWith("__recip_version1.0")) {
 					// a recipient entry has been found (which is also a directory entry itself)
 					checkRecipientDirectoryEntry(de, msg);
+				} else if (de.getName().startsWith("__nameid_version1.0")) {
+					// a named property mapping directory has been found. We have to ignore it because 
+					// we can not parse it yet and it creates conflicts with normal parsing see also [MS-OXMSG]
 				} else {
 					// a directory entry has been found. this node will be recursively checked
 					checkDirectoryEntry(de, msg);
