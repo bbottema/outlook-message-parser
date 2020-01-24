@@ -6,6 +6,7 @@ import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.bbottema.rtftohtml.RTF2HTMLConverter;
 import org.bbottema.rtftohtml.impl.RTF2HTMLConverterRFCCompliant;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -828,10 +829,11 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean getter for {@link #clientSubmitTime}.
+	 * @return {@link #clientSubmitTime} or null in case this message has not been sent yet.
 	 */
+	@Nullable
 	public Date getClientSubmitTime() {
-		return (Date) clientSubmitTime.clone();
+		return clientSubmitTime != null ? (Date) clientSubmitTime.clone() : null;
 	}
 
 	private void setClientSubmitTime(final String value) {

@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.simplejavamail.outlookmessageparser.TestUtils.normalizeText;
 
@@ -32,6 +33,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Dear BitDaddys Corp.,\n"
 				+ "\n"
 				+ "We have added your software to our approved list.\n"
@@ -58,6 +60,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with one cc recipient.\n");
 	}
 	
@@ -81,6 +84,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with multiple to/cc/bcc recipients.\n\n \n\n");
 	}
 	
@@ -94,6 +98,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(msg.getClientSubmitTime()).isNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("MSG test file\n"
 				+ "Purpose: Provide example of this file type\n"
 				+ "Document file type: MSG\n"
@@ -163,6 +168,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getConvertedBodyHTML()).isNotEmpty();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Another test email to obtain raw data for Jean-Philippe.\n"
 				+ "\n"
 				+ " \n"
@@ -236,6 +242,7 @@ public class HighoverEmailsTest {
 		assertThat(nestedMsg.getBodyText()).isNotEmpty();
 		assertThat(nestedMsg.getBodyHTML()).isNull();
 		assertThat(nestedMsg.getBodyRTF()).isNotEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(nestedMsg.getBodyText())).isEqualTo("Hello all,\n"
 				+ "\n"
 				+ " \n"
@@ -323,6 +330,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Delivery is delayed to these recipients or groups:\n"
 				+ "\n"
 				+ "Darren.vuzzo@myfloridalicence.com (Darren.vuzzo@myfloridalicence.com)\n"
@@ -423,6 +431,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.fetchCIDMap()).hasSize(1);
 		assertThat(msg.fetchCIDMap()).containsEntry("image001.png@01CDC1CA.B3005370", (OutlookFileAttachment) outlookAttachments.get(0));
 		assertThat(msg.fetchTrueAttachments()).isEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).contains("This should pass into the kayako\n"
 				+ "\n"
 				+ " \n"
@@ -486,6 +495,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getConvertedBodyHTML()).isNotEmpty();
 		assertThat(msg.fetchCIDMap()).isEmpty();
 		assertThat(msg.fetchTrueAttachments()).isEmpty();
+		assertThat(msg.getClientSubmitTime()).isNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo(" \n" +
 				" \n" +
 				"Dears：\n" +
@@ -530,6 +540,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.fetchCIDMap()).isEmpty();
 		assertThat(msg.fetchTrueAttachments()).isEmpty();
+		assertThat(msg.getClientSubmitTime()).isNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("-/-\n" +
 				"Char-å-Char\n" +
 				"-/-\n" +
@@ -561,6 +572,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.fetchCIDMap()).isEmpty();
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(msg.fetchTrueAttachments()).isEmpty();
 	}
 
@@ -640,6 +652,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getConvertedBodyHTML()).contains("cid:image002.png");
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getClientSubmitTime()).isNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo(" \n"
 				+ " \n"
 				+ "Van: Microsoft Outlook\n"
@@ -819,6 +832,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("Bottema, Benny", "benny.bottema@aegon.nl"));
 		OutlookMessageAssert.assertThat(msg).hasReplyToName("lollypop-replyto");
 		OutlookMessageAssert.assertThat(msg).hasReplyToEmail("lo.pop.replyto@somemail.com");
+		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("We should meet up!\n");
 		// Outlook overrode this value too OR converted the original HTML to RTF, from which OutlookMessageParser derived this HTML
 		assertThat(normalizeText(msg.getConvertedBodyHTML())).isEqualTo(
@@ -866,6 +880,6 @@ public class HighoverEmailsTest {
 	private static OutlookMessage parseMsgFile(String msgPath)
 			throws IOException {
 		InputStream resourceAsStream = OutlookMessageParser.class.getClassLoader().getResourceAsStream(msgPath);
-		return new OutlookMessageParser().parseMsg(resourceAsStream);
+		return new OutlookMessageParser().parseMsg(requireNonNull(resourceAsStream));
 	}
 }
