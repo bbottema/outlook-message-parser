@@ -1,3 +1,9 @@
+v1.7.1 (24-January-2020)
+
+- #25: NPE on ClientSubmitTime when original message has not been sent yet
+- #23: Bug: __nameid_ directory should not be parsed (and causing invalid HTML body)
+
+
 v1.7.0 (9-January-2020)
 
 - #18: Upgrade Apache POI 3.9 -> 4.x
