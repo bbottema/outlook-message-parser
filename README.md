@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.7.2</version>
+  <version>1.7.3</version>
 </dependency>
 ```
 
@@ -19,8 +19,9 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
 
-v1.7.0 - v1.7.2 (9-January-2020 - 24-January-2020)
+v1.7.0 - v1.7.3 (9-January-2020 - 24-January-2020)
 
+- v1.7.3 - [#27](https://github.com/bbottema/outlook-message-parser/issues/27) When from name/address are not available (unsent emails), these fields are filled with binary garbage
 - v1.7.2 - [#26](https://github.com/bbottema/outlook-message-parser/issues/26) To email address is not handled properly when name is omitted
 - v1.7.1 - [#25](https://github.com/bbottema/outlook-message-parser/issues/25) NPE on ClientSubmitTime when original message has not been sent yet
 - v1.7.1 - [#23](https://github.com/bbottema/outlook-message-parser/issues/23) Bug: __nameid_ directory should not be parsed (and causing invalid HTML body)
