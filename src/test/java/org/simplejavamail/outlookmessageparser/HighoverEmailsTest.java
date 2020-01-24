@@ -94,6 +94,8 @@ public class HighoverEmailsTest {
 	public void testUnsentRtfDraft()
 			throws IOException {
 		OutlookMessage msg = parseMsgFile("test-messages/unsent draft.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName(null);
+		OutlookMessageAssert.assertThat(msg).hasFromEmail(null);
 		OutlookMessageAssert.assertThat(msg).hasSubject("MSG Test File");
 		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("time2talk@online-convert.com", "time2talk@online-convert.com"));
 		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
