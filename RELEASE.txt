@@ -1,12 +1,9 @@
-v1.7.1 (24-January-2020)
+v1.7.0 - v1.7.2 (9-January-2020 - 24-January-2020)
 
-- #25: NPE on ClientSubmitTime when original message has not been sent yet
-- #23: Bug: __nameid_ directory should not be parsed (and causing invalid HTML body)
-
-
-v1.7.0 (9-January-2020)
-
-- #18: Upgrade Apache POI 3.9 -> 4.x
+- v1.7.2 - #26: To email address is not handled properly when name is omitted
+- v1.7.1 - #25: NPE on ClientSubmitTime when original message has not been sent yet
+- v1.7.1 - #23: Bug: __nameid_ directory should not be parsed (and causing invalid HTML body)
+- v1.7.0 - #18: Upgrade Apache POI 3.9 -> 4.x
 
 Note: Apache POI requires minimum Java 8
 
