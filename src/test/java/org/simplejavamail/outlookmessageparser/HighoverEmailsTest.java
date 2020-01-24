@@ -1,5 +1,7 @@
 package org.simplejavamail.outlookmessageparser;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
@@ -533,7 +535,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasFromName("m.kalejs@outlook.com");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("m.kalejs@outlook.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("Testcase");
-		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("doesnotexist@doesnt.com", null));
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("doesnotexist@doesnt.com", "doesnotexist@doesnt.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).isEmpty();
 		assertThat(msg.getBodyText()).isNotEmpty();
@@ -870,10 +872,10 @@ public class HighoverEmailsTest {
 		assertThat(((OutlookFileAttachment) attachment).getLongFilename()).isEqualTo(fullname);
 	}
 
-	private static OutlookRecipient createRecipient(String toName, String toEmail) {
+	private static OutlookRecipient createRecipient(@Nullable String toName, @NotNull String toEmail) {
 		final OutlookRecipient outlookRecipient = new OutlookRecipient();
 		outlookRecipient.setName(toName);
-		outlookRecipient.setAddress(toEmail);
+		outlookRecipient.setAddress(requireNonNull(toEmail));
 		return outlookRecipient;
 	}
 

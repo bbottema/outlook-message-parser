@@ -25,6 +25,10 @@ public class OutlookRecipient {
 	private String name;
 	private String address;
 
+	// while parsing new properties, in some use cases the only emailaddress we get is actually encoded as name in the email
+	// but if not, we should know when to replace it with the actually encoded address, where this flag helps us
+	private boolean nameWasUsedAsAddress = false;
+
 	/**
 	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #address} when the property name
 	 * is '0076').
@@ -47,14 +51,29 @@ public class OutlookRecipient {
 			LOGGER.error("Unexpected mapi class: {}", name, e);
 		}
 
-		if (mapiClass == 0x3003 || mapiClass == 0x39fe) {
-			setAddress((String) value);
-		} else if (mapiClass == 0x3001) {
-			setName((String) value);
+		if (mapiClass == 0x3003 || mapiClass == 0x39fe || mapiClass == 0x3001) {
+			handleNameAddressProperty(mapiClass, (String) value);
 		}
 
 		// save all properties (incl. those identified above)
 		properties.put(mapiClass, value);
+	}
+
+	private void handleNameAddressProperty(int mapiClass, String probablyNamePossiblyAddress) {
+		if (mapiClass == 0x3003 || mapiClass == 0x39fe) { // address
+			if ((this.address == null || nameWasUsedAsAddress) && probablyNamePossiblyAddress.contains("@")) {
+				setAddress(probablyNamePossiblyAddress);
+				nameWasUsedAsAddress = false;
+			}
+		} else if (mapiClass == 0x3001) { // name
+			setName(probablyNamePossiblyAddress);
+			// If no name+email was given, Outlook will encode the value as name, even if it actually is an addres
+			// so just in that case, do a quick check to catch most use-cases where the name is actually the email address
+			if (this.address == null && probablyNamePossiblyAddress.contains("@")) {
+				setAddress(probablyNamePossiblyAddress);
+				nameWasUsedAsAddress = true;
+			}
+		}
 	}
 
 	@Override
@@ -106,9 +125,7 @@ public class OutlookRecipient {
 	 * Bean setter for {@link #address}.
 	 */
 	public void setAddress(final String address) {
-		if (this.address == null && address != null && address.contains("@")) {
-			this.address = address;
-		}
+		this.address = address;
 	}
 
 	/**
