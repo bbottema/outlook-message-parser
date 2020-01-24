@@ -160,7 +160,7 @@ public class HighoverEmailsTest {
 				createRecipient("'rob@thegopedal.com'", "rob@thegopedal.com"));
 		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
 		assertThat(msg.getBodyText()).isNotEmpty();
-		assertThat(msg.getBodyHTML()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Another test email to obtain raw data for Jean-Philippe.\n"
 				+ "\n"
@@ -249,7 +249,7 @@ public class HighoverEmailsTest {
 				+ "\n");
 		/* /nested message */
 		assertThat(msg.getBodyText()).isNotEmpty();
-		assertThat(msg.getBodyHTML()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Mail in mail.\n"
 				+ "\n"
@@ -480,7 +480,7 @@ public class HighoverEmailsTest {
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
 		assertThat(outlookAttachments).isEmpty();
 		assertThat(msg.getBodyText()).isNotEmpty();
-		assertThat(msg.getBodyHTML()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.fetchCIDMap()).isEmpty();
 		assertThat(msg.fetchTrueAttachments()).isEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo(" \n" +
@@ -636,7 +636,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.getConvertedBodyHTML()).contains("cid:image001.png");
 		assertThat(msg.getConvertedBodyHTML()).contains("cid:image002.png");
 		assertThat(msg.getBodyText()).isNotEmpty();
-		assertThat(msg.getBodyHTML()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo(" \n"
 				+ " \n"
 				+ "Van: Microsoft Outlook\n"
