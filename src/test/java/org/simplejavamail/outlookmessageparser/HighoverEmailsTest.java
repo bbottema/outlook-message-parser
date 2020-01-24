@@ -161,6 +161,7 @@ public class HighoverEmailsTest {
 		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getConvertedBodyHTML()).isNotEmpty();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Another test email to obtain raw data for Jean-Philippe.\n"
 				+ "\n"
@@ -250,6 +251,7 @@ public class HighoverEmailsTest {
 		/* /nested message */
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getConvertedBodyHTML()).isNotEmpty();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Mail in mail.\n"
 				+ "\n"
@@ -481,6 +483,7 @@ public class HighoverEmailsTest {
 		assertThat(outlookAttachments).isEmpty();
 		assertThat(msg.getBodyText()).isNotEmpty();
 		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getConvertedBodyHTML()).isNotEmpty();
 		assertThat(msg.fetchCIDMap()).isEmpty();
 		assertThat(msg.fetchTrueAttachments()).isEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo(" \n" +
