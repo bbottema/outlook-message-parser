@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,10 +35,6 @@ import static java.util.regex.Pattern.compile;
  */
 public class OutlookMessage {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessage.class);
-
-	// in case there is no from name/address, email may still populate the respective properties with binary garbage values
-	// to at least protect at the binary garbage, we can perform an ASCII check on it
-	private static final CharsetEncoder US_ASCII_ENCODER = StandardCharsets.US_ASCII.newEncoder();
 
 	/**
 	 * The message class as defined in the .msg file.
@@ -193,16 +187,10 @@ public class OutlookMessage {
 			case 0xc1f: //SENDER EMAIL ADDRESS
 			case 0x65: //SENT REPRESENTING EMAIL ADDRESS
 			case 0x3ffa: //LAST MODIFIER NAME
-			case 0x800d:
-			case 0x8008:
-				if (US_ASCII_ENCODER.canEncode(stringValue)) {
-					setFromEmail(stringValue);
-				}
+				setFromEmail(stringValue);
 				break;
 			case 0x42: //SENT REPRESENTING NAME
-				if (US_ASCII_ENCODER.canEncode(stringValue)) {
-					setFromName(stringValue);
-				}
+				setFromName(stringValue);
 				break;
 			case 0xe04: //DISPLAY TO
 				setDisplayTo(stringValue);
