@@ -88,6 +88,31 @@ public class HighoverEmailsTest {
 	}
 	
 	@Test
+	public void testGithubIssue31_AttachmentNameWithSpecialCharacters()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/attachment with a bracket in the name.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName(null);
+		OutlookMessageAssert.assertThat(msg).hasFromEmail(null);
+		OutlookMessageAssert.assertThat(msg).hasSubject("Attachment with the name \"Attachment[1.pdf\"");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("a@b.c", "a@b.c"));
+		OutlookMessageAssert.assertThat(msg).hasNoCcRecipients();
+		OutlookMessageAssert.assertThat(msg).hasNoBccRecipients();
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).hasSize(1);
+		OutlookAttachment outlookAttachment1 = outlookAttachments.get(0);
+		assertAttachmentMetadata(outlookAttachment1, "application/pdf", ".pdf", "", "Attachment[1.pdf");
+		assertThat(outlookAttachment1).isOfAnyClassIn(OutlookFileAttachment.class);
+		String attachmentContent1 = normalizeText(new String(((OutlookFileAttachment) outlookAttachment1).getData(), UTF_8));
+		assertThat(attachmentContent1).isEqualTo("dummy attachment");
+		assertThat(msg.fetchTrueAttachments()).hasSize(1);
+		assertThat(msg.fetchTrueAttachments()).contains((OutlookFileAttachment) outlookAttachment1);
+		assertThat(msg.getBodyText()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getBodyRTF()).isNotEmpty();
+		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Dummy text. Btw, the pdf is actually a .txt\n");
+	}
+	
+	@Test
 	public void testToAndCCAreSeparated_Multiple()
 			throws IOException {
 		OutlookMessage msg = parseMsgFile("test-messages/simple email with TO and CC_multiple.msg");

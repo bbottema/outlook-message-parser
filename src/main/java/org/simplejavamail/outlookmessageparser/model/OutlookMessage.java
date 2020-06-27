@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.lang.String.*;
 import static java.util.Arrays.copyOfRange;
 import static java.util.regex.Pattern.compile;
 
@@ -26,8 +27,9 @@ import static java.util.regex.Pattern.compile;
  * object.
  */
 public class OutlookMessage {
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessage.class);
-
+	
 	/**
 	 * The message class as defined in the .msg file.
 	 */
@@ -126,7 +128,7 @@ public class OutlookMessage {
 	private final List<OutlookRecipient> recipients = new ArrayList<>();
 
 	private final RTF2HTMLConverter rtf2htmlConverter;
-
+	
 	public OutlookMessage() {
 		rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
 	}
@@ -303,16 +305,15 @@ public class OutlookMessage {
 		}
 		return fileAttachments;
 	}
-
+	
 	private boolean htmlContainsCID(final String html, final String cidName) {
-		return compile("cid:['\"]?" + escapeCID(cidName) + "['\"]?").matcher(html).find();
+		return compile(format("cid:['\"]?%s['\"]?", escapeCID(cidName))).matcher(html).find();
 	}
 
 	private String escapeCID(final String cidName) {
 		String res = cidName;
-		final List<Character> specialCharacters = Arrays.asList('\\', '^', '$', '.', '|', '?', '*', '+', '(', ')', '[', '{');
-		for (final Character c : specialCharacters) {
-			res = res.replace(c.toString(), "\\" + c.toString());
+		for (final String c : new String[]{"\\", "^", "$", ".", "|", "?", "*", "+", "(", ")", "[", "{"}) {
+			res = res.replace(c, "\\" + c);
 		}
 		return res;
 	}
@@ -942,7 +943,7 @@ public class OutlookMessage {
 	 * @return A hex formatted number.
 	 */
 	private String convertToHex(final Integer propCode) {
-		return String.format("%04x", propCode);
+		return format("%04x", propCode);
 	}
 
 	/**
