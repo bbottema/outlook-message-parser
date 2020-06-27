@@ -54,8 +54,12 @@ import static java.util.regex.Pattern.compile;
  * <p>
  * Usage:
  * <p>
- * <code> OutlookMessageParser msgp = new OutlookMessageParser();<br /> msgp.setRtf2htmlConverter(new SimpleRTF2HTMLConverter()); //optional (if you want to use
- * your own implementation)<br /> OutlookMessage msg = msgp.parseMsg("test.msg"); </code>
+ * <code>
+ *    OutlookMessageParser msgp = new OutlookMessageParser();<br>
+ *    msgp.setRtf2htmlConverter(new SimpleRTF2HTMLConverter()); //optional (if you want to use
+ *    your own implementation)<br>
+ *    OutlookMessage msg = msgp.parseMsg("test.msg");
+ * </code>
  */
 public class OutlookMessageParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookMessageParser.class);
