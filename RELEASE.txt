@@ -1,5 +1,6 @@
-v1.7.0 - v1.7.4 (9-January-2020 - 27-January-2020)
+v1.7.0 - v1.7.5 (9-January-2020 - 27-June-2020)
 
+- v1.7.5 - #31: Bugfix for attachments with special characters in the name
 - v1.7.4 - #27: Same as 1.7.3, but now also for chinese senders
 - v1.7.3 - #27: When from name/address are not available (unsent emails), these fields are filled with binary garbage
 - v1.7.2 - #26: To email address is not handled properly when name is omitted
