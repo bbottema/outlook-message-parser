@@ -15,15 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 import static java.util.Arrays.copyOfRange;
 import static java.util.regex.Pattern.compile;
@@ -313,7 +305,16 @@ public class OutlookMessage {
 	}
 
 	private boolean htmlContainsCID(final String html, final String cidName) {
-		return compile("cid:['\"]?" + cidName + "['\"]?").matcher(html).find();
+		return compile("cid:['\"]?" + escapeCID(cidName) + "['\"]?").matcher(html).find();
+	}
+
+	private String escapeCID(final String cidName) {
+		String res = cidName;
+		final List<Character> specialCharacters = Arrays.asList('\\', '^', '$', '.', '|', '?', '*', '+', '(', ')', '[', '{');
+		for (final Character c : specialCharacters) {
+			res = res.replace(c.toString(), "\\" + c.toString());
+		}
+		return res;
 	}
 
 	/**
