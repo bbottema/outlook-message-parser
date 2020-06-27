@@ -2,6 +2,7 @@ package org.simplejavamail.outlookmessageparser;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
@@ -63,6 +64,26 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyHTML()).isNull();
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(msg.getClientSubmitTime()).isNotNull();
+		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with one cc recipient.\n");
+	}
+	
+	@Test
+	@Ignore("test case is an Outlook contact card, not an email, waiting for proper test data")
+	public void testGithubIssue28_AnomalousMessageError()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/msg_with_anomaly.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName("Gustavo Garrido");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("geg@garridolawfirm.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("Test E-Mail");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(
+				createRecipient("Sven Sielenkemper", "sielenkemper@otris.de"));
+		OutlookMessageAssert.assertThat(msg).hasOnlyCcRecipients(
+				createRecipient("niklas.lindson@gmail.com", "niklas.lindson@gmail.com"));
+		OutlookMessageAssert.assertThat(msg).hasNoBccRecipients();
+		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
+		assertThat(msg.getBodyText()).isNotEmpty();
+		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with one cc recipient.\n");
 	}
 	
