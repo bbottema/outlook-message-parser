@@ -911,6 +911,66 @@ public class HighoverEmailsTest {
 		assertThat(attachmentContent1).isEqualTo("Black Tie Optional");
 		assertThat(attachmentContent2).isEqualTo("On the moon!");
 	}
+	
+	@Test
+	public void testAttachmentAndNestedOutlookMessageGitHubIssue32()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/testgetmsgAttch.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName("zhangtianhua@longestech.com");
+		// Google SMTP overrode this, Outlook recognized it as: Benny Bottema <b.bottema@gmail.com>; on behalf of; lollypop <b.bottema@projectnibble.org>
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("zhangtianhua@longestech.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("测试多人邮件抄送msg格式");
+		// Outlook overrode this when saving the .msg to match the mail account
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(
+				createRecipient("zhaopengfei", "zhaopengfei@longestech.com"),
+				createRecipient("zhangtianhua", "zhangtianhua@longestech.com"));
+		OutlookMessageAssert.assertThat(msg).hasOnlyCcRecipients(
+				createRecipient("zhaopengfei", "zhaopengfei@longestech.com"),
+				createRecipient("zhangtianhua", "zhangtianhua@longestech.com"));
+		OutlookMessageAssert.assertThat(msg).hasReplyToName(null);
+		OutlookMessageAssert.assertThat(msg).hasReplyToEmail(null);
+		assertThat(msg.getClientSubmitTime()).isNotNull();
+		assertThat(normalizeText(msg.getBodyText())).isEqualTo("AAAAAAAAAAAAAAAAAAAAAAAA\n");
+		// the RTF was probably created by Outlook based on the HTML when the message was saved
+		assertThat(msg.getBodyRTF()).isNotEmpty();
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).hasSize(2);
+		OutlookFileAttachment outlookAttachment1 = (OutlookFileAttachment) outlookAttachments.get(0);
+		OutlookMsgAttachment outlookAttachment2 = (OutlookMsgAttachment) outlookAttachments.get(1);
+		assertAttachmentMetadata(outlookAttachment1, "application/octet-stream", null, "剑来.jpg", "剑来.jpg");
+		
+		assertThat(msg.fetchCIDMap()).isEmpty();
+		assertThat(msg.fetchTrueAttachments()).hasSize(1);
+		assertThat(msg.fetchTrueAttachments()).containsOnly(outlookAttachment1);
+		
+		assertThat(msg.getSmime()).isNull();
+		
+		/*
+			NESTED OUTLOOK MESSAGE
+		 */
+		
+		OutlookMessage nestedMsg = outlookAttachment2.getOutlookMessage();
+		
+		OutlookMessageAssert.assertThat(nestedMsg).hasFromName("zhangtianhua@longestech.com");
+		// Google SMTP overrode this, Outlook recognized it as: Benny Bottema <b.bottema@gmail.com>; on behalf of; lollypop <b.bottema@projectnibble.org>
+		OutlookMessageAssert.assertThat(nestedMsg).hasFromEmail("zhangtianhua@longestech.com");
+		OutlookMessageAssert.assertThat(nestedMsg).hasSubject("test mail");
+		// Outlook overrode this when saving the .msg to match the mail account
+		OutlookMessageAssert.assertThat(nestedMsg).hasOnlyToRecipients(createRecipient("zhaopengfei", "zhaopengfei@longestech.com"));
+		OutlookMessageAssert.assertThat(nestedMsg).hasOnlyCcRecipients(createRecipient("zhangtianhua", "zhangtianhua@longestech.com"));
+		OutlookMessageAssert.assertThat(nestedMsg).hasReplyToName(null);
+		OutlookMessageAssert.assertThat(nestedMsg).hasReplyToEmail(null);
+		assertThat(nestedMsg.getClientSubmitTime()).isNotNull();
+		assertThat(normalizeText(nestedMsg.getBodyText())).isEqualTo("Test12346464\n");
+		// the RTF was probably created by Outlook based on the HTML when the message was saved
+		assertThat(nestedMsg.getBodyRTF()).isNotEmpty();
+		assertThat(nestedMsg.getOutlookAttachments()).isEmpty();
+		
+		assertThat(nestedMsg.fetchCIDMap()).isEmpty();
+		assertThat(nestedMsg.fetchTrueAttachments()).isEmpty();
+		
+		assertThat(nestedMsg.getSmime()).isNull();
+	}
 
 	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {
 		assertThat(attachment).isOfAnyClassIn(OutlookFileAttachment.class);
