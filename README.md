@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.7.5</version>
+  <version>1.7.7</version>
 </dependency>
 ```
 
@@ -19,8 +19,9 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
 
-v1.7.0 - v1.7.5 (9-January-2020 - 27-June-2020)
+v1.7.0 - v1.7.7 (9-January-2020 - 17-July-2020)
  
+- v1.7.7 - [#34](https://github.com/bbottema/outlook-message-parser/issues/34) Wrong encoding for bodyHTML
 - v1.7.5 - [#31](https://github.com/bbottema/outlook-message-parser/issues/31) Bugfix for attachments with special characters in the name
 - v1.7.4 - [#27](https://github.com/bbottema/outlook-message-parser/issues/27) Same as 1.7.3, but now also for chinese senders
 - v1.7.3 - [#27](https://github.com/bbottema/outlook-message-parser/issues/27) When from name/address are not available (unsent emails), these fields are filled with binary garbage
