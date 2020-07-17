@@ -5,9 +5,9 @@ import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.bbottema.rtftohtml.RTF2HTMLConverter;
 import org.bbottema.rtftohtml.impl.RTF2HTMLConverterRFCCompliant;
+import org.bbottema.rtftohtml.impl.util.CharsetHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.simplejavamail.outlookmessageparser.rtf.util.CharsetHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,7 +250,7 @@ public class OutlookMessage {
 		if (value instanceof String) {
 			return (String) value;
 		} else if (value instanceof byte[]) {
-			return new String((byte[]) value, CharsetHelper.WINDOWS_CHARSET);
+			return new String((byte[]) value, StandardCharsets.UTF_8);
 		} else {
 			LOGGER.trace("Unexpected body class: {} (expected String or byte[])", value.getClass().getName());
 			return value.toString();
