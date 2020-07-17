@@ -487,11 +487,7 @@ public class OutlookMessage {
 	 * Bean setter for {@link #fromEmail}. Uses force if the email contains a '@' symbol ({@link #setFromEmail(String, boolean)}).
 	 */
 	private void setFromEmail(final String fromEmail) {
-		if (fromEmail != null && fromEmail.contains("@")) {
-			setFromEmail(fromEmail, true);
-		} else {
-			setFromEmail(fromEmail, false);
-		}
+		setFromEmail(fromEmail, fromEmail != null && fromEmail.contains("@"));
 	}
 
 	/**
