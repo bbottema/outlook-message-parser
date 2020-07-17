@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,9 +26,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Arrays.copyOfRange;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 
 /**
@@ -137,6 +141,7 @@ public class OutlookMessage {
 	private final List<OutlookRecipient> recipients = new ArrayList<>();
 
 	private final RTF2HTMLConverter rtf2htmlConverter;
+	private Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
 	
 	public OutlookMessage() {
 		rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
@@ -259,7 +264,17 @@ public class OutlookMessage {
 		if (value instanceof String) {
 			return (String) value;
 		} else if (value instanceof byte[]) {
-			return new String((byte[]) value, StandardCharsets.UTF_8);
+			final String convertedString = new String((byte[]) value, StandardCharsets.UTF_8);
+			final Matcher m = XML_CHARSET_PATTERN.matcher(convertedString);
+			if (m.find()) {
+				try {
+					final Charset charset = Charset.forName(m.group("charset"));
+					return new String((byte[]) value, charset);
+				} catch (Exception e) {
+					// fallback on default encoding
+				}
+			}
+			return convertedString;
 		} else {
 			LOGGER.trace("Unexpected body class: {} (expected String or byte[])", value.getClass().getName());
 			return value.toString();
