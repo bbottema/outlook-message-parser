@@ -6,7 +6,8 @@
   Copyright (C) 2017 Benny Bottema (benny@bennybottema.com)
   https://github.com/bbottema/outlook-message-parser
 
-  Originally based on msgparser, https://github.com/bbottema/msgparser
+  Originally based on com.auxilii.msgparser:msgparser (http://auxilii.com/msgparser/)
+  This library was forked with permission and is completely rewritten and improved upon
   
   This product uses no commercial products.
   
