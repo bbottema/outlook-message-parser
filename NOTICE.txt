@@ -8,6 +8,10 @@
 
   Originally based on com.auxilii.msgparser:msgparser (http://auxilii.com/msgparser/)
   This library was forked with permission and is completely rewritten and improved upon
+
+  The original project was released under GPL3, but express permission was granted to continue
+  this project under Apache v2. Thanks again Dr. Roman Kurmanowytsch for starting this library
+  and allowing me to carry it forward!
   
   This product uses no commercial products.
   
@@ -15,3 +19,16 @@
   
     - Apache POI (https://poi.apache.org/)
     - Jakarta Activation (https://eclipse-ee4j.github.io/jaf/)
+
+
+========== email with the relevant part regarding permission to change the license ============
+Hi Benny,
+
+(..)
+
+You have my express permission to carry on with the work, publishing it under Apache 2.0 license.
+
+(..)
+
+Regards,
+Roman
