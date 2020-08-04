@@ -1,3 +1,8 @@
+v1.7.8 (4-August-2020)
+
+- #35: Clarify permission to publish project using Apache v2 license
+
+
 v1.7.0 - v1.7.7 (9-January-2020 - 17-July-2020)
 
 - v1.7.7 - #34: Wrong encoding for bodyHTML
