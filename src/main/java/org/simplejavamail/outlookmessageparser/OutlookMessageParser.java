@@ -561,7 +561,7 @@ public class OutlookMessageParser {
 				// and the last 4 digits indicate the
 				// data type.
 				clazz = val.substring(0, 4);
-				type = val.substring(4);
+				type = val.substring(4, 8);
 				LOGGER.trace("  Found document entry: class={}, type={}", clazz, type);
 				mapiType = Integer.parseInt(type, 16);
 			} catch (final RuntimeException re) {
