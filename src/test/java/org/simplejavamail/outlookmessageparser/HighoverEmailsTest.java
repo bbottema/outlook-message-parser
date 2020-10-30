@@ -954,10 +954,10 @@ public class HighoverEmailsTest {
 
 	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {
 		assertThat(attachment).isOfAnyClassIn(OutlookFileAttachment.class);
-		assertThat(((OutlookFileAttachment) attachment).getMimeTag()).isEqualTo(mimeType);
-		assertThat(((OutlookFileAttachment) attachment).getExtension()).isEqualTo(fileExt);
-		assertThat(((OutlookFileAttachment) attachment).getFilename()).isEqualTo(filename);
-		assertThat(((OutlookFileAttachment) attachment).getLongFilename()).isEqualTo(fullname);
+		assertThat(((OutlookFileAttachment) attachment).getMimeTag()).describedAs("mimeTag").isEqualTo(mimeType);
+		assertThat(((OutlookFileAttachment) attachment).getExtension()).describedAs("extension").isEqualTo(fileExt);
+		assertThat(((OutlookFileAttachment) attachment).getFilename()).describedAs("filename").isEqualTo(filename);
+		assertThat(((OutlookFileAttachment) attachment).getLongFilename()).describedAs("longFilename").isEqualTo(fullname);
 	}
 
 	private static OutlookRecipient createRecipient(@Nullable String toName, @NotNull String toEmail) {
