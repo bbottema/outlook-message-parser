@@ -11,7 +11,7 @@ public class OutlookFieldInformation {
 	/**
 	 * The default value for both the {@link #clazz} and the {@link #type} properties.
 	 */
-	private static final String UNKNOWN = "unknown";
+	public static final String UNKNOWN = "unknown";
 
 	/**
 	 * The default value for the {@link #mapiType}

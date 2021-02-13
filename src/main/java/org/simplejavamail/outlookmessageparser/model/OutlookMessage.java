@@ -4,7 +4,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.bbottema.rtftohtml.RTF2HTMLConverter;
-import org.bbottema.rtftohtml.impl.RTF2HTMLConverterRFCCompliant;
 import org.bbottema.rtftohtml.impl.util.CharsetHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -140,17 +139,8 @@ public class OutlookMessage {
 	 */
 	private final List<OutlookRecipient> recipients = new ArrayList<>();
 
-	private final RTF2HTMLConverter rtf2htmlConverter;
-	private final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
+	private static final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
 	
-	public OutlookMessage() {
-		rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
-	}
-
-	public OutlookMessage(final RTF2HTMLConverter rtf2htmlConverter) {
-		this.rtf2htmlConverter = (rtf2htmlConverter != null) ? rtf2htmlConverter : RTF2HTMLConverterRFCCompliant.INSTANCE;
-	}
-
 	public void addAttachment(final OutlookAttachment outlookAttachment) {
 		outlookAttachments.add(outlookAttachment);
 	}
@@ -163,7 +153,7 @@ public class OutlookMessage {
 	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #setSubject(String)} when the property name is '0x37').
 	 */
 	@SuppressFBWarnings("SF_SWITCH_NO_DEFAULT")
-	public void setProperty(final OutlookMessageProperty msgProp) {
+	public void setProperty(final OutlookMessageProperty msgProp, RTF2HTMLConverter rtf2HTMLConverter) {
 		final String name = msgProp.getClazz();
 		final Object value = msgProp.getData();
 
@@ -216,7 +206,7 @@ public class OutlookMessage {
 				setBodyText(stringValue);
 				break;
 			case 0x1009: //RTF COMPRESSED
-				setBodyRTF(value);
+				setBodyRTF(value, rtf2HTMLConverter);
 				break;
 			case 0x7d: //TRANSPORT MESSAGE HEADERS
 				setHeaders(stringValue);
@@ -704,7 +694,7 @@ public class OutlookMessage {
 	/**
 	 * @param bodyRTF the bodyRTF to set
 	 */
-	private void setBodyRTF(final Object bodyRTF) {
+	private void setBodyRTF(final Object bodyRTF, RTF2HTMLConverter rtf2htmlConverter) {
 		// we simply try to decompress the RTF data if it's not compressed, the utils class is able to detect this anyway
 		if (this.bodyRTF == null && bodyRTF != null) {
 			if (bodyRTF instanceof byte[]) {

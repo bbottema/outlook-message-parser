@@ -114,7 +114,7 @@ public class OutlookMessageParser {
 		try (InputStream managedMsgFileInputStream = msgFileInputStream) {
 			// the .msg file, like a file system, contains directories and documents within this directories
 			// we now gain access to the root node and recursively go through the complete 'filesystem'.
-			final OutlookMessage msg = new OutlookMessage(rtf2htmlConverter);
+			final OutlookMessage msg = new OutlookMessage();
 			checkDirectoryEntry(new POIFSFileSystem(managedMsgFileInputStream).getRoot(), msg);
 			convertHeaders(msg);
 			return msg;
@@ -241,10 +241,10 @@ public class OutlookMessageParser {
 			final List<DocumentEntry> deList = getDocumentEntriesFromPropertiesStream(de);
 			for (final DocumentEntry deFromProps : deList) {
 				final OutlookMessageProperty msgProp = getMessagePropertyFromDocumentEntry(deFromProps);
-				msg.setProperty(msgProp);
+				msg.setProperty(msgProp, rtf2htmlConverter);
 			}
 		} else {
-			msg.setProperty(getMessagePropertyFromDocumentEntry(de));
+			msg.setProperty(getMessagePropertyFromDocumentEntry(de), rtf2htmlConverter);
 		}
 	}
 
@@ -609,7 +609,7 @@ public class OutlookMessageParser {
 			} else {
 				// a directory within the attachment directory entry  means that a .msg file is attached at this point.
 				// we recursively parse this .msg file and add it as a OutlookMsgAttachment object to the current OutlookMessage object.
-				final OutlookMessage attachmentMsg = new OutlookMessage(rtf2htmlConverter);
+				final OutlookMessage attachmentMsg = new OutlookMessage();
 				msg.addAttachment(new OutlookMsgAttachment(attachmentMsg));
 				checkDirectoryEntry((DirectoryEntry) entry, attachmentMsg);
 			}
