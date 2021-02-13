@@ -610,8 +610,7 @@ public class OutlookMessageParser {
 				// a directory within the attachment directory entry  means that a .msg file is attached at this point.
 				// we recursively parse this .msg file and add it as a OutlookMsgAttachment object to the current OutlookMessage object.
 				final OutlookMessage attachmentMsg = new OutlookMessage(rtf2htmlConverter);
-				final OutlookMsgAttachment msgAttachment = new OutlookMsgAttachment(attachmentMsg);
-				msg.addAttachment(msgAttachment);
+				msg.addAttachment(new OutlookMsgAttachment(attachmentMsg));
 				checkDirectoryEntry((DirectoryEntry) entry, attachmentMsg);
 			}
 		}
