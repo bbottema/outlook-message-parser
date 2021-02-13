@@ -141,7 +141,7 @@ public class OutlookMessage {
 	private final List<OutlookRecipient> recipients = new ArrayList<>();
 
 	private final RTF2HTMLConverter rtf2htmlConverter;
-	private Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
+	private final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
 	
 	public OutlookMessage() {
 		rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
