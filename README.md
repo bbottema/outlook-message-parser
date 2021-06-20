@@ -6,7 +6,7 @@
 # Outlook Message Parser
 *Outlook Message Parser* is a small open source Java library that parses Outlook .msg files.
 
-```
+```xml
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
