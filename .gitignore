@@ -1,3 +1,6 @@
+.classpath
 .idea/
 outlook-message-parser.iml
+.project
+/.settings/*
 target/
