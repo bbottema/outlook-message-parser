@@ -656,11 +656,13 @@ public class OutlookMessage {
 	@NotNull
 	private List<OutlookRecipient> filterRecipients(String displayTo) {
 		final List<OutlookRecipient> toRecipients = new ArrayList<>();
-		final String recipientKey = displayTo.trim();
-		for (final OutlookRecipient entry : recipients) {
-			final String name = entry.getName().trim();
-			if (recipientKey.contains(name)) {
-				toRecipients.add(entry);
+		if (displayTo != null) {
+			final String recipientKey = displayTo.trim();
+			for (final OutlookRecipient entry : recipients) {
+				final String name = entry.getName().trim();
+				if (recipientKey.contains(name)) {
+					toRecipients.add(entry);
+				}
 			}
 		}
 		return toRecipients;
