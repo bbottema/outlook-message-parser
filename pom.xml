@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.bbottema</groupId>
 		<artifactId>standard-project-parent</artifactId>
-		<version>1.0.10</version>
+		<version>1.0.18</version>
 	</parent>
 
 	<groupId>org.simplejavamail</groupId>
@@ -31,6 +31,8 @@
 
 	<properties>
 		<se.eris.notnull.instrument>false</se.eris.notnull.instrument>
+		<license.owner.name>Benny Bottema</license.owner.name>
+		<license.owner.email>benny@bennybottema.com</license.owner.email>
 	</properties>
 
 	<dependencies>
@@ -81,6 +83,33 @@
 						<param>org.simplejavamail.outlookmessageparser.model.OutlookMessage</param>
 					</classes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<header>${license.type}</header>
+					<properties>
+						<owner>${license.owner.name}</owner>
+						<email>${license.owner.email}</email>
+					</properties>
+					<mapping>
+						<java>SLASHSTAR_STYLE</java>
+					</mapping>
+					<includes>
+						<include>src/main/java/**/*.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/jakarta/mail/**</exclude>
+						<exclude>**/com/sun/mail/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution><id>remove-licence-boilerplate-on-clean</id><phase>clean</phase><goals><goal>remove</goal></goals></execution>
+					<execution><id>add-licence-boilerplate-on-compile</id><phase>process-sources</phase><goals><goal>format</goal></goals></execution>
+					<execution><id>remove-licence-boilerplate-after-package</id><phase>package</phase><goals><goal>remove</goal></goals></execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
