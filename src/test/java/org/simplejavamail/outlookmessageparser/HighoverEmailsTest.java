@@ -951,6 +951,22 @@ public class HighoverEmailsTest {
 		
 		assertThat(nestedMsg.getSmime()).isNull();
 	}
+	
+	@Test
+	public void testQoutedNameswithAtSign()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/Test at sign in personal From header.msg");
+		
+		OutlookMessageAssert.assertThat(msg).hasFromName("bogus@acme.com");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("bogus@domain.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("Test at sign in personal 3");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("'recipient'", "recipient@domain.com"));
+		
+		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
+		assertThat(msg.fetchCIDMap()).hasSize(0);
+		assertThat(msg.fetchTrueAttachments()).hasSize(0);
+		assertThat((OutlookSmimeApplicationSmime) msg.getSmime()).isNull();
+	}
 
 	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {
 		assertThat(attachment).isOfAnyClassIn(OutlookFileAttachment.class);
