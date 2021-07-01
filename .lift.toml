@@ -1,0 +1,4 @@
+ignoreFiles = """
+src/main/java/org/simplejavamail/com/sun/mail/
+src/main/java/org/simplejavamail/jakarta/mail/
+"""

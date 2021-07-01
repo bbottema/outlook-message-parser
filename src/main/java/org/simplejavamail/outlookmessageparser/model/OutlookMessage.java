@@ -9,6 +9,12 @@ import org.bbottema.rtftohtml.RTF2HTMLConverter;
 import org.bbottema.rtftohtml.impl.util.CharsetHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.simplejavamail.jakarta.mail.MessagingException;
+import org.simplejavamail.jakarta.mail.internet.AddressException;
+import org.simplejavamail.jakarta.mail.internet.InternetAddress;
+import org.simplejavamail.jakarta.mail.internet.InternetHeaders;
+import org.simplejavamail.jakarta.mail.internet.MailDateFormat;
+import org.simplejavamail.jakarta.mail.internet.MimeUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +35,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.InternetHeaders;
-import jakarta.mail.internet.MailDateFormat;
-import jakarta.mail.internet.MimeUtility;
 
 import static java.lang.String.format;
 import static java.util.Arrays.copyOfRange;
