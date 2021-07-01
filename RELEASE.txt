@@ -1,3 +1,9 @@
+v1.7.10 (1-July-2021)
+
+- #43: bugfix getFromEmailFromHeaders cannot handle "quoted-name-with@at-sign"
+- some minor code improvements
+
+
 v1.7.9 (10-October-2020)
 
 - #28/#36: bugfix NumberFormatException on parsing .msg files
