@@ -770,24 +770,29 @@ public class OutlookMessage {
 	private void setHeaders(final String headers) {
 		if (headers != null) {
 			this.headers = headers;
-			final InternetHeaders parsedHeaders;
-			try {
-				parsedHeaders = new InternetHeaders(IOUtils.toInputStream(headers, StandardCharsets.UTF_8), true);
-			} catch (final MessagingException e) {
-				return;
-			}
-			// try to parse the date from the headers
-			final Date d = getDateFromHeaders(parsedHeaders);
-			if (d != null) {
-				setDate(d);
-			}
-			final String s = getFromEmailFromHeaders(parsedHeaders);
-			if (s != null) {
-				setFromEmail(s);
+			final InternetHeaders parsedHeaders = getInternetHeaders(headers);
+			if (parsedHeaders != null) {// try to parse the date from the headers
+				final Date d = getDateFromHeaders(parsedHeaders);
+				if (d != null) {
+					setDate(d);
+				}
+				final String s = getFromEmailFromHeaders(parsedHeaders);
+				if (s != null) {
+					setFromEmail(s);
+				}
 			}
 		}
 	}
-
+	
+	@Nullable
+	private InternetHeaders getInternetHeaders(String headers) {
+		try {
+			return new InternetHeaders(IOUtils.toInputStream(headers, StandardCharsets.UTF_8), true);
+		} catch (final MessagingException e) {
+			return null;
+		}
+	}
+	
 	/**
 	 * Parses the sender's email address from the mail headers.
 	 *
