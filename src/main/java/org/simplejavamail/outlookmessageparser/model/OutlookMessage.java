@@ -1,12 +1,20 @@
 package org.simplejavamail.outlookmessageparser.model;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.bbottema.rtftohtml.RTF2HTMLConverter;
 import org.bbottema.rtftohtml.impl.util.CharsetHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.simplejavamail.jakarta.mail.MessagingException;
+import org.simplejavamail.jakarta.mail.internet.AddressException;
+import org.simplejavamail.jakarta.mail.internet.InternetAddress;
+import org.simplejavamail.jakarta.mail.internet.InternetHeaders;
+import org.simplejavamail.jakarta.mail.internet.MailDateFormat;
+import org.simplejavamail.jakarta.mail.internet.MimeUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -762,12 +770,18 @@ public class OutlookMessage {
 	private void setHeaders(final String headers) {
 		if (headers != null) {
 			this.headers = headers;
+			final InternetHeaders parsedHeaders;
+			try {
+				parsedHeaders = new InternetHeaders(IOUtils.toInputStream(headers, StandardCharsets.UTF_8), true);
+			} catch (final MessagingException e) {
+				return;
+			}
 			// try to parse the date from the headers
-			final Date d = getDateFromHeaders(headers);
+			final Date d = getDateFromHeaders(parsedHeaders);
 			if (d != null) {
 				setDate(d);
 			}
-			final String s = getFromEmailFromHeaders(headers);
+			final String s = getFromEmailFromHeaders(parsedHeaders);
 			if (s != null) {
 				setFromEmail(s);
 			}
@@ -777,20 +791,19 @@ public class OutlookMessage {
 	/**
 	 * Parses the sender's email address from the mail headers.
 	 *
-	 * @param headers The headers in a single String object
+	 * @param parsedHeaders
+	 *            The headers
 	 * @return The sender's email or null if nothing was found.
 	 */
-	private static String getFromEmailFromHeaders(final String headers) {
-		if (headers != null) {
-			final String[] headerLines = headers.split("\n");
-			for (final String headerLine : headerLines) {
-				if (headerLine.toUpperCase().startsWith("FROM: ")) {
-					final String[] tokens = headerLine.split(" ");
-					for (final String potentialFromEmailToken : tokens) {
-						if (potentialFromEmailToken.contains("@")) {
-							return potentialFromEmailToken.replaceAll("[<>]", "").trim();
-						}
-					}
+	private static String getFromEmailFromHeaders(final InternetHeaders parsedHeaders) {
+		final String[] a = parsedHeaders.getHeader("fROM");
+		if (a != null) {
+			for (final String mlValue : a) {
+				final String value = MimeUtility.unfold(mlValue);
+				try {
+					return new InternetAddress(value, true).getAddress();
+				} catch (AddressException e) {
+					LOGGER.debug("Could not parse from {}, moving on to the next date candidate", value, e);
 				}
 			}
 		}
@@ -800,26 +813,25 @@ public class OutlookMessage {
 	/**
 	 * Parses the message date from the mail headers.
 	 *
-	 * @param headers The headers in a single String object
+	 * @param parsedHeaders
+	 *            The headers
 	 * @return The Date object or null, if no valid Date: has been found
 	 */
-	private static Date getDateFromHeaders(final String headers) {
-		if (headers != null) {
-			final String[] headerLines = headers.split("\n");
-			for (final String headerLine : headerLines) {
-				if (headerLine.toLowerCase().startsWith("date:")) {
-					final String dateValue = headerLine.substring("Date:".length()).trim();
-					final SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-
-					// There may be multiple Date: headers. Let's take the first one that can be parsed.
-					try {
-						final Date date = formatter.parse(dateValue);
-						if (date != null) {
-							return date;
-						}
-					} catch (final ParseException e) {
-						LOGGER.debug("Could not parse date {}, moving on to the next date candidate", dateValue, e);
+	private static Date getDateFromHeaders(final InternetHeaders parsedHeaders) {
+		final String[] a = parsedHeaders.getHeader("dATE");
+		if (a != null) {
+			final MailDateFormat formatter = new MailDateFormat();
+			for (final String mlValue : a) {
+				final String dateValue = MimeUtility.unfold(mlValue);
+				// There may be multiple Date: headers. Let's
+				// take the first one that can be parsed.
+				try {
+					final Date date = formatter.parse(dateValue);
+					if (date != null) {
+						return date;
 					}
+				} catch (final ParseException e) {
+					LOGGER.debug("Could not parse date {}, moving on to the next date candidate", dateValue, e);
 				}
 			}
 		}
