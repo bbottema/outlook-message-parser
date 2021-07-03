@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.7.11</version>
+  <version>1.7.12</version>
 </dependency>
 ```
 
@@ -18,8 +18,9 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
-v1.7.10 - v1.7.11 (2-July-2021)
+v1.7.10 - v1.7.12 (3-July-2021)
 
+- [#46](https://github.com/bbottema/outlook-message-parser/issues/46) bugfix Rare NPE case of producing empty nested outlook attachment when there should be no attachments
 - [#43](https://github.com/bbottema/outlook-message-parser/issues/43) bugfix bugfix getFromEmailFromHeaders cannot handle "quoted-name-with@at-sign"
 - some minor code improvements
 
