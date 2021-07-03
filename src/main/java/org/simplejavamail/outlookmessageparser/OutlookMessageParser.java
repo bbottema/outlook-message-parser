@@ -117,16 +117,41 @@ public class OutlookMessageParser {
 			final OutlookMessage msg = new OutlookMessage();
 			checkDirectoryEntry(new POIFSFileSystem(managedMsgFileInputStream).getRoot(), msg);
 			convertHeaders(msg);
+			purgeEmptyAttachments(msg);
 			return msg;
 		}
 	}
-
+	
 	private void convertHeaders(@NotNull final OutlookMessage msg) {
 		final String allHeaders = msg.getHeaders();
 		if (allHeaders != null) {
 			extractReplyToHeader(msg, allHeaders);
 			extractSMimeHeader(msg, allHeaders);
 		}
+	}
+	
+	/**
+	 * It seems some rare cases produce invalid nested empty Outlook message attachments, causing NPE's down the line.
+	 */
+	private void purgeEmptyAttachments(OutlookMessage msg) {
+		final Iterator<OutlookAttachment> iter = msg.getOutlookAttachments().iterator();
+		while (iter.hasNext()) {
+			OutlookAttachment attachment = iter.next();
+			if (attachment instanceof OutlookMsgAttachment) {
+				OutlookMessage msgAttachment = ((OutlookMsgAttachment) attachment).getOutlookMessage();
+				if (messageIsEmpty(msgAttachment)) {
+					iter.remove();
+				}
+			}
+		}
+	}
+	
+	private boolean messageIsEmpty(OutlookMessage msgAttachment) {
+		return msgAttachment.getMessageId() == null &&
+				msgAttachment.getSubject() == null &&
+				msgAttachment.getBodyText() == null &&
+				msgAttachment.getBodyRTF() == null &&
+				msgAttachment.getBodyHTML() == null;
 	}
 	
 	static void extractReplyToHeader(@NotNull final OutlookMessage msg, @NotNull final String allHeaders) {
