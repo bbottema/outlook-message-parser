@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -36,6 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 
 /**
@@ -71,7 +74,9 @@ public class OutlookMessageParser {
 	private static final Pattern SMIME_CONTENT_TYPE_PATTERN = compile(format("^Content-Type: (?<contenttype>%s)(?:; name=\"(?<name>smime.p7m)\")?(?:; smime-type=(?<smimetype>enveloped-data))?$",
 			"application\\/pkcs7-mime|multipart\\/signed|application\\/octet-stream|application\\/pkcs7-signature"),
 			Pattern.MULTILINE);
-
+	
+	private static final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
+	
 	private RTF2HTMLConverter rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
 
 	/**
@@ -454,7 +459,17 @@ public class OutlookMessageParser {
 				// we put the complete data into a byte[] object...
 				final byte[] textBytes1e = getBytesFromDocumentEntry(de);
 				// ...and create a String object from it
-				return new String(textBytes1e, "ISO-8859-1");
+				String convertedString = new String(textBytes1e, StandardCharsets.ISO_8859_1);
+				final Matcher m = XML_CHARSET_PATTERN.matcher(convertedString);
+				if (m.find()) {
+					try {
+						final Charset charset = Charset.forName(m.group("charset"));
+						return new String(textBytes1e, charset);
+					} catch (Exception e) {
+						// fallback on default encoding
+					}
+				}
+				return convertedString;
 			case 0x1f:
 				// Unicode encoding with lowbyte followed by hibyte
 				// Note: this is arcane guesswork, but it works
