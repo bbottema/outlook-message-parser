@@ -1,6 +1,6 @@
 package org.simplejavamail.outlookmessageparser.model;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 import java.io.IOException;
 import java.io.InputStream;
 
