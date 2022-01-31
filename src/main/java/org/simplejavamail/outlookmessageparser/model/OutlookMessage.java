@@ -944,7 +944,7 @@ public class OutlookMessage {
 	 * @param code The key for the property to be retrieved.
 	 * @return The value of the specified property.
 	 */
-	private Object getPropertyValue(final Integer code) {
+	public Object getPropertyValue(final Integer code) {
 		return properties.get(code);
 	}
 
