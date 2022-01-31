@@ -1,7 +1,5 @@
 package org.simplejavamail.outlookmessageparser.model;
 
-import javax.activation.MimetypesFileTypeMap;
-
 /**
  * Implementation of the {@link OutlookAttachment} interface that represents a file attachment. It contains some useful information (as long as it is available
  * in the .msg file) like the attachment name, its size, etc.
