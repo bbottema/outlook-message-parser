@@ -1,7 +1,9 @@
-v1.8.0 (21-January-2022)
+v1.8.0 - v1.8.1
 
-- #45: Adjust dependencies and make Java 9+ friendly
-- #45: Bump commons-io from 2.6 to 2.7
+- v1.8.1 (31-January-2022): #41: OutlookMessage.getPropertyValue() should be public
+- v1.8.0 (31-January-2022): #52: Adjust dependencies and make Java 9+ friendly
+- v1.8.0 (31-January-2022): #45: Bump commons-io from 2.6 to 2.7
+
 
 v1.7.10 - v1.7.13 (17-November-2021)
 

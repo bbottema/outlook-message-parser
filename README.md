@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.8.0</version>
+  <version>1.8.1</version>
 </dependency>
 ```
 
@@ -18,10 +18,11 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
-v1.8.0 (21-January-2022)
+v1.8.0 - [v1.8.1](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.8.1%7Cjar)
 
-- [#45](https://github.com/bbottema/outlook-message-parser/pull/52) Adjust dependencies and make Java 9+ friendly
-- [#45](https://github.com/bbottema/outlook-message-parser/pull/45) Bump commons-io from 2.6 to 2.7
+- v1.8.1 (31-January-2022): [#41](https://github.com/bbottema/outlook-message-parser/pull/41) OutlookMessage.getPropertyValue() should be public
+- v1.8.0 (31-January-2022): [#52](https://github.com/bbottema/outlook-message-parser/pull/52) Adjust dependencies and make Java 9+ friendly
+- v1.8.0 (31-January-2022): [#45](https://github.com/bbottema/outlook-message-parser/pull/45) Bump commons-io from 2.6 to 2.7
 
 
 v1.7.10 - v1.7.13 (17-November-2021)
