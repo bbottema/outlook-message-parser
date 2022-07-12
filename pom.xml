@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.bbottema</groupId>
 		<artifactId>standard-project-parent</artifactId>
-		<version>1.0.28</version>
+		<version>1.0.29</version>
 	</parent>
 
 	<groupId>org.simplejavamail</groupId>
@@ -42,6 +42,12 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>5.2.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -112,6 +118,27 @@
 					<execution><id>remove-licence-boilerplate-on-clean</id><phase>clean</phase><goals><goal>remove</goal></goals></execution>
 					<execution><id>add-licence-boilerplate-on-compile</id><phase>process-sources</phase><goals><goal>format</goal></goals></execution>
 					<execution><id>remove-licence-boilerplate-after-package</id><phase>package</phase><goals><goal>remove</goal></goals></execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M3</version>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<dependencyConvergence/>
+								<requireReleaseDeps>
+									<onlyWhenRelease>true</onlyWhenRelease>
+								</requireReleaseDeps>
+							</rules>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
