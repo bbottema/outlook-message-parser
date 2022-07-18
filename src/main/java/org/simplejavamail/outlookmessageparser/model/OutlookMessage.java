@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -124,7 +125,7 @@ public class OutlookMessage {
 	/**
 	 * Email headers (if available) parsed, but only the last value will survive as headers are allowed multiple times.
 	 */
-	private final Map<String, String> headersMap = new HashMap<>();
+	private final Map<String, Collection<String>> headersMap = new HashMap<>();
 
 	/**
 	 * Email Date
@@ -775,7 +776,7 @@ public class OutlookMessage {
 	/**
 	 * Bean getter for {@link #headersMap}.
 	 */
-	public Map<String, String> getHeadersMap() {
+	public Map<String, Collection<String>> getHeadersMap() {
 		return headersMap;
 	}
 
@@ -798,7 +799,11 @@ public class OutlookMessage {
 				
 				for (Enumeration<Header> headerElement = parsedHeaders.getAllHeaders(); headerElement.hasMoreElements(); ) {
 					final Header header = headerElement.nextElement();
-					headersMap.put(header.getName(), header.getValue());
+					
+					if (!headersMap.containsKey(header.getName())) {
+						headersMap.put(header.getName(), new ArrayList<>());
+					}
+					headersMap.get(header.getName()).add(header.getValue());
 				}
 			}
 		}
