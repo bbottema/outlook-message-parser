@@ -1,5 +1,6 @@
-v1.9.0 - v1.9.5
+v1.9.0 - v1.9.6
 
+- 1.9.6 (18-July-2022): #57 Same, but now with Collection values to support duplicate headers
 - 1.9.5 (18-July-2022): #57 Headers should be more accessible, rather than just a big string of text
 - 1.9.x - a bunch of dependency fixes and tries apparently, my release train was not so smooth here, sorry
 - 1.9.0 (13-May-2021): #55: CVE issue: Update Apache POI and POI Scratchpad
