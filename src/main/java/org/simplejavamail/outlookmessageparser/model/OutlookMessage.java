@@ -9,6 +9,7 @@ import org.bbottema.rtftohtml.RTF2HTMLConverter;
 import org.bbottema.rtftohtml.impl.util.CharsetHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.simplejavamail.jakarta.mail.Header;
 import org.simplejavamail.jakarta.mail.MessagingException;
 import org.simplejavamail.jakarta.mail.internet.AddressException;
 import org.simplejavamail.jakarta.mail.internet.InternetAddress;
@@ -26,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -113,10 +115,16 @@ public class OutlookMessage {
 	 * The body in HTML format (converted from RTF)
 	 */
 	private String convertedBodyHTML;
+	
 	/**
 	 * Email headers (if available)
 	 */
 	private String headers;
+	
+	/**
+	 * Email headers (if available) parsed, but only the last value will survive as headers are allowed multiple times.
+	 */
+	private final Map<String, String> headersMap = new HashMap<>();
 
 	/**
 	 * Email Date
@@ -756,12 +764,19 @@ public class OutlookMessage {
 			bodyHTML = bodyToSet;
 		}
 	}
-
+	
 	/**
 	 * Bean getter for {@link #headers}.
 	 */
 	public String getHeaders() {
 		return headers;
+	}
+	
+	/**
+	 * Bean getter for {@link #headersMap}.
+	 */
+	public Map<String, String> getHeadersMap() {
+		return headersMap;
 	}
 
 	/**
@@ -779,6 +794,11 @@ public class OutlookMessage {
 				final String s = getFromEmailFromHeaders(parsedHeaders);
 				if (s != null) {
 					setFromEmail(s);
+				}
+				
+				for (Enumeration<Header> headerElement = parsedHeaders.getAllHeaders(); headerElement.hasMoreElements(); ) {
+					final Header header = headerElement.nextElement();
+					headersMap.put(header.getName(), header.getValue());
 				}
 			}
 		}
