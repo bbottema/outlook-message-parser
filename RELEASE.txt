@@ -1,7 +1,8 @@
-v1.9.0 - v1.9.1
+v1.9.0 - v1.9.5
 
-- #57 (18-July-2022): Headers should be more accessible, rather than just a big string of text
-- #55 (13-May-2021): CVE issue: Update Apache POI and POI Scratchpad
+- 1.9.5 (18-July-2022): #57 Headers should be more accessible, rather than just a big string of text
+- 1.9.x - a bunch of dependency fixes and tries apparently, my release train was not so smooth here, sorry
+- 1.9.0 (13-May-2021): #55: CVE issue: Update Apache POI and POI Scratchpad
 
 
 v1.8.0 - v1.8.1
