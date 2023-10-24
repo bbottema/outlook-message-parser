@@ -72,6 +72,9 @@ public class OutlookRecipient {
 			if (this.address == null && probablyNamePossiblyAddress.contains("@")) {
 				setAddress(probablyNamePossiblyAddress);
 				nameWasUsedAsAddress = true;
+			} else if (this.address == null && probablyNamePossiblyAddress.startsWith("/o=ExchangeLabs/ou=Exchange Administrative Group")) {
+				setAddress(probablyNamePossiblyAddress);
+				nameWasUsedAsAddress = false;
 			}
 		}
 	}
