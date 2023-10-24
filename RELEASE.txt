@@ -1,3 +1,8 @@
+v1.10.0 (24-October-2023)
+
+- #67: Adding possibility to parse X500 Names
+
+
 v1.9.0 - v1.9.6
 
 - 1.9.6 (18-July-2022): #57 Same, but now with Collection values to support duplicate headers
