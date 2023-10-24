@@ -64,6 +64,9 @@ public class OutlookRecipient {
 			if ((this.address == null || nameWasUsedAsAddress) && probablyNamePossiblyAddress.contains("@")) {
 				setAddress(probablyNamePossiblyAddress);
 				nameWasUsedAsAddress = false;
+			} else if (this.address == null && probablyNamePossiblyAddress.startsWith("/o=ExchangeLabs/ou=Exchange Administrative Group")) {
+				setAddress(probablyNamePossiblyAddress);
+				nameWasUsedAsAddress = false;
 			}
 		} else if (mapiClass == 0x3001) { // name
 			setName(probablyNamePossiblyAddress);
@@ -72,10 +75,7 @@ public class OutlookRecipient {
 			if (this.address == null && probablyNamePossiblyAddress.contains("@")) {
 				setAddress(probablyNamePossiblyAddress);
 				nameWasUsedAsAddress = true;
-			} else if (this.address == null && probablyNamePossiblyAddress.startsWith("/o=ExchangeLabs/ou=Exchange Administrative Group")) {
-				setAddress(probablyNamePossiblyAddress);
-				nameWasUsedAsAddress = false;
-			}
+			} 
 		}
 	}
 
