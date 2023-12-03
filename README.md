@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.10.1</version>
+  <version>1.10.2</version>
 </dependency>
 ```
 
@@ -19,10 +19,11 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
 
-v1.10.0 - [v1.10.1](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.10.1%7Cjar)
+v1.10.0 - [v1.10.2](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.10.2%7Cjar)
 
-- 1.10.1 (03-December-2023): [#68](https://github.com/bbottema/outlook-message-parser/pull/68) Improved heuristics for X500 Names
-- 1.10.0 (24-October-2023): [#67]((https://github.com/bbottema/outlook-message-parser/pull/67) Adding possibility to parse X500 Names
+- 1.10.2 (03-December-2023): [#68](https://github.com/bbottema/outlook-message-parser/pull/68) Improved heuristics for X500 Names
+- 1.10.1 (24-October-2023): [#67]((https://github.com/bbottema/outlook-message-parser/pull/67) Fixed "possibility to parse X500 Names"
+- 1.10.0 (24-October-2023): [#67]((https://github.com/bbottema/outlook-message-parser/pull/67) Adding possibility to parse X500 Names (dont' use this version)
 
 
 v1.9.0 - [v1.9.6](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.9.6%7Cjar) 

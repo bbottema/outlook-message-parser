@@ -1,7 +1,8 @@
-v1.10.0 - v1.10.1
+v1.10.0 - v1.10.2
 
-- 1.10.1 (03-December-2023): #68: Improved heuristics for X500 Names
-- 1.10.0 (24-October-2023): #67: Adding possibility to parse X500 Names
+- 1.10.2 (03-December-2023): #68: Improved heuristics for X500 Names
+- 1.10.1 (24-October-2023): #67: Fixed "Adding possibility to parse X500 Names"
+- 1.10.0 (24-October-2023): #67: Adding possibility to parse X500 Names (don't use this version)
 
 
 v1.9.0 - v1.9.7
