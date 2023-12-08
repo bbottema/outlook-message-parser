@@ -1,6 +1,7 @@
-v1.11.0 (08-December-2023)
+v1.11.0 - v1.11.1
 
-- #69: Enhancement: ignore attachment with missing content
+- 1.11.1 (08-December-2023): #69: Enhancement: instead of ignoring them completely, only ignore for embedded images
+- 1.11.0 (08-December-2023): #69: Enhancement: ignore attachment with missing content
 
 
 v1.10.0 - v1.10.2
