@@ -23,13 +23,11 @@ Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) li
 - [#69](https://github.com/bbottema/outlook-message-parser/pull/69): Enhancement: ignore attachment with missing content
 
 
-[v1.10.0](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.10.0%7Cjar)  (24-October-2023)
-
 v1.10.0 - [v1.10.2](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.10.2%7Cjar)
 
 - 1.10.2 (03-December-2023): [#68](https://github.com/bbottema/outlook-message-parser/pull/68) Improved heuristics for X500 Names
-- 1.10.1 (24-October-2023): [#67]((https://github.com/bbottema/outlook-message-parser/pull/67) Fixed "possibility to parse X500 Names"
-- 1.10.0 (24-October-2023): [#67]((https://github.com/bbottema/outlook-message-parser/pull/67) Adding possibility to parse X500 Names (dont' use this version)
+- 1.10.1 (24-October-2023): [#67](https://github.com/bbottema/outlook-message-parser/pull/67) Fixed "possibility to parse X500 Names"
+- 1.10.0 (24-October-2023): [#67](https://github.com/bbottema/outlook-message-parser/pull/67) Adding possibility to parse X500 Names (dont' use this version)
 
 
 v1.9.0 - [v1.9.6](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.9.6%7Cjar) 
