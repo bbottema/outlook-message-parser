@@ -287,31 +287,32 @@ public class OutlookMessage {
 			return value.toString();
 		}
 	}
-	
-	/**
-	 * @return Only the attachments that are embedded by cid reference.
-	 */
+
 	public Map<String, OutlookFileAttachment> fetchCIDMap() {
 		final HashMap<String, OutlookFileAttachment> cidMap = new HashMap<>();
 		final String html = getConvertedBodyHTML();
 
-		if (html != null && html.length() != 0) {
-			for (final OutlookAttachment attachment : getOutlookAttachments()) {
-				if (attachment instanceof OutlookFileAttachment) {
-					final OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
-					if (!tryAddCid(cidMap, html, fileAttachment, fileAttachment.getContentId())) {
-						if (!tryAddCid(cidMap, html, fileAttachment, fileAttachment.getFilename())) {
-							tryAddCid(cidMap, html, fileAttachment, fileAttachment.getLongFilename());
-						}
-					}
-				}
-			}
+		if (html != null && !html.isEmpty()) {
+			getOutlookAttachments().stream()
+					.filter(attachment -> attachment instanceof OutlookFileAttachment)
+					.map(attachment -> (OutlookFileAttachment) attachment)
+					.forEach(fileAttachment -> tryAddCIDAttachments(cidMap, html, fileAttachment));
 		}
 		return cidMap;
 	}
 	
-	private boolean tryAddCid(HashMap<String, OutlookFileAttachment> cidMap, String html, OutlookFileAttachment a, String cid) {
-		final boolean cidFound = cid != null && cid.length() != 0 && htmlContainsCID(html, cid);
+	private void tryAddCIDAttachments(final HashMap<String, OutlookFileAttachment> cidMap, final String html, final OutlookFileAttachment fileAttachment) {
+		if (fileAttachment.getData().length != 0) {
+			if (!tryAddCid(cidMap, html, fileAttachment, fileAttachment.getContentId())) {
+				if (!tryAddCid(cidMap, html, fileAttachment, fileAttachment.getFilename())) {
+					tryAddCid(cidMap, html, fileAttachment, fileAttachment.getLongFilename());
+				}
+			}
+		}
+	}
+
+	private boolean tryAddCid(final HashMap<String, OutlookFileAttachment> cidMap, final String html, final OutlookFileAttachment a, final String cid) {
+		final boolean cidFound = cid != null && !cid.isEmpty() && htmlContainsCID(html, cid);
 		if (cidFound) {
 			cidMap.put(cid, a);
 		}
