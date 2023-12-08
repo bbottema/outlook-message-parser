@@ -1,3 +1,8 @@
+v1.11.0 (08-December-2023)
+
+- #69: Enhancement: ignore attachment with missing content
+
+
 v1.10.0 - v1.10.2
 
 - 1.10.2 (03-December-2023): #68: Improved heuristics for X500 Names
