@@ -656,7 +656,7 @@ public class OutlookMessageParser {
 		}
 
 		// only if there was really an attachment, we add this object to the OutlookMessage object
-		if (attachment.getSize() > 0 && attachment.getData().length > 0) {
+		if (attachment.getSize() > -1) {
 			attachment.checkSmimeFilename();
 			attachment.checkMimeTag();
 			msg.addAttachment(attachment);
