@@ -677,9 +677,13 @@ public class OutlookMessage {
 		if (displayTo != null) {
 			final String recipientKey = displayTo.trim();
 			for (final OutlookRecipient entry : recipients) {
-				final String name = entry.getName().trim();
-				if (recipientKey.contains(name)) {
-					toRecipients.add(entry);
+				if (entry.getAddress() != null) {
+					final String name = entry.getName().trim();
+					if (recipientKey.contains(name)) {
+						toRecipients.add(entry);
+					}
+				} else {
+					LOGGER.debug("Recipient {} has no email address, skipping", entry);
 				}
 			}
 		}
