@@ -12,7 +12,7 @@ class MimeType {
      * @return a vastly improved mimetype map
      */
     private static MimetypesFileTypeMap createMap() {
-        try (InputStream is = MimeType.class.getClassLoader().getResourceAsStream("mimetypes.txt")) {
+        try (InputStream is = MimeType.class.getResourceAsStream("/mimetypes.txt")) {
             return new MimetypesFileTypeMap(is);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
