@@ -59,4 +59,71 @@ public class OutlookMessageParserTest {
 		assertThat(msg.getReplyToName()).isEqualTo("lo.pop.r");
 		assertThat(msg.getReplyToEmail()).isEqualTo("eplyto@somemail.com>tg");
 	}
+
+	@Test
+	public void extractSmimePropertiesOctetStream() {
+
+		/* application/octet-stream and file-suffix p7m, p7s, p7c, p7z */
+		String header = "Content-Type: application/octet-stream; name=\"smime.p7m\"";
+		OutlookMessage msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+
+		header = "Content-Type: application/octet-stream; name=\"smime.p7s\"";
+		msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+
+		header = "Content-Type: application/octet-stream; name=\"smime.p7c\"";
+		msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+
+		header = "Content-Type: application/octet-stream; name=\"smime.p7z\"";
+		msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+
+		/* application/octet-stream and file-suffix NOT p7m, p7s, p7c, p7z */
+		header = "Content-Type: application/octet-stream; name=\"smime.zip\"";
+		msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNull();
+
+	}
+
+	@Test
+	public void extractSmimePropertiesMultipartSigned() {
+		/*multipart/signed and protocol=pkcs7-signature*/
+		String header = "Content-Type: multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=sha-512; boundary=\"------------ms060207010804070005060507\"";
+		OutlookMessage msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+
+		/*multipart/signed and protocol=x-pkcs7-signature*/
+		header = "Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=sha-256; boundary=\"------------ms060207010804070005060507\"";
+		msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+
+		/*multipart/signed and some other protocol*/
+		header = "Content-Type: multipart/signed; protocol=\"application/plain\"; micalg=sha-512";
+		msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNull();
+	}
+
+	@Test
+	public void extractSmimePropertiesPkcsMime() {
+		/* application/pkcs7-mime name and smime-type is optional */
+		String header = "Content-Type: application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data";
+		OutlookMessage msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+
+		header = "Content-Type: application/pkcs7-mime";
+		msg = new OutlookMessage();
+		OutlookMessageParser.extractSMimeHeader(msg, header);
+		assertThat(msg.getSmime()).isNotNull();
+	}
 }
