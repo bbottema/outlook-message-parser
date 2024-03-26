@@ -64,7 +64,7 @@ public class OutlookRecipient {
 			if ((this.address == null || nameWasUsedAsAddress) && probablyNamePossiblyAddress.contains("@")) {
 				setAddress(probablyNamePossiblyAddress);
 				nameWasUsedAsAddress = false;
-			} else if (this.address == null && probablyNamePossiblyAddress.matches("/o=[^/]+/ou=[^/]+(?:/cn=[^/]+)?")) {
+			} else if (this.address == null && probablyNamePossiblyAddress.matches("/o=[^/]+/ou=[^/]+(?:/cn=[^/]+)*")) {
 				// highly likely an X500 address
 				setAddress(probablyNamePossiblyAddress);
 				nameWasUsedAsAddress = false;
