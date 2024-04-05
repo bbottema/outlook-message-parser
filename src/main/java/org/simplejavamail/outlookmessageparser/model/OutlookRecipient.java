@@ -17,6 +17,8 @@ public class OutlookRecipient {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookRecipient.class);
 
+	private static final String X500_ADDRESS_PATTERN = "/o=[^/]+/ou=[^/]+(?:/cn=[^/]+)*";
+
 	/**
 	 * Contains all properties that are not covered by the special properties.
 	 */
@@ -24,10 +26,11 @@ public class OutlookRecipient {
 
 	private String name;
 	private String address;
+	private String x500Address;
 
 	// while parsing new properties, in some use cases the only emailaddress we get is actually encoded as name in the email
 	// but if not, we should know when to replace it with the actually encoded address, where this flag helps us
-	private boolean nameWasUsedAsAddress = false;
+	private boolean nameWasUsedAsAddress;
 
 	/**
 	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #address} when the property name
@@ -59,24 +62,34 @@ public class OutlookRecipient {
 		properties.put(mapiClass, value);
 	}
 
-	private void handleNameAddressProperty(int mapiClass, String probablyNamePossiblyAddress) {
-		if (mapiClass == 0x3003 || mapiClass == 0x39fe) { // address
-			if ((this.address == null || nameWasUsedAsAddress) && probablyNamePossiblyAddress.contains("@")) {
+	private void handleNameAddressProperty(final int mapiClass, final String probablyNamePossiblyAddress) {
+		if (mapiClass == 0x3001) { // name
+			handleNameProperty(probablyNamePossiblyAddress);
+		} else if (mapiClass == 0x3003 || mapiClass == 0x39fe) { // address
+			handleAddressProperty(probablyNamePossiblyAddress);
+		}
+	}
+
+	private void handleNameProperty(final String probablyNamePossiblyAddress) {
+		setName(probablyNamePossiblyAddress);
+		// If no name+email was given, Outlook will encode the value as name, even if it actually is an addres
+		// so just in that case, do a quick check to catch most use-cases where the name is actually the email address
+		if (address == null && probablyNamePossiblyAddress.contains("@")) {
+			setAddress(probablyNamePossiblyAddress);
+			nameWasUsedAsAddress = true;
+		}
+	}
+
+	private void handleAddressProperty(final String probablyNamePossiblyAddress) {
+		if (probablyNamePossiblyAddress.contains("@") && (address == null || nameWasUsedAsAddress || address.matches(X500_ADDRESS_PATTERN))) {
+			setAddress(probablyNamePossiblyAddress);
+			nameWasUsedAsAddress = false;
+		} else if (probablyNamePossiblyAddress.matches(X500_ADDRESS_PATTERN)) {
+			if (address == null) {
 				setAddress(probablyNamePossiblyAddress);
-				nameWasUsedAsAddress = false;
-			} else if (this.address == null && probablyNamePossiblyAddress.matches("/o=[^/]+/ou=[^/]+(?:/cn=[^/]+)*")) {
-				// highly likely an X500 address
-				setAddress(probablyNamePossiblyAddress);
-				nameWasUsedAsAddress = false;
 			}
-		} else if (mapiClass == 0x3001) { // name
-			setName(probablyNamePossiblyAddress);
-			// If no name+email was given, Outlook will encode the value as name, even if it actually is an addres
-			// so just in that case, do a quick check to catch most use-cases where the name is actually the email address
-			if (this.address == null && probablyNamePossiblyAddress.contains("@")) {
-				setAddress(probablyNamePossiblyAddress);
-				nameWasUsedAsAddress = true;
-			} 
+			setX500Address(probablyNamePossiblyAddress);
+			nameWasUsedAsAddress = false;
 		}
 	}
 
@@ -90,12 +103,13 @@ public class OutlookRecipient {
 		}
 		final OutlookRecipient that = (OutlookRecipient) o;
 		return Objects.equals(address, that.address) &&
+				Objects.equals(x500Address, that.x500Address) &&
 				Objects.equals(name, that.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(address, name);
+		return Objects.hash(address, x500Address, name);
 	}
 
 	@Override
@@ -105,8 +119,11 @@ public class OutlookRecipient {
 		if (sb.length() > 0) {
 			sb.append(" ");
 		}
-		if (address != null && address.length() > 0) {
+		if (address != null && !address.isEmpty()) {
 			sb.append("<").append(address).append(">");
+		}
+		if (x500Address != null && !x500Address.isEmpty()) {
+			sb.append("<").append(x500Address).append(">");
 		}
 		return sb.toString();
 	}
@@ -126,10 +143,24 @@ public class OutlookRecipient {
 	}
 
 	/**
+	 * Bean getter for {@link #x500Address}.
+	 */
+	public String getX500Address() {
+		return x500Address;
+	}
+
+	/**
 	 * Bean setter for {@link #address}.
 	 */
 	public void setAddress(final String address) {
 		this.address = address;
+	}
+
+	/**
+	 * Bean setter for {@link #address}.
+	 */
+	public void setX500Address(final String x500Address) {
+		this.x500Address = x500Address;
 	}
 
 	/**
