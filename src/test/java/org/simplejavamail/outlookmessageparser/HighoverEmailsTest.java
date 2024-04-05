@@ -91,7 +91,22 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Dummy text. Btw, the pdf is actually a .txt\n");
 	}
-	
+
+	@Test
+	public void testGithubIssue73_AttachmentNameWithSpecialCharacters()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/OutlookMessage with X500 dual address.msg");
+
+		OutlookMessageAssert.assertThat(msg).hasFromName("Sven Sielenkemper");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("sielenkemper@otris.de");
+
+		// just assert what currently comes back from the parser, not what the parser should do, because I'm not sure yet what the parser should do
+		OutlookMessageAssert.assertThat(msg).hasOnlyRecipients(
+				createRecipient("Sven Sielenkemper", "/o=otris/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=ad5e65c5e53d40e2825d738a39904682-sielenkemper"),
+				createRecipient("sven.sielenkemper@gmail.com", "sven.sielenkemper@gmail.com")
+		);
+	}
+
 	@Test
 	public void testToAndCCAreSeparated_Multiple()
 			throws IOException {
