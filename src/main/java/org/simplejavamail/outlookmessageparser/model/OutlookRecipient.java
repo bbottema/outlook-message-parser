@@ -59,24 +59,32 @@ public class OutlookRecipient {
 		properties.put(mapiClass, value);
 	}
 
-	private void handleNameAddressProperty(int mapiClass, String probablyNamePossiblyAddress) {
-		if (mapiClass == 0x3003 || mapiClass == 0x39fe) { // address
-			if ((this.address == null || nameWasUsedAsAddress) && probablyNamePossiblyAddress.contains("@")) {
-				setAddress(probablyNamePossiblyAddress);
-				nameWasUsedAsAddress = false;
-			} else if (this.address == null && probablyNamePossiblyAddress.matches("/o=[^/]+/ou=[^/]+(?:/cn=[^/]+)*")) {
-				// highly likely an X500 address
-				setAddress(probablyNamePossiblyAddress);
-				nameWasUsedAsAddress = false;
-			}
-		} else if (mapiClass == 0x3001) { // name
-			setName(probablyNamePossiblyAddress);
-			// If no name+email was given, Outlook will encode the value as name, even if it actually is an addres
-			// so just in that case, do a quick check to catch most use-cases where the name is actually the email address
-			if (this.address == null && probablyNamePossiblyAddress.contains("@")) {
-				setAddress(probablyNamePossiblyAddress);
-				nameWasUsedAsAddress = true;
-			} 
+	private void handleNameAddressProperty(final int mapiClass, final String probablyNamePossiblyAddress) {
+		if (mapiClass == 0x3001) { // name
+			handleNameProperty(probablyNamePossiblyAddress);
+		} else if (mapiClass == 0x3003 || mapiClass == 0x39fe) { // address
+			handleAddressProperty(probablyNamePossiblyAddress);
+		}
+	}
+
+	private void handleNameProperty(final String probablyNamePossiblyAddress) {
+		setName(probablyNamePossiblyAddress);
+		// If no name+email was given, Outlook will encode the value as name, even if it actually is an addres
+		// so just in that case, do a quick check to catch most use-cases where the name is actually the email address
+		if (address == null && probablyNamePossiblyAddress.contains("@")) {
+			setAddress(probablyNamePossiblyAddress);
+			nameWasUsedAsAddress = true;
+		}
+	}
+
+	private void handleAddressProperty(final String probablyNamePossiblyAddress) {
+		if ((address == null || nameWasUsedAsAddress) && probablyNamePossiblyAddress.contains("@")) {
+			setAddress(probablyNamePossiblyAddress);
+			nameWasUsedAsAddress = false;
+		} else if (address == null && probablyNamePossiblyAddress.matches("/o=[^/]+/ou=[^/]+(?:/cn=[^/]+)*")) {
+			// highly likely an X500 address
+			setAddress(probablyNamePossiblyAddress);
+			nameWasUsedAsAddress = false;
 		}
 	}
 
