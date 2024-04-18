@@ -201,8 +201,9 @@ public class OutlookMessage {
 				break;
 			case 0xc1f: //SENDER EMAIL ADDRESS
 			case 0x65: //SENT REPRESENTING EMAIL ADDRESS
-			case 0x3ffa: //LAST MODIFIER NAME
 				setFromEmail(stringValue);
+				break;
+			case 0x3ffa: //LAST MODIFIER NAME
 				break;
 			case 0x42: //SENT REPRESENTING NAME
 				setFromName(stringValue);
@@ -527,7 +528,7 @@ public class OutlookMessage {
 	 * @param force     forces overwriting of the field if already set
 	 */
 	private void setFromEmail(final String fromEmail, final boolean force) {
-		if ((force || this.fromEmail == null) && fromEmail != null && fromEmail.contains("@")) {
+		if (force || this.fromEmail == null) {
 			this.fromEmail = fromEmail;
 		}
 	}
