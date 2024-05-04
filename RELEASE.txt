@@ -1,8 +1,9 @@
-v1.13.0 - [v1.13.2](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.13.2%7Cjar)
+v1.13.0 - v1.13.3
 
-- 1.13.2 (05-April-2024): [#73](https://github.com/bbottema/outlook-message-parser/issues/73): Don't overwrite existing address, but do retain X500 address if available
-- 1.13.1 (04-April-2024): [#73](https://github.com/bbottema/outlook-message-parser/issues/73): Further improve X500 addresses detection
-- 1.13.0 (18-January-2024): [#71](https://github.com/bbottema/outlook-message-parser/issues/71): Update to latest Jakarta+Angus dependencies
+- 1.13.3 (04-May-2024): bumped angus-activation from 2.0.2 to 2.0.3
+- 1.13.2 (05-April-2024): #73: Don't overwrite existing address, but do retain X500 address if available
+- 1.13.1 (04-April-2024): #73: Further improve X500 addresses detection
+- 1.13.0 (18-January-2024): #71: Update to latest Jakarta+Angus dependencies
 
 
 v1.12.0 (10-December-2023)
