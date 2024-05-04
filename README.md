@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.13.3</version>
+  <version>1.13.4</version>
 </dependency>
 ```
 
@@ -18,8 +18,9 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
-v1.13.0 - [v1.13.3](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.13.3%7Cjar)
+v1.13.0 - [v1.13.4](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.13.4%7Cjar)
 
+- 1.13.4 (04-May-2024): bumped apache poi to 5.2.5 and managed commons-io to 2.16.1
 - 1.13.3 (04-May-2024): bumped angus-activation from 2.0.2 to 2.0.3
 - 1.13.2 (05-April-2024): [#73 B](https://github.com/bbottema/outlook-message-parser/issues/73): Don't overwrite existing address, but do retain X500 address if available
 - 1.13.1 (04-April-2024): [#73 A](https://github.com/bbottema/outlook-message-parser/issues/73): Further improve X500 addresses detection
