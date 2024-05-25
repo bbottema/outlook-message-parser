@@ -71,6 +71,7 @@ public class HighoverEmailsTest {
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with one cc recipient.\n");
 	}
 
+	// see https://github.com/bbottema/outlook-message-parser/issues/76
 	@Test
 	public void testDuplicateRecipientsBug()
 			throws IOException {
