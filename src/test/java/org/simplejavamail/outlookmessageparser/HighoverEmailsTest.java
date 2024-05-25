@@ -15,7 +15,11 @@ import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeMu
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
@@ -46,7 +50,7 @@ public class HighoverEmailsTest {
 				+ "John Doe\n"
 				+ "Some Server Company\n");
 	}
-	
+
 	@Test
 	public void testToAndCCAreSeparated_Single()
 			throws IOException {
@@ -65,6 +69,22 @@ public class HighoverEmailsTest {
 		assertThat(msg.getBodyRTF()).isNotEmpty();
 		assertThat(msg.getClientSubmitTime()).isNotNull();
 		assertThat(normalizeText(msg.getBodyText())).isEqualTo("Just a test to get an email with one cc recipient.\n");
+	}
+
+	@Test
+	public void testDuplicateRecipientsBug()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/CC duplicate recipients bug.msg");
+		OutlookMessageAssert.assertThat(msg).hasFromName("Andrew McQuillen");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("atmcquillen@gmail.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("Testing MSG");
+		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(
+				createRecipient("Andrew McQuillen", "andrew.mcquillen@civica.co.uk", "/o=ExchangeLabs/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=a1afd0d9b9254a1d8f0326f54698e43f-Andrew McQu"));
+		OutlookMessageAssert.assertThat(msg).hasOnlyCcRecipients(
+				createRecipient("Andrew McQuillen", "atmcquillen@gmail.com", "/o=ExchangeLabs/ou=Exchange Administrative Group (FYDIBOHF23SPDLT)/cn=Recipients/cn=a1afd0d9b9254a1d8f0326f54698e43f-Andrew McQu"));
+		OutlookMessageAssert.assertThat(msg).hasNoBccRecipients();
+		assertThat(normalizeText(msg.getBodyText())).contains("This is an MSG message.");
+		assertThat(msg.getHeadersMap()).doesNotContainKeys("CC", "Cc", "cc", "BCC", "Bcc", "bcc", "TO", "To", "to");
 	}
 	
 	@Test
