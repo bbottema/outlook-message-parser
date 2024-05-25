@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.bbottema</groupId>
 		<artifactId>standard-project-parent</artifactId>
-		<version>1.0.29</version>
+		<version>1.0.45</version>
 	</parent>
 
 	<groupId>org.simplejavamail</groupId>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>com.github.bbottema</groupId>
 			<artifactId>rtf-to-html</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.angus</groupId>

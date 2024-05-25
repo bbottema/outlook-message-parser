@@ -1,3 +1,8 @@
+v1.14.0 (25-05-2024)
+
+- #80: RTF converted to HTML doesn't always detect charset properly
+
+
 v1.13.0 - v1.13.4
 
 - 1.13.4 (04-May-2024): bumped apache poi to 5.2.5 and managed commons-io to 2.16.1
