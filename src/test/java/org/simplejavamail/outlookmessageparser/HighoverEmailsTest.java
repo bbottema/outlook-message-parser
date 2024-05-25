@@ -969,21 +969,46 @@ public class HighoverEmailsTest {
 		
 		assertThat(nestedMsg.getSmime()).isNull();
 	}
-	
+
 	@Test
 	public void testQoutedNameswithAtSign()
 			throws IOException {
 		OutlookMessage msg = parseMsgFile("test-messages/Test at sign in personal From header.msg");
-		
+
 		OutlookMessageAssert.assertThat(msg).hasFromName("bogus@acme.com");
 		OutlookMessageAssert.assertThat(msg).hasFromEmail("bogus@domain.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("Test at sign in personal 3");
 		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("'recipient'", "recipient@domain.com"));
-		
+
 		OutlookMessageAssert.assertThat(msg).hasNoOutlookAttachments();
 		assertThat(msg.fetchCIDMap()).hasSize(0);
 		assertThat(msg.fetchTrueAttachments()).hasSize(0);
 		assertThat((OutlookSmimeApplicationSmime) msg.getSmime()).isNull();
+	}
+
+	@Test
+	public void testChineseMessageGarbled()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/chinese message un_garbled.msg");
+
+		OutlookMessageAssert.assertThat(msg).hasFromName("Wang, Zhuo D.");
+		OutlookMessageAssert.assertThat(msg).hasFromEmail("zhuo.d.wang@accenture.com");
+		OutlookMessageAssert.assertThat(msg).hasSubject("测试邮件");
+
+		assertThat(msg.getOutlookAttachments()).hasSize(1);
+		assertThat(msg.fetchCIDMap()).hasSize(1);
+		assertThat(msg.fetchTrueAttachments()).hasSize(0);
+		assertThat(msg.getConvertedBodyHTML()).contains("<a href=\"https://taira-komori.jpn.org/sound_os2/openclose01/op_CD_jewel_case.mp3\">");
+
+		OutlookMessage msgGarbled = parseMsgFile("test-messages/chinese message garbled.msg");
+
+		OutlookMessageAssert.assertThat(msgGarbled).hasFromName(msgGarbled.getFromName());
+		OutlookMessageAssert.assertThat(msgGarbled).hasFromEmail(msgGarbled.getFromEmail());
+		OutlookMessageAssert.assertThat(msgGarbled).hasSubject(msgGarbled.getSubject());
+		assertThat(msgGarbled.getOutlookAttachments()).hasSize(msgGarbled.getOutlookAttachments().size());
+		assertThat(msgGarbled.fetchCIDMap()).hasSize(msgGarbled.fetchCIDMap().size());
+		assertThat(msgGarbled.fetchTrueAttachments()).hasSize(msgGarbled.fetchTrueAttachments().size());
+		assertThat(msgGarbled.getConvertedBodyHTML()).isEqualTo(msg.getConvertedBodyHTML());
 	}
 
 	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {
