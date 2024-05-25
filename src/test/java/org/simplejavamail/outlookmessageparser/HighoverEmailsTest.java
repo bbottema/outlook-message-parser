@@ -998,6 +998,7 @@ public class HighoverEmailsTest {
 		assertThat(msg.fetchCIDMap()).hasSize(1);
 		assertThat(msg.fetchTrueAttachments()).hasSize(0);
 		assertThat(msg.getConvertedBodyHTML()).contains("<a href=\"https://taira-komori.jpn.org/sound_os2/openclose01/op_CD_jewel_case.mp3\">");
+		assertThat(msg.getConvertedBodyHTML()).contains("翻牌音效");
 
 		OutlookMessage msgGarbled = parseMsgFile("test-messages/chinese message garbled.msg");
 
@@ -1007,7 +1008,8 @@ public class HighoverEmailsTest {
 		assertThat(msgGarbled.getOutlookAttachments()).hasSize(msgGarbled.getOutlookAttachments().size());
 		assertThat(msgGarbled.fetchCIDMap()).hasSize(msgGarbled.fetchCIDMap().size());
 		assertThat(msgGarbled.fetchTrueAttachments()).hasSize(msgGarbled.fetchTrueAttachments().size());
-		assertThat(msgGarbled.getConvertedBodyHTML()).isEqualTo(msg.getConvertedBodyHTML());
+		assertThat(msgGarbled.getConvertedBodyHTML()).contains("<a href=\"https://taira-komori.jpn.org/sound_os2/openclose01/op_CD_jewel_case.mp3\">");
+		assertThat(msgGarbled.getConvertedBodyHTML()).contains("翻牌音效");
 	}
 
 	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {

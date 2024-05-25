@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.bbottema.rtftohtml.RTF2HTMLConverter;
-import org.bbottema.rtftohtml.impl.util.CharsetHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.simplejavamail.jakarta.mail.Header;
@@ -43,6 +42,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.copyOfRange;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
+import static org.bbottema.rtftohtml.impl.util.CodePage.WINDOWS_1252;
 
 /**
  * Class that represents a .msg file. Some fields from the .msg file are stored in special parameters (e.g., {@link #fromEmail}). Attachments are stored in the
@@ -725,7 +725,7 @@ public class OutlookMessage {
 				try {
 					final byte[] decompressedBytes = decompressRtfBytes((byte[]) bodyRTF);
 					if (decompressedBytes != null) {
-						this.bodyRTF = new String(decompressedBytes, CharsetHelper.WINDOWS_CHARSET);
+						this.bodyRTF = new String(decompressedBytes, WINDOWS_1252.getCharset());
 						setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
 					}
 				} catch (IllegalArgumentException e) {
