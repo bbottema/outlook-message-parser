@@ -1,6 +1,7 @@
-v1.14.0 (25-05-2024)
+v1.14.0 - v1.14.1
 
-- #80: RTF converted to HTML doesn't always detect charset properly
+- 1.14.1 (08-06-2024): #64: [Bug] Parsing lists to HTML has double bullet points
+- 1.14.0 (25-05-2024): #80: RTF converted to HTML doesn't always detect charset properly
 
 
 v1.13.0 - v1.13.4

@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.14.0</version>
+  <version>1.14.1</version>
 </dependency>
 ```
 
@@ -18,9 +18,10 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
-[v1.14.0](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.14.0%7Cjar) (25-05-2024)
+v1.14.0 - [v1.14.1](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.14.1%7Cjar)
 
-- #80: RTF converted to HTML doesn't always detect charset properly
+- 1.14.1 (08-06-2024): [#64](https://github.com/bbottema/outlook-message-parser/issues/64): [Bug] Parsing lists to HTML has double bullet points
+- 1.14.0 (25-05-2024): [#80](https://github.com/bbottema/outlook-message-parser/issues/80): RTF converted to HTML doesn't always detect charset properly
 
 
 v1.13.0 - [v1.13.4](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.13.4%7Cjar)
