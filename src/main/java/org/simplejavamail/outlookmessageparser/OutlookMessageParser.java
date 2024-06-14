@@ -17,6 +17,8 @@ import org.simplejavamail.outlookmessageparser.model.OutlookMessageProperty;
 import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeMultipartSigned;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationOctetStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +72,10 @@ public class OutlookMessageParser {
 	private static final String PROPS_KEY = "__properties_version1.0";
 
 	private static final String PROPERTY_STREAM_PREFIX = "__substg1.0_";
-	
-	private static final Pattern SMIME_CONTENT_TYPE_PATTERN = compile(format("^Content-Type: (?<contenttype>%s)(?:; name=\"(?<name>smime.p7m)\")?(?:; smime-type=(?<smimetype>enveloped-data))?$",
-			"application\\/pkcs7-mime|multipart\\/signed|application\\/octet-stream|application\\/pkcs7-signature"),
-			Pattern.MULTILINE);
-	
+	private static final Pattern SMIME_APPLICATION_PCKS_TYPE_PATTERN = compile("^Content-Type: (?<contenttype>application\\/pkcs7-mime.*?)(?:; name=(\")?(?<name>.*?)(\")?)?(?:; smime-type=(?<smimetype>enveloped-data))?$",Pattern.MULTILINE);
+	private static final Pattern SMIME_MULTIPART_SIGNED_TYPE_PATTERN = compile("^Content-Type: (?<contenttype>multipart\\/signed.*?)(?:; protocol=(\")?(?<protocol>application\\/(x-)?pkcs7-signature.*?)(\")?)(?:; micalg=(?<micalg>.*?))?(?:;(?<rest>.*?))?$",Pattern.MULTILINE);
+	private static final Pattern SMIME_APPLICATION_OCTET_TYPE_PATTERN = compile("^Content-Type: (?<contenttype>application\\/octet-stream.*?)(?:; protocol=(?<protocol>.*?))?(?:; name=(?<name>(.*p7z|.*p7c|.*p7s|.*p7m).*?))(?:;(?<rest>.*?))?$",Pattern.MULTILINE);
+
 	private static final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
 	
 	private RTF2HTMLConverter rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
@@ -177,12 +178,38 @@ public class OutlookMessageParser {
 		}
 	}
 	
-	static void extractSMimeHeader(@NotNull final OutlookMessage msg, @NotNull final String allHeaders) {
+	static void extractSMimeHeader(@NotNull final OutlookMessage msg, @NotNull String allHeaders) {
 		if (msg.getSmime() == null) {
-			// https://regex101.com/r/AE0Uys/1
-			final Matcher m = SMIME_CONTENT_TYPE_PATTERN.matcher(allHeaders);
-			if (m.find()) {
-				msg.setSmime(new OutlookSmimeApplicationSmime(m.group("contenttype"), m.group("smimetype"), m.group("name")));
+			// https://regex101.com/r/pbMYd2/1
+			final Matcher applicationPkcs = SMIME_APPLICATION_PCKS_TYPE_PATTERN.matcher(allHeaders);
+			// https://regex101.com/r/5iAxbs/1
+			final Matcher multipartSigned = SMIME_MULTIPART_SIGNED_TYPE_PATTERN.matcher(allHeaders);
+			// https://regex101.com/r/sa4Rp2/1
+			final Matcher octetType = SMIME_APPLICATION_OCTET_TYPE_PATTERN.matcher(allHeaders);
+			if (applicationPkcs.find()) {
+				msg.setSmime(new OutlookSmimeApplicationSmime(applicationPkcs.group("contenttype"), applicationPkcs.group("smimetype"), applicationPkcs.group("name")));
+			}
+			if(multipartSigned.find()){
+				msg.setSmime(new OutlookSmimeMultipartSigned(multipartSigned.group("contenttype"), multipartSigned.group("protocol").replace("\"", ""), multipartSigned.group("micalg")));
+			}
+			if(octetType.find()){
+				msg.setSmime(new OutlookSmimeApplicationOctetStream(octetType.group("contenttype"), octetType.group("protocol"), octetType.group("name")));
+			}
+			if (msg.getSmime() == null && (msg.getMessageClass().equals("IPM.Note.SMIME") || msg.getMessageClass().equals("IPM.Note.SMIME.MultipartSigned"))) {
+				for (OutlookFileAttachment att : msg.fetchTrueAttachments()) {
+					if(att.getMimeTag().equals("application/pkcs-mime")){
+						msg.setSmime(new OutlookSmimeApplicationSmime(att.getMimeTag(), null, att.getFilename()));
+						return;
+					}
+					if(att.getMimeTag().matches("multipart/signed|application/(x-)?pkcs7-signature") && att.getExtension().matches(".*p7z|.*p7c|.*p7s|.*p7m")){
+						msg.setSmime(new OutlookSmimeMultipartSigned(att.getMimeTag(), null, att.getFilename()));
+						return;
+					}
+					if(att.getMimeTag().equals("application/octet-stream") && att.getExtension().matches(".*p7z|.*p7c|.*p7s|.*p7m")){
+						msg.setSmime(new OutlookSmimeMultipartSigned(att.getMimeTag(), null, att.getFilename()));
+						return;
+					}
+				}
 			}
 		}
 	}
