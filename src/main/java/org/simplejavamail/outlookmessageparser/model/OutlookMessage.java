@@ -666,21 +666,27 @@ public class OutlookMessage {
    	 */
 	@NotNull
 	private List<OutlookRecipient> filterRecipients(String displayTo) {
-        final List<OutlookRecipient> toRecipients = new ArrayList<>();
-	        if (displayTo != null) {
-	        	final String recipientKey = displayTo.trim();
-	        	List<String> keyList = Arrays.asList(recipientKey.split(";"));
-	        	keyList.forEach(key -> {
-	                	Optional<OutlookRecipient> entry = recipients.stream().filter(r -> r.getName().equalsIgnoreCase(key.trim())).findFirst();
-	                	if (entry.isPresent()) {
-	                    		toRecipients.add(entry.get());
-	                	}
-	                	else {
-	                    		LOGGER.debug("Key {} has no matching recipient, skipping", key.trim());
-	                	}
-	            	});
-	        }
-	        return toRecipients;
+		final List<OutlookRecipient> toRecipients = new ArrayList<>();
+		if (displayTo != null) {
+			final String recipientKey = displayTo.trim();
+			List<String> keyList = Arrays.asList(recipientKey.split(";"));
+			keyList.forEach(key -> {
+				Optional<OutlookRecipient> entry = recipients.stream()
+						.filter(r -> {
+							boolean matches = r.getName().equalsIgnoreCase(key.trim());
+							boolean alreadyAdded = toRecipients.contains(r);
+							return matches && !alreadyAdded;
+						})
+						.findFirst();
+				if (entry.isPresent()) {
+					toRecipients.add(entry.get());
+				}
+				else {
+					LOGGER.debug("Key {} has no matching recipient, skipping", key.trim());
+				}
+			});
+		}
+		return toRecipients;
 	}
 
 	/**
