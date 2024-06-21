@@ -24,17 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -670,24 +660,27 @@ public class OutlookMessage {
 	public List<OutlookRecipient> getBccRecipients() {
 		return filterRecipients(getDisplayBcc());
 	}
-	
+
+	/**
+ 	 * Creates a list of recipients that are found inside the key that is passed as parameter.
+   	 */
 	@NotNull
 	private List<OutlookRecipient> filterRecipients(String displayTo) {
-		final List<OutlookRecipient> toRecipients = new ArrayList<>();
-		if (displayTo != null) {
-			final String recipientKey = displayTo.trim();
-			for (final OutlookRecipient entry : recipients) {
-				if (entry.getAddress() != null) {
-					final String name = entry.getName().trim();
-					if (recipientKey.contains(name)) {
-						toRecipients.add(entry);
-					}
-				} else {
-					LOGGER.debug("Recipient {} has no email address, skipping", entry);
-				}
-			}
-		}
-		return toRecipients;
+        final List<OutlookRecipient> toRecipients = new ArrayList<>();
+	        if (displayTo != null) {
+	        	final String recipientKey = displayTo.trim();
+	        	List<String> keyList = Arrays.asList(recipientKey.split(";"));
+	        	keyList.forEach(key -> {
+	                	Optional<OutlookRecipient> entry = recipients.stream().filter(r -> r.getName().equalsIgnoreCase(key.trim())).findFirst();
+	                	if (entry.isPresent()) {
+	                    		toRecipients.add(entry.get());
+	                	}
+	                	else {
+	                    		LOGGER.debug("Key {} has no matching recipient, skipping", key.trim());
+	                	}
+	            	});
+	        }
+	        return toRecipients;
 	}
 
 	/**
