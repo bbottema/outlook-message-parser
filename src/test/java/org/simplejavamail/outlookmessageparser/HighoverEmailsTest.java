@@ -1012,6 +1012,24 @@ public class HighoverEmailsTest {
 		assertThat(msgGarbled.getConvertedBodyHTML()).contains("翻牌音效");
 	}
 
+	@Test
+	public void testGithubIssue76_DuplicatedRecipients1()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/CC duplicate recipients bug.msg");
+
+		assertThat(msg.getToRecipients().size()).isEqualTo(1);
+		assertThat(msg.getCcRecipients().size()).isEqualTo(1);
+	}
+
+	@Test
+	public void testGithubIssue76_DuplicatedRecipients2()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/test subject duplicated recipients.msg");
+
+		assertThat(msg.getToRecipients().size()).isEqualTo(1);
+		assertThat(msg.getCcRecipients().size()).isEqualTo(1);
+	}
+
 	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {
 		assertThat(attachment).isOfAnyClassIn(OutlookFileAttachment.class);
 		assertThat(((OutlookFileAttachment) attachment).getMimeTag()).describedAs("mimeTag").isEqualTo(mimeType);
