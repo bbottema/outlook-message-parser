@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
 import org.bbottema.rtftohtml.RTF2HTMLConverter;
-import org.bbottema.rtftohtml.impl.util.CharsetHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.simplejavamail.jakarta.mail.Header;
@@ -25,17 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +32,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.copyOfRange;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
+import static org.bbottema.rtftohtml.impl.util.CodePage.WINDOWS_1252;
 
 /**
  * Class that represents a .msg file. Some fields from the .msg file are stored in special parameters (e.g., {@link #fromEmail}). Attachments are stored in the
@@ -670,22 +660,31 @@ public class OutlookMessage {
 	public List<OutlookRecipient> getBccRecipients() {
 		return filterRecipients(getDisplayBcc());
 	}
-	
+
+	/**
+ 	 * Creates a list of recipients that are found inside the key that is passed as parameter.
+   	 */
 	@NotNull
 	private List<OutlookRecipient> filterRecipients(String displayTo) {
 		final List<OutlookRecipient> toRecipients = new ArrayList<>();
 		if (displayTo != null) {
 			final String recipientKey = displayTo.trim();
-			for (final OutlookRecipient entry : recipients) {
-				if (entry.getAddress() != null) {
-					final String name = entry.getName().trim();
-					if (recipientKey.contains(name)) {
-						toRecipients.add(entry);
-					}
-				} else {
-					LOGGER.debug("Recipient {} has no email address, skipping", entry);
+			List<String> keyList = Arrays.asList(recipientKey.split(";"));
+			keyList.forEach(key -> {
+				Optional<OutlookRecipient> entry = recipients.stream()
+						.filter(r -> {
+							boolean matches = r.getName().equalsIgnoreCase(key.trim());
+							boolean alreadyAdded = toRecipients.contains(r);
+							return matches && !alreadyAdded;
+						})
+						.findFirst();
+				if (entry.isPresent()) {
+					toRecipients.add(entry.get());
 				}
-			}
+				else {
+					LOGGER.debug("Key {} has no matching recipient, skipping", key.trim());
+				}
+			});
 		}
 		return toRecipients;
 	}
@@ -725,7 +724,7 @@ public class OutlookMessage {
 				try {
 					final byte[] decompressedBytes = decompressRtfBytes((byte[]) bodyRTF);
 					if (decompressedBytes != null) {
-						this.bodyRTF = new String(decompressedBytes, CharsetHelper.WINDOWS_CHARSET);
+						this.bodyRTF = new String(decompressedBytes, WINDOWS_1252.getCharset());
 						setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
 					}
 				} catch (IllegalArgumentException e) {

@@ -6,14 +6,14 @@
 	<parent>
 		<groupId>com.github.bbottema</groupId>
 		<artifactId>standard-project-parent</artifactId>
-		<version>1.0.29</version>
+		<version>1.0.45</version>
 	</parent>
 
 	<groupId>org.simplejavamail</groupId>
 	<artifactId>outlook-message-parser</artifactId>
 	<packaging>jar</packaging>
 	<name>Outlook Message Parser</name>
-	<version>1.13.4</version>
+	<version>1.14.1</version>
 	<description>A Java parser for Outlook messages (.msg files)</description>
 	<url>https://github.com/bbottema/outlook-message-parser</url>
 	<inceptionYear>2017</inceptionYear>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>com.github.bbottema</groupId>
 			<artifactId>rtf-to-html</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.angus</groupId>

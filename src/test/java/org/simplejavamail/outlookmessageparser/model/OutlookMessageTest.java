@@ -1,6 +1,6 @@
 package org.simplejavamail.outlookmessageparser.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
 
 import static org.assertj.core.api.Assertions.assertThat;
