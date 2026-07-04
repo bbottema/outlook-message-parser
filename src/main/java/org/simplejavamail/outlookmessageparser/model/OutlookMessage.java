@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -640,7 +641,10 @@ public class OutlookMessage {
 	 * @return the TO recipients of the message.
 	 */
 	public List<OutlookRecipient> getToRecipients() {
-		return filterRecipients(getDisplayTo(), new ArrayList<>());
+		if (hasRecipientTypeData()) {
+			return filterRecipientsByType(OutlookRecipient.RECIPIENT_TYPE_TO);
+		}
+		return filterRecipients(getDisplayTo(), getHeaderAddresses("To"), new ArrayList<>());
 	}
 	
 	/**
@@ -649,8 +653,11 @@ public class OutlookMessage {
 	 * @return the CC recipients of the message.
 	 */
 	public List<OutlookRecipient> getCcRecipients() {
+		if (hasRecipientTypeData()) {
+			return filterRecipientsByType(OutlookRecipient.RECIPIENT_TYPE_CC);
+		}
 		final List<OutlookRecipient> assignedRecipients = new ArrayList<>(getToRecipients());
-		return filterRecipients(getDisplayCc(), assignedRecipients);
+		return filterRecipients(getDisplayCc(), getHeaderAddresses("Cc"), assignedRecipients);
 	}
 
 	/**
@@ -659,22 +666,25 @@ public class OutlookMessage {
 	 * @return the BCC recipients of the message.
 	 */
 	public List<OutlookRecipient> getBccRecipients() {
+		if (hasRecipientTypeData()) {
+			return filterRecipientsByType(OutlookRecipient.RECIPIENT_TYPE_BCC);
+		}
 		final List<OutlookRecipient> assignedRecipients = new ArrayList<>(getToRecipients());
 		assignedRecipients.addAll(getCcRecipients());
-		return filterRecipients(getDisplayBcc(), assignedRecipients);
+		return filterRecipients(getDisplayBcc(), getHeaderAddresses("Bcc"), assignedRecipients);
 	}
 
 	/**
  	 * Creates a list of recipients that are found inside the key that is passed as parameter.
    	 */
 	@NotNull
-	private List<OutlookRecipient> filterRecipients(String displayTo, List<OutlookRecipient> assignedRecipients) {
+	private List<OutlookRecipient> filterRecipients(String displayTo, Set<String> headerAddresses, List<OutlookRecipient> assignedRecipients) {
 		final List<OutlookRecipient> toRecipients = new ArrayList<>();
 		if (displayTo != null) {
 			final String recipientKey = displayTo.trim();
 			List<String> keyList = Arrays.asList(recipientKey.split(";"));
 			keyList.forEach(key -> {
-				Optional<OutlookRecipient> entry = findRecipient(key.trim(), assignedRecipients, toRecipients);
+				Optional<OutlookRecipient> entry = findRecipient(key.trim(), headerAddresses, assignedRecipients, toRecipients);
 				if (entry.isPresent()) {
 					toRecipients.add(entry.get());
 					assignedRecipients.add(entry.get());
@@ -687,11 +697,73 @@ public class OutlookMessage {
 		return toRecipients;
 	}
 
+	private boolean hasRecipientTypeData() {
+		for (OutlookRecipient recipient : recipients) {
+			if (recipient.getRecipientType() != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@NotNull
-	private Optional<OutlookRecipient> findRecipient(String key, List<OutlookRecipient> assignedRecipients, List<OutlookRecipient> currentRecipients) {
+	private List<OutlookRecipient> filterRecipientsByType(int recipientType) {
+		final List<OutlookRecipient> typedRecipients = new ArrayList<>();
+		for (OutlookRecipient recipient : recipients) {
+			if (Integer.valueOf(recipientType).equals(recipient.getRecipientType())) {
+				typedRecipients.add(recipient);
+			}
+		}
+		return typedRecipients;
+	}
+
+	@NotNull
+	private Set<String> getHeaderAddresses(String headerName) {
+		final Set<String> addresses = new HashSet<>();
+		for (Map.Entry<String, Collection<String>> entry : headersMap.entrySet()) {
+			if (entry.getKey().equalsIgnoreCase(headerName)) {
+				for (String value : entry.getValue()) {
+					addHeaderAddresses(addresses, value);
+				}
+			}
+		}
+		return addresses;
+	}
+
+	private void addHeaderAddresses(Set<String> addresses, String value) {
+		try {
+			for (InternetAddress address : InternetAddress.parse(MimeUtility.unfold(value), false)) {
+				if (address.getAddress() != null) {
+					addresses.add(address.getAddress().toLowerCase(Locale.ENGLISH));
+				}
+			}
+		} catch (AddressException e) {
+			LOGGER.debug("Could not parse recipient header {}", value, e);
+		}
+	}
+
+	@NotNull
+	private Optional<OutlookRecipient> findRecipient(String key, Set<String> headerAddresses, List<OutlookRecipient> assignedRecipients, List<OutlookRecipient> currentRecipients) {
+		if (!headerAddresses.isEmpty()) {
+			final Optional<OutlookRecipient> headerMatch = findRecipientMatching(
+					recipient -> recipient.getAddress() != null && headerAddresses.contains(recipient.getAddress().toLowerCase(Locale.ENGLISH)),
+					assignedRecipients,
+					currentRecipients);
+			if (headerMatch.isPresent()) {
+				return headerMatch;
+			}
+		}
+		return findRecipientMatching(
+				recipient -> recipient.getName() != null && recipient.getName().equalsIgnoreCase(key),
+				assignedRecipients,
+				currentRecipients);
+	}
+
+	@NotNull
+	private Optional<OutlookRecipient> findRecipientMatching(Predicate<OutlookRecipient> matches, List<OutlookRecipient> assignedRecipients, List<OutlookRecipient> currentRecipients) {
 		OutlookRecipient alreadyAssignedMatch = null;
 		for (OutlookRecipient recipient : recipients) {
-			if (recipient.getName().equalsIgnoreCase(key) && !currentRecipients.contains(recipient)) {
+			if (matches.test(recipient) && !currentRecipients.contains(recipient)) {
 				if (!assignedRecipients.contains(recipient)) {
 					return Optional.of(recipient);
 				}

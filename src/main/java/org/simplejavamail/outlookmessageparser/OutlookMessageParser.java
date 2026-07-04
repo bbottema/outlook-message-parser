@@ -366,7 +366,7 @@ public class OutlookMessageParser {
 						//noinspection ResultOfMethodCallIgnored
 						dstream.read(bytes);
 						//noinspection ResultOfMethodCallIgnored
-						dstream.read(bytes); //read and ignore padding
+						dstream.read(new byte[4]); //read and ignore padding
 					} else if (typeNumber == 0x5 //DOUBLE
 							|| typeNumber == 0x7 //APPTIME
 							|| typeNumber == 0x6 //CURRENCY
@@ -495,6 +495,10 @@ public class OutlookMessageParser {
 					// To keep compatible with previous implementations, we return an empty array here
 					return new byte[0];
 				}
+			case 0x2:
+				return readLittleEndianShort(de);
+			case 0x3:
+				return readLittleEndianInt(de);
 			case 0x40:
 				// The following part has been provided by Morten Sørensen (Thanks!)
 
@@ -521,6 +525,22 @@ public class OutlookMessageParser {
 				return null;
 		}
 
+	}
+
+	private int readLittleEndianShort(final DocumentEntry de)
+			throws IOException {
+		final byte[] bytes = getBytesFromDocumentEntry(de);
+		final ByteBuffer buff = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+		buff.put(bytes, 0, Math.min(bytes.length, Short.BYTES));
+		return buff.getShort(0);
+	}
+
+	private int readLittleEndianInt(final DocumentEntry de)
+			throws IOException {
+		final byte[] bytes = getBytesFromDocumentEntry(de);
+		final ByteBuffer buff = ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+		buff.put(bytes, 0, Math.min(bytes.length, Integer.BYTES));
+		return buff.getInt(0);
 	}
 
 	/**

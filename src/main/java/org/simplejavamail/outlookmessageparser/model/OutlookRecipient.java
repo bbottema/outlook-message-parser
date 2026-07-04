@@ -15,6 +15,10 @@ import static java.lang.Integer.parseInt;
  */
 public class OutlookRecipient {
 
+	public static final int RECIPIENT_TYPE_TO = 1;
+	public static final int RECIPIENT_TYPE_CC = 2;
+	public static final int RECIPIENT_TYPE_BCC = 3;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(OutlookRecipient.class);
 
 	private static final String X500_ADDRESS_PATTERN = "/o=[^/]+/ou=[^/]+(?:/cn=[^/]+)*";
@@ -27,6 +31,7 @@ public class OutlookRecipient {
 	private String name;
 	private String address;
 	private String x500Address;
+	private Integer recipientType;
 
 	// while parsing new properties, in some use cases the only emailaddress we get is actually encoded as name in the email
 	// but if not, we should know when to replace it with the actually encoded address, where this flag helps us
@@ -54,12 +59,21 @@ public class OutlookRecipient {
 			LOGGER.error("Unexpected mapi class: {}", name, e);
 		}
 
+		if (mapiClass == 0x0c15) {
+			handleRecipientTypeProperty(value);
+		}
 		if (mapiClass == 0x3003 || mapiClass == 0x39fe || mapiClass == 0x3001) {
 			handleNameAddressProperty(mapiClass, (String) value);
 		}
 
 		// save all properties (incl. those identified above)
 		properties.put(mapiClass, value);
+	}
+
+	private void handleRecipientTypeProperty(final Object value) {
+		if (value instanceof Number) {
+			recipientType = ((Number) value).intValue();
+		}
 	}
 
 	private void handleNameAddressProperty(final int mapiClass, final String probablyNamePossiblyAddress) {
@@ -147,6 +161,10 @@ public class OutlookRecipient {
 	 */
 	public String getX500Address() {
 		return x500Address;
+	}
+
+	public Integer getRecipientType() {
+		return recipientType;
 	}
 
 	/**
