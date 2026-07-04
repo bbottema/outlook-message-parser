@@ -640,7 +640,7 @@ public class OutlookMessage {
 	 * @return the TO recipients of the message.
 	 */
 	public List<OutlookRecipient> getToRecipients() {
-		return filterRecipients(getDisplayTo());
+		return filterRecipients(getDisplayTo(), new ArrayList<>());
 	}
 	
 	/**
@@ -649,7 +649,8 @@ public class OutlookMessage {
 	 * @return the CC recipients of the message.
 	 */
 	public List<OutlookRecipient> getCcRecipients() {
-		return filterRecipients(getDisplayCc());
+		final List<OutlookRecipient> assignedRecipients = new ArrayList<>(getToRecipients());
+		return filterRecipients(getDisplayCc(), assignedRecipients);
 	}
 
 	/**
@@ -658,28 +659,25 @@ public class OutlookMessage {
 	 * @return the BCC recipients of the message.
 	 */
 	public List<OutlookRecipient> getBccRecipients() {
-		return filterRecipients(getDisplayBcc());
+		final List<OutlookRecipient> assignedRecipients = new ArrayList<>(getToRecipients());
+		assignedRecipients.addAll(getCcRecipients());
+		return filterRecipients(getDisplayBcc(), assignedRecipients);
 	}
 
 	/**
  	 * Creates a list of recipients that are found inside the key that is passed as parameter.
    	 */
 	@NotNull
-	private List<OutlookRecipient> filterRecipients(String displayTo) {
+	private List<OutlookRecipient> filterRecipients(String displayTo, List<OutlookRecipient> assignedRecipients) {
 		final List<OutlookRecipient> toRecipients = new ArrayList<>();
 		if (displayTo != null) {
 			final String recipientKey = displayTo.trim();
 			List<String> keyList = Arrays.asList(recipientKey.split(";"));
 			keyList.forEach(key -> {
-				Optional<OutlookRecipient> entry = recipients.stream()
-						.filter(r -> {
-							boolean matches = r.getName().equalsIgnoreCase(key.trim());
-							boolean alreadyAdded = toRecipients.contains(r);
-							return matches && !alreadyAdded;
-						})
-						.findFirst();
+				Optional<OutlookRecipient> entry = findRecipient(key.trim(), assignedRecipients, toRecipients);
 				if (entry.isPresent()) {
 					toRecipients.add(entry.get());
+					assignedRecipients.add(entry.get());
 				}
 				else {
 					LOGGER.debug("Key {} has no matching recipient, skipping", key.trim());
@@ -687,6 +685,22 @@ public class OutlookMessage {
 			});
 		}
 		return toRecipients;
+	}
+
+	@NotNull
+	private Optional<OutlookRecipient> findRecipient(String key, List<OutlookRecipient> assignedRecipients, List<OutlookRecipient> currentRecipients) {
+		OutlookRecipient alreadyAssignedMatch = null;
+		for (OutlookRecipient recipient : recipients) {
+			if (recipient.getName().equalsIgnoreCase(key) && !currentRecipients.contains(recipient)) {
+				if (!assignedRecipients.contains(recipient)) {
+					return Optional.of(recipient);
+				}
+				if (alreadyAssignedMatch == null) {
+					alreadyAssignedMatch = recipient;
+				}
+			}
+		}
+		return Optional.ofNullable(alreadyAssignedMatch);
 	}
 
 	/**
