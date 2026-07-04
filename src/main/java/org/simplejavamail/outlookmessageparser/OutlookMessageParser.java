@@ -356,6 +356,8 @@ public class OutlookMessageParser {
 						bytes = null;
 						//noinspection ResultOfMethodCallIgnored
 						dstream.read(new byte[4]);
+						//noinspection ResultOfMethodCallIgnored
+						dstream.read(new byte[4]); //read and ignore padding
 					} else if (typeNumber == 0x3 //INT
 							|| typeNumber == 0x4 //FLOAT
 							|| typeNumber == 0xa //ERROR

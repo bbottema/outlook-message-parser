@@ -15,6 +15,7 @@ import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeMu
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1050,6 +1051,21 @@ public class HighoverEmailsTest {
 
 		assertThat(msg.getToRecipients().size()).isEqualTo(1);
 		assertThat(msg.getCcRecipients().size()).isEqualTo(1);
+	}
+
+	@Test
+	public void testGithubIssue87_ClientSubmitTimeAfterVariableLengthProperties()
+			throws IOException {
+		assertClientSubmitTime("test-messages/issue-87-client-submit-time.msg");
+		assertClientSubmitTime("test-messages/issue-87-client-submit-time-corrected.msg");
+	}
+
+	private static void assertClientSubmitTime(String msgPath)
+			throws IOException {
+		OutlookMessage msg = parseMsgFile(msgPath);
+
+		assertThat(msg.getClientSubmitTime()).isEqualTo(new Date(1717507879000L));
+		assertThat(msg.getPropertyValue(0x0e06)).describedAs("message delivery time").isEqualTo(new Date(1717507860000L));
 	}
 
 	private void assertAttachmentMetadata(OutlookAttachment attachment, String mimeType, String fileExt, String filename, String fullname) {
