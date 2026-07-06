@@ -26,6 +26,7 @@ v1.15.0 (unreleased)
 - [#76](https://github.com/bbottema/outlook-message-parser/issues/76): preserve duplicate display-name recipient buckets and prefer explicit recipient types
 - [#77](https://github.com/bbottema/outlook-message-parser/issues/77): stop treating the last modifier name property as the sender email address
 - [#83](https://github.com/bbottema/outlook-message-parser/issues/83): prefer Outlook long attachment filenames for MIME inference and correct Excel MIME mappings
+- [#84](https://github.com/bbottema/outlook-message-parser/pull/84): upgrade Apache POI artifacts to 5.4.1 for CVE-2025-31672 and keep POI dependencies aligned
 - [#85](https://github.com/bbottema/outlook-message-parser/issues/85): publish a valid JPMS automatic module name for `module-info.java` consumers and consume `rtf-to-html` 2.0.1
 - [#87](https://github.com/bbottema/outlook-message-parser/issues/87): fixed missing client submit time when variable-length properties appeared earlier in the MSG property stream
 - [#88](https://github.com/bbottema/outlook-message-parser/issues/88): detect S/MIME metadata from Outlook/Exchange messages that store the signed MIME entity as a single attachment
