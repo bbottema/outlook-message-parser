@@ -7,16 +7,46 @@ import java.io.InputStream;
 class MimeType {
 
     private static final MimetypesFileTypeMap MIMETYPES_FILE_TYPE_MAP = createMap();
+    private static final String MIMETYPES_RESOURCE = "mimetypes.txt";
 
     /**
      * @return a vastly improved mimetype map
      */
     private static MimetypesFileTypeMap createMap() {
-        try (InputStream is = MimeType.class.getClassLoader().getResourceAsStream("mimetypes.txt")) {
-            return new MimetypesFileTypeMap(is);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        return createMap(
+                new ResourceLoader() {
+                    @Override
+                    public InputStream getResourceAsStream() {
+                        return MimeType.class.getResourceAsStream("/" + MIMETYPES_RESOURCE);
+                    }
+                },
+                new ResourceLoader() {
+                    @Override
+                    public InputStream getResourceAsStream() {
+                        final ClassLoader classLoader = MimeType.class.getClassLoader();
+                        return classLoader != null
+                                ? classLoader.getResourceAsStream(MIMETYPES_RESOURCE)
+                                : ClassLoader.getSystemResourceAsStream(MIMETYPES_RESOURCE);
+                    }
+                });
+    }
+
+    static MimetypesFileTypeMap createMap(final ResourceLoader... resourceLoaders) {
+        for (ResourceLoader resourceLoader : resourceLoaders) {
+            try (InputStream is = resourceLoader.getResourceAsStream()) {
+                if (is != null) {
+                    return new MimetypesFileTypeMap(is);
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
+        return new MimetypesFileTypeMap();
+    }
+
+    interface ResourceLoader {
+        InputStream getResourceAsStream()
+                throws IOException;
     }
 
     public static String getContentType(String fileName) {

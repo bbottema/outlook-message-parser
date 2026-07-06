@@ -1,7 +1,11 @@
 package org.simplejavamail.outlookmessageparser.model;
 
+import jakarta.activation.MimetypesFileTypeMap;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OutlookFileAttachmentTest {
@@ -57,6 +61,22 @@ public class OutlookFileAttachmentTest {
 		assertThat(MimeType.getContentType("report.xlam")).isEqualTo("application/vnd.ms-excel.addin.macroEnabled.12");
 		assertThat(MimeType.getContentType("report.xlsb")).isEqualTo("application/vnd.ms-excel.sheet.binary.macroEnabled.12");
 		assertThat(MimeType.getContentType("report.xltx")).isEqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.template");
+	}
+
+	@Test
+	public void createMimeTypeMapTriesFallbackResourceLoader() {
+		MimetypesFileTypeMap map = MimeType.createMap(
+				() -> null,
+				() -> new ByteArrayInputStream("application/x-test testext".getBytes(US_ASCII)));
+
+		assertThat(map.getContentType("attachment.testext")).isEqualTo("application/x-test");
+	}
+
+	@Test
+	public void createMimeTypeMapFallsBackToActivationDefaults() {
+		MimetypesFileTypeMap map = MimeType.createMap(() -> null);
+
+		assertThat(map.getContentType("attachment.unknown-extension")).isEqualTo("application/octet-stream");
 	}
 
 	private void testMimeTagScenario(String mimeTag, String filename, String expectedNewMimeTag) {

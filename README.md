@@ -22,6 +22,7 @@ v1.15.0 (unreleased)
 
 - [#16](https://github.com/bbottema/outlook-message-parser/issues/16): upgraded rtf-to-html to 2.0.0 and switched to the new Outlook RTF converter for readable HTML from generic RTF-only MSG bodies
 - [#51](https://github.com/bbottema/outlook-message-parser/issues/51): recognize S/MIME messages from RFC 8551 `application/pkcs7-mime`, `multipart/signed`, and S/MIME-suffixed `application/octet-stream` headers
+- [#62](https://github.com/bbottema/outlook-message-parser/issues/62): avoid MIME type initialization failures when `mimetypes.txt` is hidden by packaging or classloader behavior
 - [#76](https://github.com/bbottema/outlook-message-parser/issues/76): preserve duplicate display-name recipient buckets and prefer explicit recipient types
 - [#77](https://github.com/bbottema/outlook-message-parser/issues/77): stop treating the last modifier name property as the sender email address
 - [#83](https://github.com/bbottema/outlook-message-parser/issues/83): prefer Outlook long attachment filenames for MIME inference and correct Excel MIME mappings
