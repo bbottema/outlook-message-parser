@@ -21,6 +21,7 @@ Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) li
 v1.15.0 (unreleased)
 
 - [#16](https://github.com/bbottema/outlook-message-parser/issues/16): upgraded rtf-to-html to 2.0.0 and switched to the new Outlook RTF converter for readable HTML from generic RTF-only MSG bodies
+- [#42](https://github.com/bbottema/outlook-message-parser/issues/42): retain attachment-level metadata for embedded Outlook message attachments, including filename, content ID, and MIME type when Outlook provides them
 - [#51](https://github.com/bbottema/outlook-message-parser/issues/51): recognize S/MIME messages from RFC 8551 `application/pkcs7-mime`, `multipart/signed`, and S/MIME-suffixed `application/octet-stream` headers
 - [#62](https://github.com/bbottema/outlook-message-parser/issues/62): avoid MIME type initialization failures when `mimetypes.txt` is hidden by packaging or classloader behavior
 - [#76](https://github.com/bbottema/outlook-message-parser/issues/76): preserve duplicate display-name recipient buckets and prefer explicit recipient types

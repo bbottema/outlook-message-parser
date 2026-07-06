@@ -317,7 +317,9 @@ public class HighoverEmailsTest {
 		assertThat(outlookAttachments).hasSize(1);
 		OutlookAttachment outlookAttachment = outlookAttachments.get(0);
 		assertThat(outlookAttachment).isOfAnyClassIn(OutlookMsgAttachment.class);
-		OutlookMessage nestedMsg = ((OutlookMsgAttachment) outlookAttachment).getOutlookMessage();
+		OutlookMsgAttachment outlookMsgAttachment = (OutlookMsgAttachment) outlookAttachment;
+		assertThat(outlookMsgAttachment.getAttachment().getFilename()).isEqualTo("outlookmsg2html Testmail");
+		OutlookMessage nestedMsg = outlookMsgAttachment.getOutlookMessage();
 		/* nested message */
 		OutlookMessageAssert.assertThat(nestedMsg).hasFromName("REISINGER Emanuel");
 		OutlookMessageAssert.assertThat(nestedMsg).hasFromEmail("Emanuel.Reisinger@cargonet.software");
