@@ -16,7 +16,12 @@ import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessageProperty;
 import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookRecipient;
+import org.simplejavamail.jakarta.mail.MessagingException;
+import org.simplejavamail.jakarta.mail.internet.InternetHeaders;
+import org.simplejavamail.jakarta.mail.internet.MimeUtility;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationOctetStream;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
+import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeMultipartSigned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +37,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,10 +78,15 @@ public class OutlookMessageParser {
 	private static final String PROPS_KEY = "__properties_version1.0";
 
 	private static final String PROPERTY_STREAM_PREFIX = "__substg1.0_";
-	
-	private static final Pattern SMIME_CONTENT_TYPE_PATTERN = compile(format("^Content-Type: (?<contenttype>%s)(?:; name=\"(?<name>smime.p7m)\")?(?:; smime-type=(?<smimetype>enveloped-data))?$",
-			"application\\/pkcs7-mime|multipart\\/signed|application\\/octet-stream|application\\/pkcs7-signature"),
-			Pattern.MULTILINE);
+
+	private static final String CONTENT_TYPE = "Content-Type";
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+	private static final String SMIME_APPLICATION_PKCS7_MIME = "application/pkcs7-mime";
+	private static final String SMIME_MULTIPART_SIGNED = "multipart/signed";
+	private static final String SMIME_APPLICATION_OCTET_STREAM = "application/octet-stream";
+	private static final String SMIME_PKCS7_SIGNATURE_PROTOCOL = "application/pkcs7-signature";
+	private static final String SMIME_LEGACY_PKCS7_SIGNATURE_PROTOCOL = "application/x-pkcs7-signature";
+	private static final Pattern SMIME_OCTET_STREAM_FILENAME_PATTERN = compile(".*\\.(?:p7m|p7s|p7c|p7z)$", CASE_INSENSITIVE);
 	
 	private static final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
 	
@@ -178,12 +191,125 @@ public class OutlookMessageParser {
 	}
 	
 	static void extractSMimeHeader(@NotNull final OutlookMessage msg, @NotNull final String allHeaders) {
-		if (msg.getSmime() == null) {
-			// https://regex101.com/r/AE0Uys/1
-			final Matcher m = SMIME_CONTENT_TYPE_PATTERN.matcher(allHeaders);
-			if (m.find()) {
-				msg.setSmime(new OutlookSmimeApplicationSmime(m.group("contenttype"), m.group("smimetype"), m.group("name")));
+		if (msg.getSmime() != null) {
+			return;
+		}
+
+		final MimeHeaderValue contentType = parseHeader(allHeaders, CONTENT_TYPE);
+		if (contentType == null) {
+			return;
+		}
+
+		if (SMIME_APPLICATION_PKCS7_MIME.equals(contentType.getValue())) {
+			msg.setSmime(new OutlookSmimeApplicationSmime(contentType.getValue(), contentType.getParameter("smime-type"), contentType.getParameter("name")));
+		} else if (SMIME_MULTIPART_SIGNED.equals(contentType.getValue()) && isSmimeSignatureProtocol(contentType.getParameter("protocol"))) {
+			msg.setSmime(new OutlookSmimeMultipartSigned(contentType.getValue(), contentType.getParameter("protocol"), contentType.getParameter("micalg")));
+		} else if (SMIME_APPLICATION_OCTET_STREAM.equals(contentType.getValue())) {
+			final String filename = firstNonBlank(contentType.getParameter("name"), getDispositionFilename(allHeaders));
+			if (isSmimeOctetStreamFilename(filename)) {
+				msg.setSmime(new OutlookSmimeApplicationOctetStream(contentType.getValue(), filename));
 			}
+		}
+	}
+
+	private static boolean isSmimeSignatureProtocol(String protocol) {
+		return SMIME_PKCS7_SIGNATURE_PROTOCOL.equalsIgnoreCase(protocol) || SMIME_LEGACY_PKCS7_SIGNATURE_PROTOCOL.equalsIgnoreCase(protocol);
+	}
+
+	private static boolean isSmimeOctetStreamFilename(String filename) {
+		return filename != null && SMIME_OCTET_STREAM_FILENAME_PATTERN.matcher(filename).matches();
+	}
+
+	private static String getDispositionFilename(@NotNull final String allHeaders) {
+		final MimeHeaderValue contentDisposition = parseHeader(allHeaders, CONTENT_DISPOSITION);
+		return contentDisposition == null ? null : contentDisposition.getParameter("filename");
+	}
+
+	private static MimeHeaderValue parseHeader(@NotNull final String allHeaders, String headerName) {
+		final String headerValue = getFirstHeaderValue(allHeaders, headerName);
+		return headerValue == null ? null : MimeHeaderValue.parse(headerValue);
+	}
+
+	private static String getFirstHeaderValue(@NotNull final String allHeaders, String headerName) {
+		try {
+			final InternetHeaders parsedHeaders = new InternetHeaders(new ByteArrayInputStream(allHeaders.getBytes(StandardCharsets.UTF_8)), true);
+			final String[] values = parsedHeaders.getHeader(headerName);
+			return values == null || values.length == 0 ? null : MimeUtility.unfold(values[0]);
+		} catch (MessagingException e) {
+			LOGGER.trace("Could not parse message headers while extracting S/MIME metadata", e);
+			return null;
+		}
+	}
+
+	private static String firstNonBlank(String primary, String fallback) {
+		return primary == null || primary.trim().isEmpty() ? fallback : primary;
+	}
+
+	private static final class MimeHeaderValue {
+		private final String value;
+		private final Map<String, String> parameters;
+
+		private MimeHeaderValue(String value, Map<String, String> parameters) {
+			this.value = value;
+			this.parameters = parameters;
+		}
+
+		private static MimeHeaderValue parse(String rawValue) {
+			final List<String> parts = splitHeaderValue(rawValue);
+			final String value = parts.isEmpty() ? "" : parts.get(0).trim().toLowerCase(Locale.ROOT);
+			final Map<String, String> parameters = new HashMap<>();
+			for (int i = 1; i < parts.size(); i++) {
+				final String parameter = parts.get(i);
+				final int equalsIndex = parameter.indexOf('=');
+				if (equalsIndex > 0) {
+					final String name = parameter.substring(0, equalsIndex).trim().toLowerCase(Locale.ROOT);
+					final String valuePart = unquote(parameter.substring(equalsIndex + 1).trim());
+					parameters.put(name, valuePart);
+				}
+			}
+			return new MimeHeaderValue(value, parameters);
+		}
+
+		private static List<String> splitHeaderValue(String rawValue) {
+			final List<String> parts = new ArrayList<>();
+			final StringBuilder currentPart = new StringBuilder();
+			boolean insideQuotes = false;
+			boolean escaped = false;
+			for (int i = 0; i < rawValue.length(); i++) {
+				final char c = rawValue.charAt(i);
+				if (escaped) {
+					currentPart.append(c);
+					escaped = false;
+				} else if (c == '\\') {
+					currentPart.append(c);
+					escaped = true;
+				} else if (c == '"') {
+					currentPart.append(c);
+					insideQuotes = !insideQuotes;
+				} else if (c == ';' && !insideQuotes) {
+					parts.add(currentPart.toString());
+					currentPart.setLength(0);
+				} else {
+					currentPart.append(c);
+				}
+			}
+			parts.add(currentPart.toString());
+			return parts;
+		}
+
+		private static String unquote(String value) {
+			if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
+				return value.substring(1, value.length() - 1);
+			}
+			return value;
+		}
+
+		private String getValue() {
+			return value;
+		}
+
+		private String getParameter(String parameterName) {
+			return parameters.get(parameterName);
 		}
 	}
 

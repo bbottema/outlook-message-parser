@@ -21,6 +21,7 @@ Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) li
 v1.15.0 (unreleased)
 
 - [#16](https://github.com/bbottema/outlook-message-parser/issues/16): upgraded rtf-to-html to 2.0.0 and switched to the new Outlook RTF converter for readable HTML from generic RTF-only MSG bodies
+- [#51](https://github.com/bbottema/outlook-message-parser/issues/51): recognize S/MIME messages from RFC 8551 `application/pkcs7-mime`, `multipart/signed`, and S/MIME-suffixed `application/octet-stream` headers
 - [#76](https://github.com/bbottema/outlook-message-parser/issues/76): preserve duplicate display-name recipient buckets and prefer explicit recipient types
 - [#77](https://github.com/bbottema/outlook-message-parser/issues/77): stop treating the last modifier name property as the sender email address
 - [#87](https://github.com/bbottema/outlook-message-parser/issues/87): fixed missing client submit time when variable-length properties appeared earlier in the MSG property stream

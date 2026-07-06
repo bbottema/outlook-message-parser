@@ -88,6 +88,38 @@ public abstract class OutlookSmime {
 	}
 	
 	public static class OutlookSmimeApplicationOctetStream extends OutlookSmime {
-	
+		private final String smimeMime;
+		private final String smimeName;
+
+		public OutlookSmimeApplicationOctetStream(String smimeMime, String smimeName) {
+			this.smimeMime = smimeMime;
+			this.smimeName = smimeName;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			OutlookSmimeApplicationOctetStream that = (OutlookSmimeApplicationOctetStream) o;
+			return Objects.equals(smimeMime, that.smimeMime) &&
+					Objects.equals(smimeName, that.smimeName);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(smimeMime, smimeName);
+		}
+
+		@Override
+		public String toString() {
+			final StringBuilder sb = new StringBuilder("OutlookSmimeApplicationOctetStream{");
+			sb.append("smimeMime='").append(smimeMime).append('\'');
+			sb.append(", smimeName='").append(smimeName).append('\'');
+			sb.append('}');
+			return sb.toString();
+		}
+
+		public String getSmimeMime() { return smimeMime; }
+		public String getSmimeName() { return smimeName; }
 	}
 }
