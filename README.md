@@ -18,6 +18,13 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
+v1.15.0 (unreleased)
+
+- [#16](https://github.com/bbottema/outlook-message-parser/issues/16): upgraded rtf-to-html to 2.0.0 and switched to the new Outlook RTF converter for readable HTML from generic RTF-only MSG bodies
+- [#76](https://github.com/bbottema/outlook-message-parser/issues/76): preserve duplicate display-name recipient buckets and prefer explicit recipient types
+- [#87](https://github.com/bbottema/outlook-message-parser/issues/87): fixed missing client submit time when variable-length properties appeared earlier in the MSG property stream
+
+
 v1.14.0 - [v1.14.1](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.14.1%7Cjar)
 
 - 1.14.1 (08-06-2024): [#64](https://github.com/bbottema/outlook-message-parser/issues/64): [Bug] Parsing lists to HTML has double bullet points

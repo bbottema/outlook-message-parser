@@ -1060,6 +1060,32 @@ public class HighoverEmailsTest {
 		assertClientSubmitTime("test-messages/issue-87-client-submit-time-corrected.msg");
 	}
 
+	@Test
+	public void testGithubIssue16_RtfOnlyMessagesAreConvertedToReadableHtml()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/issue-16-rtf-sample-email.msg");
+
+		assertThat(msg.getBodyHTML()).isNull();
+		assertThat(msg.getBodyRTF()).contains("\\rtf1");
+		assertThat(msg.getConvertedBodyHTML())
+				.contains("<html><body>")
+				.contains("BOOK ONE: 1805")
+				.contains("Well, Prince")
+				.doesNotContain("\\pard")
+				.doesNotContain("\\f0");
+
+		OutlookMessage msgWithAttachment = parseMsgFile("test-messages/issue-16-rtf-sample-email-with-attachment.msg");
+
+		assertThat(msgWithAttachment.getBodyHTML()).isNull();
+		assertThat(msgWithAttachment.getOutlookAttachments()).hasSize(1);
+		assertThat(msgWithAttachment.getConvertedBodyHTML())
+				.contains("<html><body>")
+				.contains("This is a sample RTF email with an attachment")
+				.contains("Chris Wilson")
+				.doesNotContain("\\pard")
+				.doesNotContain("\\f0");
+	}
+
 	private static void assertClientSubmitTime(String msgPath)
 			throws IOException {
 		OutlookMessage msg = parseMsgFile(msgPath);

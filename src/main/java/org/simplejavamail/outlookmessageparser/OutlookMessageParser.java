@@ -6,8 +6,8 @@ import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.bbottema.rtftohtml.RTF2HTMLConverter;
-import org.bbottema.rtftohtml.impl.RTF2HTMLConverterRFCCompliant;
+import org.bbottema.rtftohtml.OutlookRtfToHtmlConverter;
+import org.bbottema.rtftohtml.RtfToHtmlConverter;
 import org.jetbrains.annotations.NotNull;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFieldInformation;
@@ -51,7 +51,7 @@ import static java.util.regex.Pattern.compile;
  * outlookAttachments and so on.
  * <p>
  * Furthermore there is a feature which allows us to extract HTML bodies when only RTF bodies are available. In order to achieve this a conversion class
- * implementing {@link RTF2HTMLConverter} is used. This can be overridden with a custom implementation as well (see code below for an example).
+ * implementing {@link RtfToHtmlConverter} is used. This can be overridden with a custom implementation as well (see code below for an example).
  * <p>
  * Note: this code has not been tested on a wide range of .msg files. Use in production level (as in any other level) at your own risk.
  * <p>
@@ -59,7 +59,7 @@ import static java.util.regex.Pattern.compile;
  * <p>
  * <code>
  *    OutlookMessageParser msgp = new OutlookMessageParser();<br>
- *    msgp.setRtf2htmlConverter(new SimpleRTF2HTMLConverter()); //optional (if you want to use
+ *    msgp.setRtf2htmlConverter(new CustomRtfToHtmlConverter()); //optional (if you want to use
  *    your own implementation)<br>
  *    OutlookMessage msg = msgp.parseMsg("test.msg");
  * </code>
@@ -77,7 +77,7 @@ public class OutlookMessageParser {
 	
 	private static final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
 	
-	private RTF2HTMLConverter rtf2htmlConverter = RTF2HTMLConverterRFCCompliant.INSTANCE;
+	private RtfToHtmlConverter rtf2htmlConverter = OutlookRtfToHtmlConverter.INSTANCE;
 
 	/**
 	 * Parses a .msg file provided in the specified file.
@@ -686,12 +686,12 @@ public class OutlookMessageParser {
 	}
 
 	/**
-	 * Setter for overriding the default {@link RTF2HTMLConverter}
+	 * Setter for overriding the default {@link RtfToHtmlConverter}
 	 * implementation which is used to get HTML code from an RTF body.
 	 *
 	 * @param rtf2htmlConverter The converter instance to be used.
 	 */
-	public void setRtf2htmlConverter(final RTF2HTMLConverter rtf2htmlConverter) {
+	public void setRtf2htmlConverter(final RtfToHtmlConverter rtf2htmlConverter) {
 		this.rtf2htmlConverter = rtf2htmlConverter;
 	}
 }

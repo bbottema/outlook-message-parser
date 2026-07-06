@@ -5,7 +5,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hmef.CompressedRTF;
 import org.apache.poi.hsmf.datatypes.MAPIProperty;
-import org.bbottema.rtftohtml.RTF2HTMLConverter;
+import org.bbottema.rtftohtml.RtfToHtmlConverter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.simplejavamail.jakarta.mail.Header;
@@ -161,7 +161,7 @@ public class OutlookMessage {
 	 * Sets the name/value pair in the {@link #properties} map. Some properties are put into special attributes (e.g., {@link #setSubject(String)} when the property name is '0x37').
 	 */
 	@SuppressFBWarnings("SF_SWITCH_NO_DEFAULT")
-	public void setProperty(final OutlookMessageProperty msgProp, RTF2HTMLConverter rtf2HTMLConverter) {
+	public void setProperty(final OutlookMessageProperty msgProp, RtfToHtmlConverter rtf2HTMLConverter) {
 		final String name = msgProp.getClazz();
 		final Object value = msgProp.getData();
 
@@ -803,7 +803,7 @@ public class OutlookMessage {
 	/**
 	 * @param bodyRTF the bodyRTF to set
 	 */
-	private void setBodyRTF(final Object bodyRTF, RTF2HTMLConverter rtf2htmlConverter) {
+	private void setBodyRTF(final Object bodyRTF, RtfToHtmlConverter rtf2htmlConverter) {
 		// we simply try to decompress the RTF data if it's not compressed, the utils class is able to detect this anyway
 		if (this.bodyRTF == null && bodyRTF != null) {
 			if (bodyRTF instanceof byte[]) {
@@ -811,7 +811,7 @@ public class OutlookMessage {
 					final byte[] decompressedBytes = decompressRtfBytes((byte[]) bodyRTF);
 					if (decompressedBytes != null) {
 						this.bodyRTF = new String(decompressedBytes, WINDOWS_1252.getCharset());
-						setConvertedBodyHTML(rtf2htmlConverter.rtf2html(this.bodyRTF));
+						setConvertedBodyHTML(rtf2htmlConverter.toHtml(decompressedBytes));
 					}
 				} catch (IllegalArgumentException e) {
 					LOGGER.info("Error occurred while extracting compressed RTF from source msg", e);
