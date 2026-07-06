@@ -1,40 +1,50 @@
 Prerequisite:
 
-You need GPG installed (comes along with GIT installation in the \bin folder) and you need to create a keyring, used for signing artifacts.
-If you have an existing key, simply import it:
+CircleCI needs the RELEASE_PROFILE_BBOTTEMA context with:
 
-gpg --allow-secret-key-import --import <keyring>.gpg
+- CENTRAL_USERNAME
+- CENTRAL_PASSWORD
+- GPG_PASSPHRASE
+
+The project publishes through Sonatype Central Portal using server id `central`
+from `.circleci/maven-central-settings.xml`.
 
 To release:
 
- 1. update release notes and github readme page (don't commit)
- 2. remove SNAPSHOT version
- 3. mvn -DperformRelease=true clean deploy
-            (set password in settings.xml or use local pgp key password, for which the public key must have been sent to a public key server,
-            eg: gpg --keyserver hkp://keyserver.ubuntu.com --send-keys 05AC6403)
-		    server needed in settings.xml (see below)
- 4. add new SNAPSHOT version and commit everything
- 5. Go to https://oss.sonatype.org and release the artifact so it is submitted to Maven Central
+1. Make sure release notes and GitHub issue/milestone bookkeeping are complete.
+2. Push the release-ready commit to `master`.
+3. Wait for the CircleCI build-and-test job to pass.
+4. Approve the appropriate deploy job in CircleCI:
+   - deploy-patch-version
+   - deploy-minor-version
+   - deploy-major-version
+   - deploy-as-is-version
+5. Confirm the released version appears in Maven Central metadata.
+6. Close the GitHub milestone and update GitHub Releases if needed.
 
-maven's settings.xml:
+Local deploy equivalent, when needed:
+
+    mvn -s .circleci/maven-central-settings.xml clean deploy -DperformRelease=true -DskipTests -Dspotbugs.skip=true -Denforcer.skip=true -Djacoco.skip=true
+
+Maven settings server:
 
     <server>
-      <id>ossrh</id>
-      <username>sonatype user</username>
-      <password>sonatype password</password>
+      <id>central</id>
+      <username>${env.CENTRAL_USERNAME}</username>
+      <password>${env.CENTRAL_PASSWORD}</password>
     </server>
 
-To have a global gpg password so that it will use that automatically:
+GPG profile:
 
-	<profiles>
-		<profile>
-			<id>gpg</id>
-			<properties>
-				<gpg.executable>gpg</gpg.executable>
-				<gpg.passphrase>letmein</gpg.passphrase>
-			</properties>
-		</profile>
-	</profiles>
-	<activeProfiles>
-		<activeProfile>gpg</activeProfile>
-	</activeProfiles>
+    <profiles>
+      <profile>
+        <id>gpg</id>
+        <properties>
+          <gpg.executable>gpg</gpg.executable>
+          <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+        </properties>
+      </profile>
+    </profiles>
+    <activeProfiles>
+      <activeProfile>gpg</activeProfile>
+    </activeProfiles>
