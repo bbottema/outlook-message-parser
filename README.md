@@ -24,6 +24,7 @@ v1.15.0 (unreleased)
 - [#51](https://github.com/bbottema/outlook-message-parser/issues/51): recognize S/MIME messages from RFC 8551 `application/pkcs7-mime`, `multipart/signed`, and S/MIME-suffixed `application/octet-stream` headers
 - [#76](https://github.com/bbottema/outlook-message-parser/issues/76): preserve duplicate display-name recipient buckets and prefer explicit recipient types
 - [#77](https://github.com/bbottema/outlook-message-parser/issues/77): stop treating the last modifier name property as the sender email address
+- [#85](https://github.com/bbottema/outlook-message-parser/issues/85): publish a valid JPMS automatic module name for `module-info.java` consumers
 - [#87](https://github.com/bbottema/outlook-message-parser/issues/87): fixed missing client submit time when variable-length properties appeared earlier in the MSG property stream
 - [#88](https://github.com/bbottema/outlook-message-parser/issues/88): detect S/MIME metadata from Outlook/Exchange messages that store the signed MIME entity as a single attachment
 

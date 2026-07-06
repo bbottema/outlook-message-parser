@@ -30,6 +30,7 @@
 	</issueManagement>
 
 	<properties>
+		<automaticModuleName>org.simplejavamail.outlookmessageparser</automaticModuleName>
 		<se.eris.notnull.instrument>false</se.eris.notnull.instrument>
 		<license.owner.name>Benny Bottema</license.owner.name>
 		<license.owner.email>benny@bennybottema.com</license.owner.email>
