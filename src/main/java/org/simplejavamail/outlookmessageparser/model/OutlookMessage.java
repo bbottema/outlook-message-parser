@@ -192,8 +192,9 @@ public class OutlookMessage {
 				break;
 			case 0xc1f: //SENDER EMAIL ADDRESS
 			case 0x65: //SENT REPRESENTING EMAIL ADDRESS
-			case 0x3ffa: //LAST MODIFIER NAME
 				setFromEmail(stringValue);
+				break;
+			case 0x3ffa: //LAST MODIFIER NAME
 				break;
 			case 0x42: //SENT REPRESENTING NAME
 				setFromName(stringValue);
