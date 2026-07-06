@@ -131,6 +131,22 @@ public class HighoverEmailsTest {
 	}
 
 	@Test
+	public void testGithubIssue88_SmimeDetectedFromTnefWrappedSignedAttachment()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/OutlookMessage with X500 dual address.msg");
+
+		assertThat(msg.getMessageClass()).isEqualTo("IPM.Note.SMIME.MultipartSigned");
+		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
+		assertThat(outlookAttachments).hasSize(1);
+		assertAttachmentMetadata(outlookAttachments.get(0), "multipart/signed", ".p7m", "smime.p7m", "smime.p7m");
+
+		OutlookSmimeMultipartSigned smime = (OutlookSmimeMultipartSigned) msg.getSmime();
+		assertThat(smime.getSmimeMime()).isEqualTo("multipart/signed");
+		assertThat(smime.getSmimeProtocol()).isEqualTo("application/x-pkcs7-signature");
+		assertThat(smime.getSmimeMicalg()).isEqualTo("SHA1");
+	}
+
+	@Test
 	public void testToAndCCAreSeparated_Multiple()
 			throws IOException {
 		OutlookMessage msg = parseMsgFile("test-messages/simple email with TO and CC_multiple.msg");

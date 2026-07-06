@@ -86,6 +86,9 @@ public class OutlookMessageParser {
 	private static final String SMIME_APPLICATION_OCTET_STREAM = "application/octet-stream";
 	private static final String SMIME_PKCS7_SIGNATURE_PROTOCOL = "application/pkcs7-signature";
 	private static final String SMIME_LEGACY_PKCS7_SIGNATURE_PROTOCOL = "application/x-pkcs7-signature";
+	private static final String SMIME_MESSAGE_CLASS = "IPM.Note.SMIME";
+	private static final String SMIME_MULTIPART_SIGNED_MESSAGE_CLASS = "IPM.Note.SMIME.MultipartSigned";
+	private static final int MIME_HEADER_SCAN_BYTE_LIMIT = 16384;
 	private static final Pattern SMIME_OCTET_STREAM_FILENAME_PATTERN = compile(".*\\.(?:p7m|p7s|p7c|p7z)$", CASE_INSENSITIVE);
 	
 	private static final Pattern XML_CHARSET_PATTERN = compile("charset=(\"|)(?<charset>[\\w\\-]+)\\1", CASE_INSENSITIVE);
@@ -146,6 +149,7 @@ public class OutlookMessageParser {
 			extractReplyToHeader(msg, allHeaders);
 			extractSMimeHeader(msg, allHeaders);
 		}
+		extractSMimeAttachmentHeader(msg);
 	}
 	
 	/**
@@ -210,6 +214,50 @@ public class OutlookMessageParser {
 				msg.setSmime(new OutlookSmimeApplicationOctetStream(contentType.getValue(), filename));
 			}
 		}
+	}
+
+	static void extractSMimeAttachmentHeader(@NotNull final OutlookMessage msg) {
+		if (msg.getSmime() != null || !isSmimeMessageClass(msg.getMessageClass()) || msg.getOutlookAttachments().size() != 1) {
+			return;
+		}
+
+		final OutlookAttachment attachment = msg.getOutlookAttachments().get(0);
+		if (attachment instanceof OutlookFileAttachment) {
+			final String attachmentMimeHeaders = getAttachmentMimeHeaders((OutlookFileAttachment) attachment);
+			if (attachmentMimeHeaders != null) {
+				extractSMimeHeader(msg, attachmentMimeHeaders);
+			}
+		}
+	}
+
+	private static boolean isSmimeMessageClass(String messageClass) {
+		return SMIME_MESSAGE_CLASS.equalsIgnoreCase(messageClass) || SMIME_MULTIPART_SIGNED_MESSAGE_CLASS.equalsIgnoreCase(messageClass);
+	}
+
+	private static String getAttachmentMimeHeaders(OutlookFileAttachment attachment) {
+		if (attachment.getSize() <= 0) {
+			return null;
+		}
+		final byte[] attachmentData = attachment.getData();
+		final int headerEnd = findMimeHeaderEnd(attachmentData);
+		if (headerEnd < 0) {
+			return null;
+		}
+		final int headerLength = Math.min(headerEnd, MIME_HEADER_SCAN_BYTE_LIMIT);
+		return new String(attachmentData, 0, headerLength, StandardCharsets.US_ASCII);
+	}
+
+	private static int findMimeHeaderEnd(byte[] attachmentData) {
+		final int scanLimit = Math.min(attachmentData.length, MIME_HEADER_SCAN_BYTE_LIMIT);
+		for (int i = 0; i < scanLimit - 1; i++) {
+			if (attachmentData[i] == '\n' && attachmentData[i + 1] == '\n') {
+				return i + 2;
+			}
+			if (i < scanLimit - 3 && attachmentData[i] == '\r' && attachmentData[i + 1] == '\n' && attachmentData[i + 2] == '\r' && attachmentData[i + 3] == '\n') {
+				return i + 4;
+			}
+		}
+		return -1;
 	}
 
 	private static boolean isSmimeSignatureProtocol(String protocol) {

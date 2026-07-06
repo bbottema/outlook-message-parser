@@ -25,6 +25,7 @@ v1.15.0 (unreleased)
 - [#76](https://github.com/bbottema/outlook-message-parser/issues/76): preserve duplicate display-name recipient buckets and prefer explicit recipient types
 - [#77](https://github.com/bbottema/outlook-message-parser/issues/77): stop treating the last modifier name property as the sender email address
 - [#87](https://github.com/bbottema/outlook-message-parser/issues/87): fixed missing client submit time when variable-length properties appeared earlier in the MSG property stream
+- [#88](https://github.com/bbottema/outlook-message-parser/issues/88): detect S/MIME metadata from Outlook/Exchange messages that store the signed MIME entity as a single attachment
 
 
 v1.14.0 - [v1.14.1](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.14.1%7Cjar)
