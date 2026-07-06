@@ -1,11 +1,18 @@
 package org.simplejavamail.outlookmessageparser;
 
+import org.apache.poi.poifs.filesystem.DirectoryEntry;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.junit.jupiter.api.Test;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
+import org.simplejavamail.outlookmessageparser.model.OutlookMsgAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationOctetStream;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeMultipartSigned;
 
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Method;
+
+import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OutlookMessageParserTest {
@@ -13,6 +20,31 @@ public class OutlookMessageParserTest {
 	private static final String HEADERS = "Date: Sun, 5 Mar 2017 12:11:31 +0100\n"
 			+ "Reply-To: lollypop-replyto <lo.pop.replyto@somemail.com>\n"
 			+ "To: C.Cane <hola.planet@beaches.com>";
+
+	@Test
+	public void parseAttachmentRetainsMetadataForNestedMessage()
+			throws Exception {
+		OutlookMessageParser parser = new OutlookMessageParser();
+		OutlookMessage msg = new OutlookMessage();
+
+		try (POIFSFileSystem poifs = new POIFSFileSystem()) {
+			DirectoryEntry attachmentDirectory = poifs.getRoot().createDirectory("__attach_version1.0_#00000000");
+			attachmentDirectory.createDirectory("__substg1.0_3701000D");
+			createUnicodeProperty(attachmentDirectory, "3712", "nested-content-id");
+			createUnicodeProperty(attachmentDirectory, "370e", "message/rfc822");
+			createUnicodeProperty(attachmentDirectory, "3704", "nested.msg");
+
+			Method parseAttachment = OutlookMessageParser.class.getDeclaredMethod("parseAttachment", DirectoryEntry.class, OutlookMessage.class);
+			parseAttachment.setAccessible(true);
+			parseAttachment.invoke(parser, attachmentDirectory, msg);
+		}
+
+		assertThat(msg.getOutlookAttachments()).hasSize(1);
+		OutlookMsgAttachment nested = (OutlookMsgAttachment) msg.getOutlookAttachments().get(0);
+		assertThat(nested.getAttachment().getContentId()).isEqualTo("nested-content-id");
+		assertThat(nested.getAttachment().getMimeTag()).isEqualTo("message/rfc822");
+		assertThat(nested.getAttachment().getFilename()).isEqualTo("nested.msg");
+	}
 
 	@Test
 	public void extractReplyToHeader() {
@@ -168,5 +200,10 @@ public class OutlookMessageParserTest {
 		OutlookMessageParser.extractSMimeHeader(msg, "Content-Type: application/pkcs7-signature; name=\"smime.p7s\"\n");
 
 		assertThat(msg.getSmime()).isNull();
+	}
+
+	private static void createUnicodeProperty(DirectoryEntry directory, String property, String value)
+			throws Exception {
+		directory.createDocument("__substg1.0_" + property + "001F", new ByteArrayInputStream(value.getBytes(UTF_16LE)));
 	}
 }
