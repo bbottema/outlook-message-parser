@@ -37,11 +37,37 @@ public class OutlookFileAttachmentTest {
 		testMimeTagScenario(null, "image.png", "image/png");
 		testMimeTagScenario(null, "image.bmp", "image/bmp");
 	}
-	
+
+	@Test
+	public void checkMimeTagPrefersLongFilenameOverShortFilename() {
+		testMimeTagScenario(null, "report.xls", "report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+	}
+
+	@Test
+	public void checkMimeTagFallsBackToShortFilenameForUnknownLongFilename() {
+		testMimeTagScenario(null, "image.png", "image", "image/png");
+	}
+
+	@Test
+	public void checkExcelMimeTypes() {
+		assertThat(MimeType.getContentType("report.xlsx")).isEqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		assertThat(MimeType.getContentType("report.xls")).isEqualTo("application/vnd.ms-excel");
+		assertThat(MimeType.getContentType("report.xlsm")).isEqualTo("application/vnd.ms-excel.sheet.macroEnabled.12");
+		assertThat(MimeType.getContentType("report.xltm")).isEqualTo("application/vnd.ms-excel.template.macroEnabled.12");
+		assertThat(MimeType.getContentType("report.xlam")).isEqualTo("application/vnd.ms-excel.addin.macroEnabled.12");
+		assertThat(MimeType.getContentType("report.xlsb")).isEqualTo("application/vnd.ms-excel.sheet.binary.macroEnabled.12");
+		assertThat(MimeType.getContentType("report.xltx")).isEqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.template");
+	}
+
 	private void testMimeTagScenario(String mimeTag, String filename, String expectedNewMimeTag) {
+		testMimeTagScenario(mimeTag, filename, null, expectedNewMimeTag);
+	}
+
+	private void testMimeTagScenario(String mimeTag, String filename, String longFilename, String expectedNewMimeTag) {
 		OutlookFileAttachment subject = new OutlookFileAttachment();
 		subject.setMimeTag(mimeTag);
 		subject.setFilename(filename);
+		subject.setLongFilename(longFilename);
 		
 		subject.checkMimeTag();
 		assertThat(subject.getMimeTag()).isEqualTo(expectedNewMimeTag);

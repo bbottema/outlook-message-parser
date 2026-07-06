@@ -4,6 +4,7 @@ v1.15.0 (unreleased)
 - #51: recognize S/MIME messages from RFC 8551 application/pkcs7-mime, multipart/signed, and S/MIME-suffixed application/octet-stream headers
 - #76: preserve duplicate display-name recipient buckets and prefer explicit recipient types
 - #77: stop treating the last modifier name property as the sender email address
+- #83: prefer Outlook long attachment filenames for MIME inference and correct Excel MIME mappings
 - #85: publish a valid JPMS automatic module name for module-info.java consumers and consume rtf-to-html 2.0.1
 - #87: fixed missing client submit time when variable-length properties appeared earlier in the MSG property stream
 - #88: detect S/MIME metadata from Outlook/Exchange messages that store the signed MIME entity as a single attachment

@@ -81,12 +81,28 @@ public class OutlookFileAttachment implements OutlookAttachment {
 	
 	public void checkMimeTag() {
 		if (this.mimeTag == null || this.mimeTag.length() == 0) {
-			if (this.filename != null && this.filename.length() > 0) {
-				this.mimeTag = MimeType.getContentType(this.filename);
-			} else if (this.longFilename != null && this.longFilename.length() > 0) {
-				this.mimeTag = MimeType.getContentType(this.longFilename);
-			}
+			this.mimeTag = determineMimeTag();
 		}
+	}
+
+	private String determineMimeTag() {
+		final String longFilenameMimeTag = determineMimeTag(longFilename);
+		final String filenameMimeTag = determineMimeTag(filename);
+		if (longFilenameMimeTag == null) {
+			return filenameMimeTag;
+		}
+		if (filenameMimeTag == null || isSpecificMimeTag(longFilenameMimeTag)) {
+			return longFilenameMimeTag;
+		}
+		return isSpecificMimeTag(filenameMimeTag) ? filenameMimeTag : longFilenameMimeTag;
+	}
+
+	private static String determineMimeTag(String filename) {
+		return filename != null && filename.length() > 0 ? MimeType.getContentType(filename) : null;
+	}
+
+	private static boolean isSpecificMimeTag(String mimeTag) {
+		return mimeTag != null && !"application/octet-stream".equals(mimeTag);
 	}
 
 	@Override

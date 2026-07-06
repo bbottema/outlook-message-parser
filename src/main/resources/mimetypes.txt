@@ -370,6 +370,11 @@ application/vnd.rn-realplayer rnx
 application/vnd.rn-realmedia rm
 application/vnd.openxmlformats-officedocument.wordprocessingml.document docx
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx
+application/vnd.openxmlformats-officedocument.spreadsheetml.template xltx
+application/vnd.ms-excel.sheet.macroEnabled.12 xlsm
+application/vnd.ms-excel.template.macroEnabled.12 xltm
+application/vnd.ms-excel.addin.macroEnabled.12 xlam
+application/vnd.ms-excel.sheet.binary.macroEnabled.12 xlsb
 application/vnd.oasis.text odt
 application/vnd.oasis.spreadsheet ods
 application/vnd.oasis.presentation odp
@@ -383,7 +388,7 @@ application/vnd.ms-pki.stl stl
 application/vnd.ms-pki.seccat cat
 application/vnd.ms-pki.pko pko
 application/vnd.ms-pki.certstore sst
-application/vnd.ms-excel xlsx xlw xlsm xlm xll xlc xls XLS xlb
+application/vnd.ms-excel xls xlt xla xlw xlk xlm xll xlc xlb xl xld xlv XLS
 application/vnd.hp-pcl pcl
 application/vnd.hp-hpgl hgl hpgl hpg
 application/vnd.fdf fdf
@@ -443,7 +448,6 @@ application/gnutar tgz
 application/futuresplash spl
 application/freeloader frl
 application/fractals fif
-application/excel xld xlt xlw xlv xl xlk xlm xll xla xlc xls xlb
 application/envoy evy
 application/ecmascript js
 application/dxf dxf
