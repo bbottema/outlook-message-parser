@@ -1,4 +1,4 @@
-v1.15.0 (unreleased)
+v1.15.0
 
 - #16: upgraded rtf-to-html to 2.0.0 and switched to the new Outlook RTF converter for readable HTML from generic RTF-only MSG bodies
 - #42: retain attachment-level metadata for embedded Outlook message attachments, including filename, content ID, and MIME type when Outlook provides them
