@@ -18,9 +18,10 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
-v1.16.0 - [v1.16.0](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.16.0%7Cjar)
+v1.16.0 - [v1.16.1](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.16.1%7Cjar)
 
 - [#89](https://github.com/bbottema/outlook-message-parser/issues/89): expose Outlook `PR_LAST_MODIFIER_NAME` / `0x3FFA` through `OutlookMessage#getLastModifierName()` as source metadata, without treating it as sender identity
+- [simple-java-mail#651](https://github.com/bbottema/simple-java-mail/issues/651): consume `rtf-to-html` 2.0.2 so Outlook plain-text RTF preserves whitespace without browser-default `<pre>` styling
 
 
 v1.15.0 - [v1.15.0](https://search.maven.org/#artifactdetails%7Corg.simplejavamail%7Coutlook-message-parser%7C1.15.0%7Cjar)
