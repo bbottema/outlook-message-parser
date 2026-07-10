@@ -36,6 +36,7 @@ public class OutlookMessageTest {
 		msg.setProperty(property("3ffa", "modifier@example.com"), null);
 
 		assertThat(msg.getFromEmail()).isNull();
+		assertThat(msg.getLastModifierName()).isEqualTo("modifier@example.com");
 		assertThat(msg.getPropertyValue(0x3ffa)).isEqualTo("modifier@example.com");
 	}
 
@@ -47,6 +48,7 @@ public class OutlookMessageTest {
 		msg.setProperty(property("3ffa", "modifier@example.com"), null);
 
 		assertThat(msg.getFromEmail()).isEqualTo("sender@example.com");
+		assertThat(msg.getLastModifierName()).isEqualTo("modifier@example.com");
 	}
 
 	@Test

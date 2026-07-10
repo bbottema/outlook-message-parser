@@ -61,6 +61,11 @@ public class OutlookMessage {
 	 */
 	private String fromName;
 	/**
+	 * Outlook source/store last modifier name (PR_LAST_MODIFIER_NAME / 0x3FFA).
+	 * This is not sender identity.
+	 */
+	private String lastModifierName;
+	/**
 	 * The address part of Reply-To header
 	 */
 	private String replyToEmail;
@@ -195,6 +200,7 @@ public class OutlookMessage {
 				setFromEmail(stringValue);
 				break;
 			case 0x3ffa: //LAST MODIFIER NAME
+				setLastModifierName(stringValue);
 				break;
 			case 0x42: //SENT REPRESENTING NAME
 				setFromName(stringValue);
@@ -532,11 +538,25 @@ public class OutlookMessage {
 	}
 
 	/**
+	 * @return Outlook source/store last modifier name (PR_LAST_MODIFIER_NAME / 0x3FFA), or {@code null} if the property is not present.
+	 * This is metadata about the stored Outlook item and must not be treated as sender identity.
+	 */
+	public String getLastModifierName() {
+		return lastModifierName;
+	}
+
+	/**
 	 * Bean setter for {@link #fromName}.
 	 */
 	private void setFromName(final String fromName) {
 		if (fromName != null) {
 			this.fromName = fromName;
+		}
+	}
+
+	private void setLastModifierName(final String lastModifierName) {
+		if (lastModifierName != null) {
+			this.lastModifierName = lastModifierName;
 		}
 	}
 

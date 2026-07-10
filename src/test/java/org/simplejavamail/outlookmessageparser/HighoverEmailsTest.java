@@ -574,6 +574,7 @@ public class HighoverEmailsTest {
 		OutlookMessage msg = parseMsgFile("test-messages/chinese message.msg");
 		OutlookMessageAssert.assertThat(msg).hasFromName(null);
 		OutlookMessageAssert.assertThat(msg).hasFromEmail(null);
+		assertThat(msg.getLastModifierName()).isEqualTo("haozl@Ctrip.com");
 		OutlookMessageAssert.assertThat(msg).hasSubject("");
 		OutlookMessageAssert.assertThat(msg).hasOnlyToRecipients(createRecipient("anjos@163.com", "anjos@163.com"));
 		List<OutlookAttachment> outlookAttachments = msg.getOutlookAttachments();
