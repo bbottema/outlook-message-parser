@@ -1055,6 +1055,34 @@ public class HighoverEmailsTest {
 	}
 
 	@Test
+	public void testGithubIssue90_NewOutlookHtmlOnlyInlineImage()
+			throws IOException {
+		OutlookMessage msg = parseMsgFile("test-messages/issue-90-new-outlook-html-inline-image.msg");
+
+		assertThat(msg.getBodyRTF()).isNull();
+		assertThat(msg.getBodyHTML())
+				.contains("cid:177438a0-381f-49ff-a81f-57404ccdb560");
+		assertThat(msg.getConvertedBodyHTML()).isNull();
+
+		OutlookFileAttachment embeddedImage = msg.getOutlookAttachments().stream()
+				.filter(OutlookFileAttachment.class::isInstance)
+				.map(OutlookFileAttachment.class::cast)
+				.filter(attachment -> "test.png".equals(attachment.getLongFilename()))
+				.findFirst()
+				.orElseThrow(AssertionError::new);
+
+		assertThat(embeddedImage.getContentId())
+				.isEqualTo("177438a0-381f-49ff-a81f-57404ccdb560");
+		assertThat(embeddedImage.getMimeTag()).isEqualTo("image/png");
+		assertThat(msg.fetchCIDMap())
+				.containsOnlyKeys("177438a0-381f-49ff-a81f-57404ccdb560")
+				.containsValue(embeddedImage);
+		assertThat(msg.fetchTrueAttachments())
+				.extracting(OutlookFileAttachment::getLongFilename)
+				.containsExactly("test.pdf");
+	}
+
+	@Test
 	public void testGithubIssue76_DuplicatedRecipients1()
 			throws IOException {
 		OutlookMessage msg = parseMsgFile("test-messages/CC duplicate recipients bug.msg");

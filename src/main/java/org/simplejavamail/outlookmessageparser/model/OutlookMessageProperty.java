@@ -14,8 +14,21 @@ public class OutlookMessageProperty {
 
 	public OutlookMessageProperty(final String clazz, final Object data, final int size) {
 		this.clazz = clazz;
-		this.data = data;
+		this.data = removeTrailingNulCharacters(data);
 		this.size = size;
+	}
+
+	private static Object removeTrailingNulCharacters(final Object data) {
+		if (!(data instanceof String)) {
+			return data;
+		}
+
+		final String stringData = (String) data;
+		int endIndex = stringData.length();
+		while (endIndex > 0 && stringData.charAt(endIndex - 1) == '\0') {
+			endIndex--;
+		}
+		return endIndex == stringData.length() ? stringData : stringData.substring(0, endIndex);
 	}
 
 	/**

@@ -288,7 +288,10 @@ public class OutlookMessage {
 
 	public Map<String, OutlookFileAttachment> fetchCIDMap() {
 		final HashMap<String, OutlookFileAttachment> cidMap = new HashMap<>();
-		final String html = getConvertedBodyHTML();
+		final String nativeHtml = getBodyHTML();
+		final String html = nativeHtml != null && !nativeHtml.isEmpty()
+				? nativeHtml
+				: getConvertedBodyHTML();
 
 		if (html != null && !html.isEmpty()) {
 			getOutlookAttachments().stream()
