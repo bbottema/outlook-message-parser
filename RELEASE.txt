@@ -1,4 +1,4 @@
-Unreleased
+v1.16.3
 
 - #103: return absent Outlook source, creation and modification dates as null, retaining defensive copies for present dates
 

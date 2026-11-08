@@ -10,7 +10,7 @@
 <dependency>
   <groupId>org.simplejavamail</groupId>
   <artifactId>outlook-message-parser</artifactId>
-  <version>1.16.0</version>
+  <version>1.16.3</version>
 </dependency>
 ```
 
@@ -18,7 +18,7 @@ Outlook Message Parser is a continuation (or fork if that project independently 
 
 Under the hood it uses the [Apache POI - POIFS](http://poi.apache.org/poifs/) library to parse the message files which use the OLE 2 Compound Document format. Thus, it is merely a convenience library that covers the details of the .msg file. The implementation is based on the information provided at [fileformat.info](http://www.fileformat.info/format/outlookmsg/).
 
-Unreleased
+v1.16.3 - [Maven Central](https://central.sonatype.com/artifact/org.simplejavamail/outlook-message-parser/1.16.3)
 
 - [#103](https://github.com/bbottema/outlook-message-parser/issues/103): return absent source, creation and modification dates as `null`, retaining defensive copies for present dates
 
