@@ -983,10 +983,11 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean getter for {@link #date}.
+	 * @return A defensive copy of {@link #date}, or null when no source date is available.
 	 */
+	@Nullable
 	public Date getDate() {
-		return (Date) date.clone();
+		return date != null ? (Date) date.clone() : null;
 	}
 
 	/**
@@ -1014,10 +1015,11 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean getter for {@link #creationDate}.
+	 * @return A defensive copy of {@link #creationDate}, or null when the creation time is absent.
 	 */
+	@Nullable
 	public Date getCreationDate() {
-		return (Date) creationDate.clone();
+		return creationDate != null ? (Date) creationDate.clone() : null;
 	}
 
 	private void setCreationDate(final String value) {
@@ -1031,10 +1033,11 @@ public class OutlookMessage {
 	}
 
 	/**
-	 * Bean getter for {@link #lastModificationDate}.
+	 * @return A defensive copy of {@link #lastModificationDate}, or null when the modification time is absent.
 	 */
+	@Nullable
 	public Date getLastModificationDate() {
-		return (Date) lastModificationDate.clone();
+		return lastModificationDate != null ? (Date) lastModificationDate.clone() : null;
 	}
 
 	private void setLastModificationDate(final String value) {

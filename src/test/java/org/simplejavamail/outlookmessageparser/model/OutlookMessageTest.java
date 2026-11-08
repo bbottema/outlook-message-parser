@@ -3,9 +3,51 @@ package org.simplejavamail.outlookmessageparser.model;
 import org.junit.jupiter.api.Test;
 import org.simplejavamail.outlookmessageparser.model.OutlookSmime.OutlookSmimeApplicationSmime;
 
+import java.time.Instant;
+import java.util.Date;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OutlookMessageTest {
+
+	@Test
+	public void absentMessageDateIsUnavailable() {
+		assertThat(new OutlookMessage().getDate()).isNull();
+	}
+
+	@Test
+	public void absentCreationDateIsUnavailable() {
+		assertThat(new OutlookMessage().getCreationDate()).isNull();
+	}
+
+	@Test
+	public void absentModificationDateIsUnavailable() {
+		assertThat(new OutlookMessage().getLastModificationDate()).isNull();
+	}
+
+	@Test
+	public void presentDatesRemainIndependentDefensiveCopies() {
+		OutlookMessage msg = new OutlookMessage();
+		msg.setProperty(property("3007", "Mon Jul 23 15:43:12 UTC 2012"), null);
+		msg.setProperty(property("3008", "Tue Jul 24 16:44:13 UTC 2012"), null);
+		msg.setProperty(property("0039", "Sun Jul 22 14:42:11 UTC 2012"), null);
+		Date created = Date.from(Instant.parse("2012-07-23T15:43:12Z"));
+		Date modified = Date.from(Instant.parse("2012-07-24T16:44:13Z"));
+		Date submitted = Date.from(Instant.parse("2012-07-22T14:42:11Z"));
+
+		assertThat(msg.getDate()).isEqualTo(created);
+		assertThat(msg.getCreationDate()).isEqualTo(created);
+		assertThat(msg.getLastModificationDate()).isEqualTo(modified);
+		assertThat(msg.getClientSubmitTime()).isEqualTo(submitted);
+		msg.getDate().setTime(0);
+		msg.getCreationDate().setTime(0);
+		msg.getLastModificationDate().setTime(0);
+		msg.getClientSubmitTime().setTime(0);
+		assertThat(msg.getDate()).isEqualTo(created);
+		assertThat(msg.getCreationDate()).isEqualTo(created);
+		assertThat(msg.getLastModificationDate()).isEqualTo(modified);
+		assertThat(msg.getClientSubmitTime()).isEqualTo(submitted);
+	}
 	
 	@Test
 	public void testSetSmimeNull() {

@@ -1,3 +1,8 @@
+Unreleased
+
+- #103: return absent Outlook source, creation and modification dates as null, retaining defensive copies for present dates
+
+
 v1.16.0
 
 - #89: expose Outlook PR_LAST_MODIFIER_NAME / 0x3FFA through OutlookMessage#getLastModifierName() as source metadata, without treating it as sender identity
